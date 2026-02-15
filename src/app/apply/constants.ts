@@ -1,0 +1,1 @@
+export const EXTRA_FAST_FEE_PER_APPLICANT = 100;

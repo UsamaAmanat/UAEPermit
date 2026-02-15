@@ -1,0 +1,23 @@
+@tailwind utilities;
+
+:root {
+  /* Container max-width is now defined in src/app/globals.css */
+}
+
+html,
+body {
+  /* Global styles defined in src/app/globals.css */
+}
+
+.container {
+  /* Container classes are now defined in src/app/globals.css */
+}
+
+/* Buttons we’ll reuse */
+.btn-primary {
+  @apply bg-[#3C4161] text-white px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition;
+}
+
+.btn-secondary {
+  @apply bg-[#F0E960] text-[#3C4161] px-6 py-2 rounded-lg font-semibold hover:opacity-90 transition;
+}
