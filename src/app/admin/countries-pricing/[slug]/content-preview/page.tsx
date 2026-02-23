@@ -25,7 +25,7 @@ export default function CountryContentPreviewPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0b1020]">
-        <p className="text-slate-400 text-sm">Loading preview…</p>
+        <p className="text-slate-600 text-sm">Loading preview…</p>
       </div>
     );
   }
@@ -40,10 +40,10 @@ export default function CountryContentPreviewPage() {
         <div className="rounded-2xl bg-[#050818] border border-white/10 shadow-[0_18px_45px_rgba(0,0,0,0.55)] overflow-hidden">
           <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-600">
                 Website Preview
               </p>
-              <p className="text-xs text-slate-500 mt-1">
+              <p className="text-xs text-slate-600 mt-1">
                 This is how the content will render on the country page.
               </p>
             </div>
@@ -85,7 +85,7 @@ export default function CountryContentPreviewPage() {
                   dangerouslySetInnerHTML={{ __html: html }}
                 />
               ) : (
-                <p className="text-sm text-slate-400">No content yet.</p>
+                <p className="text-sm text-slate-600">No content yet.</p>
               )}
             </div>
           </div>

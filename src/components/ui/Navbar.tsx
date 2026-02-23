@@ -5,11 +5,16 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { isAdminEmail } from "@/lib/authConstants";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
+  const { user } = useAuth();
+  const isAdmin = user?.email && isAdminEmail(user.email);
+  const showAccount = user && !isAdmin;
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
@@ -53,6 +58,20 @@ export default function Navbar() {
     isScrolled
       ? "after:bg-[#c5f7e6] text-[#c5f7e6]"
       : "after:bg-[#2B2F55] text-[#2B2F55]"
+  }`;
+
+  const authTextBase = `relative inline-block text-[16px] font-semibold transition-colors duration-300 ${
+    isScrolled
+      ? "text-white hover:text-[#c5f7e6]"
+      : "text-[#0c4d3d] hover:text-[#4bd6b5]"
+  }`;
+  const authLinkUnderline = `after:content-[''] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-0 ${
+    isScrolled ? "after:bg-[#c5f7e6]" : "after:bg-[#0c4d3d]"
+  } hover:after:w-full after:transition-all after:duration-200`;
+  const authActiveUnderline = `after:w-full ${
+    isScrolled
+      ? "after:bg-[#c5f7e6] text-[#c5f7e6]"
+      : "after:bg-[#0c4d3d] text-[#0c4d3d]"
   }`;
 
   // CTA style: solid by default, outline on hover (like you wanted)
@@ -109,13 +128,35 @@ export default function Navbar() {
                 </Link>
               );
             })}
+            {isAdmin ? (
+              <Link
+                href="/admin"
+                className={`${authTextBase} ${authLinkUnderline} ${pathname?.startsWith("/admin") ? authActiveUnderline : ""}`}
+              >
+                Dashboard
+              </Link>
+            ) : showAccount ? (
+              <Link
+                href="/account"
+                className={`${authTextBase} ${authLinkUnderline} ${pathname?.startsWith("/account") ? authActiveUnderline : ""}`}
+              >
+                My Account
+              </Link>
+            ) : (
+              <Link
+                href="/login"
+                className={`${authTextBase} ${authLinkUnderline} ${pathname?.startsWith("/login") ? authActiveUnderline : ""}`}
+              >
+                Login
+              </Link>
+            )}
             <Link
-              href="https://wa.me/971558715533"
+              href="https://wa.me/971562617646"
               target="_blank"
               rel="noopener noreferrer"
               className={ctaDesktop}
             >
-              Contact us
+              Express Service
             </Link>
           </div>
 
@@ -178,6 +219,43 @@ export default function Navbar() {
                       </Link>
                     );
                   })}
+                  {isAdmin ? (
+                    <Link
+                      href="/admin"
+                      onClick={() => setOpen(false)}
+                      className={`block w-full rounded-lg px-3 py-3 text-[16px] font-semibold ${
+                        pathname?.startsWith("/admin")
+                          ? "text-[#62E9C9] bg-[#f4f5fb]"
+                          : "text-[#62E9C9]"
+                      } hover:bg-gray-50 transition`}
+                    >
+                      Dashboard
+                    </Link>
+                  ) : showAccount ? (
+                    <Link
+                      href="/account"
+                      onClick={() => setOpen(false)}
+                      className={`block w-full rounded-lg px-3 py-3 text-[16px] font-semibold ${
+                        pathname?.startsWith("/account")
+                          ? "text-[#62E9C9] bg-[#f4f5fb]"
+                          : "text-[#62E9C9]"
+                      } hover:bg-gray-50 transition`}
+                    >
+                      My Account
+                    </Link>
+                  ) : (
+                    <Link
+                      href="/login"
+                      onClick={() => setOpen(false)}
+                      className={`block w-full rounded-lg px-3 py-3 text-[16px] font-semibold ${
+                        pathname?.startsWith("/login")
+                          ? "text-[#62E9C9] bg-[#f4f5fb]"
+                          : "text-[#62E9C9]"
+                      } hover:bg-gray-50 transition`}
+                    >
+                      Login
+                    </Link>
+                  )}
                 </div>
               </nav>
             </div>

@@ -11,7 +11,7 @@ import { listCountries, deleteCountries } from "@/lib/countriesRepo";
 import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 import { toast } from "sonner";
 
-const ALLOWED_ADMINS = ["admin@uaepermit.com"];
+import { isAdminEmail } from "@/lib/authConstants";
 
 type ExtraFastAddon = {
   enabled: boolean;
@@ -49,13 +49,13 @@ export default function CountriesPricingPage() {
       if (!currentUser) {
         setUser(null);
         setChecking(false);
-        router.replace("/admin/login");
+        router.replace("/login");
         return;
       }
-      if (!currentUser.email || !ALLOWED_ADMINS.includes(currentUser.email)) {
+      if (!currentUser.email || !isAdminEmail(currentUser.email)) {
         setUser(null);
         setChecking(false);
-        router.replace("/admin/login");
+        router.replace("/login");
         return;
       }
       setUser(currentUser);
@@ -122,7 +122,7 @@ export default function CountriesPricingPage() {
 
   const handleLogout = async () => {
     await signOut(auth);
-    router.replace("/admin/login");
+    router.replace("/login");
   };
 
   // Filtered countries based on search
@@ -195,8 +195,8 @@ export default function CountriesPricingPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b1020]">
-        <p className="text-slate-400 text-sm">Checking admin access…</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <p className="text-slate-600 text-sm">Checking admin access…</p>
       </div>
     );
   }
@@ -239,7 +239,7 @@ export default function CountriesPricingPage() {
         <button
           type="button"
           onClick={() => router.push("/admin")}
-          className="inline-flex items-center text-xs font-medium text-slate-300 hover:text-white"
+          className="inline-flex items-center text-xs font-medium text-slate-600 hover:text-slate-900"
         >
           <span className="mr-1 text-lg">←</span>
           Back to dashboard
@@ -248,10 +248,10 @@ export default function CountriesPricingPage() {
         {/* Heading */}
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">
+            <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
               Countries &amp; Pricing
             </h1>
-            <p className="mt-1 text-sm text-slate-400">
+            <p className="mt-1 text-sm text-slate-600">
               Manage which countries you support, default visa types, processing
               times and base / express prices. Changes apply to new applications
               only.
@@ -269,17 +269,17 @@ export default function CountriesPricingPage() {
         </div>
 
         {/* ✅ Global Add-ons Card */}
-        <div className="rounded-2xl bg-[#050818] border border-white/10 shadow-[0_18px_45px_rgba(0,0,0,0.55)] overflow-hidden">
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
           <div className="px-5 py-4 border-b border-white/10 flex items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-600">
                 Add-ons pricing
               </p>
-              <p className="text-[12px] text-slate-500 mt-1">
+              <p className="text-[12px] text-slate-600 mt-1">
                 Controls checkout add-ons (e.g.{" "}
-                <span className="text-slate-200">Extra Fast</span>) globally.
-                <span className="ml-2 text-slate-400">Mode:</span>{" "}
-                <span className="text-slate-200 font-semibold">
+                <span className="text-slate-900 font-semibold">Extra Fast</span>) globally.
+                <span className="ml-2 text-slate-600">Mode:</span>{" "}
+                <span className="text-slate-900 font-semibold">
                   per applicant
                 </span>
               </p>
@@ -289,7 +289,7 @@ export default function CountriesPricingPage() {
               type="button"
               disabled={addonsSaving || addonsLoading}
               onClick={saveGlobalAddons}
-              className="inline-flex items-center gap-2 rounded-full bg-[#DEE05B] px-5 py-2 text-xs font-semibold text-[#141729] shadow-[0_18px_45px_rgba(222,224,91,0.45)] hover:bg-[#f2f46d] disabled:opacity-60 disabled:cursor-not-allowed transition"
+              className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-5 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition"
             >
               {addonsSaving ? "Saving…" : "Save add-ons"}
             </button>
@@ -297,15 +297,15 @@ export default function CountriesPricingPage() {
 
           <div className="px-5 py-4">
             {addonsLoading ? (
-              <div className="text-xs text-slate-500">Loading add-ons…</div>
+              <div className="text-xs text-slate-600">Loading add-ons…</div>
             ) : (
               <div className="grid grid-cols-1  gap-4">
-                <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-slate-900">
                       Extra Fast
                     </p>
-                    <label className="inline-flex items-center gap-2 text-xs text-slate-300">
+                    <label className="inline-flex items-center gap-2 text-xs text-slate-600">
                       <input
                         type="checkbox"
                         checked={extraFast.enabled}
@@ -315,22 +315,22 @@ export default function CountriesPricingPage() {
                             enabled: e.target.checked,
                           }))
                         }
-                        className="h-4 w-4 rounded border-slate-500 bg-slate-900 text-[#DEE05B] focus:outline-none focus:ring-0"
+                        className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                       />
                       Enabled
                     </label>
                   </div>
 
-                  <p className="text-[11px] text-slate-500 mt-1">
+                  <p className="text-[11px] text-slate-600 mt-1">
                     Adds an extra fee per applicant when selected at checkout.
                   </p>
 
                   <div className="mt-4 flex items-center justify-between">
-                    <div className="text-[11px] text-slate-500">
+                    <div className="text-[11px] text-slate-600">
                       Price / applicant
                     </div>
                     <div className="inline-flex items-center gap-2">
-                      <span className="text-[11px] text-slate-400">USD</span>
+                      <span className="text-[11px] text-slate-600">USD</span>
                       <input
                         type="number"
                         value={extraFast.amount}
@@ -340,21 +340,21 @@ export default function CountriesPricingPage() {
                             amount: Number(e.target.value || 0),
                           }))
                         }
-                        className="h-9 w-28 rounded-xl bg-slate-900/70 border border-white/10 px-3 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/60"
+                        className="h-9 w-28 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
                         min={0}
                       />
                     </div>
                   </div>
 
-                  <div className="mt-4 rounded-xl bg-slate-900/60 border border-white/10 p-3">
-                    <p className="text-[11px] text-slate-300">
+                  <div className="mt-4 rounded-xl bg-slate-50 border border-slate-200 p-3">
+                    <p className="text-[11px] text-slate-600">
                       Preview: {previewApplicants} applicants →{" "}
-                      <span className="font-semibold text-white">
+                      <span className="font-semibold text-slate-900">
                         ${(previewTotal || 0).toFixed(2)}
                       </span>{" "}
                       extra fee
                     </p>
-                    <p className="text-[10px] text-slate-500 mt-1">
+                    <p className="text-[10px] text-slate-600 mt-1">
                       Applies only when customer selects “Extra Fast”.
                     </p>
                   </div>
@@ -365,14 +365,14 @@ export default function CountriesPricingPage() {
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl bg-[#050818] border border-white/10 shadow-[0_18px_45px_rgba(0,0,0,0.55)] overflow-hidden">
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
           {/* Header */}
           <div className="px-5 py-4 border-b border-white/5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-600">
                 Country list
               </p>
-              <p className="text-[11px] text-slate-500 mt-0.5">
+              <p className="text-[11px] text-slate-600 mt-0.5">
                 {loading
                   ? "Loading countries…"
                   : `${filteredCountries.length} results matching your filters.`}
@@ -382,7 +382,7 @@ export default function CountriesPricingPage() {
             {/* Search bar */}
             <div className="w-full md:w-80">
               <div className="relative">
-                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-500">
+                <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-600">
                   <svg
                     className="w-4 h-4"
                     xmlns="http://www.w3.org/2000/svg"
@@ -403,7 +403,7 @@ export default function CountriesPricingPage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search country, code or region…"
-                  className="w-full rounded-full bg-slate-900/70 border border-white/10 pl-9 pr-3 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/60"
+                  className="w-full rounded-full border border-slate-200 bg-white pl-9 pr-3 py-2 text-xs text-slate-900 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
                 />
               </div>
             </div>
@@ -411,8 +411,8 @@ export default function CountriesPricingPage() {
 
           {/* Bulk action bar – only when something selected */}
           {selectedSlugs.length > 0 && (
-            <div className="px-5 py-2 border-b border-white/5 bg-[#070c1d] flex items-center justify-between text-xs">
-              <span className="text-slate-200">
+            <div className="px-5 py-2 border-b border-slate-200 bg-slate-50 flex items-center justify-between text-xs">
+              <span className="text-slate-700">
                 {selectedSlugs.length} selected
               </span>
               <button
@@ -430,7 +430,7 @@ export default function CountriesPricingPage() {
           <div className="overflow-x-auto">
             <div className="max-h-[520px] overflow-y-auto">
               <table className="min-w-full text-left">
-                <thead className="text-[10px] uppercase tracking-[0.18em] text-slate-500 bg-slate-900/40">
+                <thead className="text-[10px] uppercase tracking-wider text-slate-600 bg-slate-50 border-b border-slate-200">
                   <tr>
                     <th className="px-4 py-3 font-semibold w-10">
                       <input
@@ -438,7 +438,7 @@ export default function CountriesPricingPage() {
                         checked={allFilteredSelected}
                         onClick={(e) => e.stopPropagation()}
                         onChange={(e) => handleToggleAll(e.target.checked)}
-                        className="h-4 w-4 rounded border-slate-500 bg-slate-900 text-[#DEE05B] focus:outline-none focus:ring-0 cursor-pointer"
+                        className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                       />
                     </th>
                     <th className="px-4 py-3 font-semibold">Country</th>
@@ -449,11 +449,11 @@ export default function CountriesPricingPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5 text-sm">
+                <tbody className="divide-y divide-slate-200 text-sm">
                   {filteredCountries.map((c) => (
                     <tr
                       key={c.slug}
-                      className="hover:bg-white/5 transition cursor-pointer"
+                      className="hover:bg-slate-50 transition cursor-pointer"
                       onClick={() =>
                         router.push(`/admin/countries-pricing/${c.slug}`)
                       }
@@ -465,21 +465,20 @@ export default function CountriesPricingPage() {
                           checked={selectedSlugs.includes(c.slug)}
                           onClick={(e) => e.stopPropagation()}
                           onChange={() => toggleRowSelection(c.slug)}
-                          className="h-4 w-4 rounded border-slate-500 bg-slate-900 text-[#DEE05B] focus:outline-none focus:ring-0 cursor-pointer"
+                          className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                         />
                       </td>
 
-                      {/* Country + region */}
                       <td className="px-4 py-3 align-middle">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 border border-white/10 text-[11px] font-semibold">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700">
                             {c.code || c.name.slice(0, 2).toUpperCase()}
                           </div>
                           <div>
-                            <div className="font-medium text-slate-100">
+                            <div className="font-medium text-slate-900">
                               {c.name}
                             </div>
-                            <div className="text-[11px] text-slate-500">
+                            <div className="text-[11px] text-slate-600">
                               {c.region || "—"}
                             </div>
                           </div>
@@ -487,12 +486,12 @@ export default function CountriesPricingPage() {
                       </td>
 
                       {/* Default visa */}
-                      <td className="px-4 py-3 align-middle text-slate-100">
+                      <td className="px-4 py-3 align-middle text-slate-700">
                         <div className="text-sm">
                           {c.defaultVisaLabel || "Not configured"}
                         </div>
                         {c.defaultEntryType && (
-                          <div className="text-[11px] text-slate-500">
+                          <div className="text-[11px] text-slate-600">
                             {c.defaultEntryType === "single"
                               ? "Single Entry"
                               : "Multiple Entry"}
@@ -503,19 +502,19 @@ export default function CountriesPricingPage() {
                       {/* Status pill */}
                       <td className="px-4 py-3 align-middle">
                         {c.status === "active" && (
-                          <span className="inline-flex items-center rounded-full bg-emerald-400/15 text-emerald-200 px-3 py-1 text-[11px] font-medium">
+                          <span className="inline-flex items-center rounded-full bg-emerald-50 text-emerald-700 px-3 py-1 text-[11px] font-medium">
                             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-1.5" />
                             Active
                           </span>
                         )}
                         {c.status === "hidden" && (
-                          <span className="inline-flex items-center rounded-full bg-slate-500/15 text-slate-200 px-3 py-1 text-[11px] font-medium">
+                          <span className="inline-flex items-center rounded-full bg-slate-100 text-slate-600 px-3 py-1 text-[11px] font-medium">
                             <span className="h-1.5 w-1.5 rounded-full bg-slate-400 mr-1.5" />
                             Hidden
                           </span>
                         )}
                         {c.status === "comingSoon" && (
-                          <span className="inline-flex items-center rounded-full bg-sky-400/15 text-sky-200 px-3 py-1 text-[11px] font-medium">
+                          <span className="inline-flex items-center rounded-full bg-sky-50 text-sky-700 px-3 py-1 text-[11px] font-medium">
                             <span className="h-1.5 w-1.5 rounded-full bg-sky-400 mr-1.5" />
                             Coming soon
                           </span>
@@ -542,7 +541,7 @@ export default function CountriesPricingPage() {
                     <tr>
                       <td
                         colSpan={5}
-                        className="px-4 py-8 text-center text-sm text-slate-500"
+                        className="px-4 py-8 text-center text-sm text-slate-600"
                       >
                         No countries match this search. Try a different name or
                         code.

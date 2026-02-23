@@ -2,9 +2,31 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const RESERVED = new Set([
-  "", "country", "apply", "admin", "blogs", "blog", "contact", "about",
-  "track", "terms", "privacy", "faq", "faqs", "api", "_next", "images",
-  "sitemap.xml", "robots.txt", "favicon.ico", "stay-overstay-rules"
+  "",
+  "country",
+  "login",
+  "register",
+  "apply",
+  "admin",
+  "blogs",
+  "blog",
+  "contact",
+  "about",
+  "track",
+  "terms",
+  "privacy",
+  "faq",
+  "faqs",
+  "api",
+  "_next",
+  "images",
+  "sitemap.xml",
+  "dashboard",
+  "robots.txt",
+  "favicon.ico",
+  "stay-overstay-rules",
+  "signup",
+  "account",
 ]);
 
 // If you have exact country slugs list, put them here for stricter redirect.

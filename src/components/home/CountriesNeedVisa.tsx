@@ -1,16 +1,16 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import ReactCountryFlag from "react-country-flag";
-import { Search, X } from "lucide-react";
+import { Search, X, Loader2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { COUNTRIES } from "./utils/utils";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import { db } from "@/lib/firebaseClient";
 
 const INITIAL_COUNT = 16;
 
-// 👉 helper to convert "Mauritania" → "mauritania", "Saudi Arabia" → "saudi-arabia"
 function countrySlug(name: string) {
   return name
     .toLowerCase()
@@ -24,31 +24,60 @@ function countrySlug(name: string) {
 type Country = {
   name: string;
   code: string;
+  slug: string;
 };
 
 export default function CountriesNeedVisa() {
-  const [query, setQuery] = useState("");
+  const [query_, setQuery] = useState("");
   const [expanded, setExpanded] = useState(false);
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const prefetchCountry = (name: string) => {
-    const slug = countrySlug(name);
+  // Fetch active countries from Firestore
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const snap = await getDocs(collection(db, "countries"));
+        if (cancelled) return;
+        const list: Country[] = [];
+        snap.docs.forEach((d) => {
+          const data = d.data() as any;
+          const status = (data?.status || "").toString().toLowerCase();
+          if (status !== "active") return;
+          list.push({
+            name: data.name || d.id,
+            code: data.countryCode || data.code || "",
+            slug: data.slug || d.id,
+          });
+        });
+        list.sort((a, b) => a.name.localeCompare(b.name));
+        setCountries(list);
+      } catch (e) {
+        console.error("Failed to load countries:", e);
+      }
+      setLoading(false);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  const prefetchCountry = (slug: string) => {
     router.prefetch(`/country/${slug}`);
   };
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = query_.trim().toLowerCase();
     return q
-      ? COUNTRIES.filter((c) => c.name.toLowerCase().includes(q))
-      : COUNTRIES;
-  }, [query]);
+      ? countries.filter((c) => c.name.toLowerCase().includes(q))
+      : countries;
+  }, [query_, countries]);
 
   const visible = expanded ? filtered : filtered.slice(0, INITIAL_COUNT);
 
   const handleSearchAction = () => {
-    if (query.trim()) {
-      // Handle search action
-      console.log("Searching for:", query);
+    if (query_.trim() && filtered.length === 1) {
+      router.push(`/country/${filtered[0].slug}`);
     }
   };
 
@@ -100,7 +129,7 @@ export default function CountriesNeedVisa() {
 
                 <input
                   type="text"
-                  value={query}
+                  value={query_}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
@@ -112,7 +141,7 @@ export default function CountriesNeedVisa() {
                   className="w-full outline-none bg-white text-[#3C4161] placeholder-gray-400 text-sm md:text-base"
                 />
 
-                {query && (
+                {query_ && (
                   <button
                     type="button"
                     onClick={handleClear}
@@ -134,20 +163,30 @@ export default function CountriesNeedVisa() {
             </div>
           </div>
 
+          {/* Loading state */}
+          {loading && (
+            <div className="mt-12 flex flex-col items-center gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-[#62E9C9]" />
+              <p className="text-sm text-black/60">Loading countries…</p>
+            </div>
+          )}
+
           {/* Grid */}
-          <div className="mt-8 md:mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
-            {visible.map((c) => (
-              <CountryRow
-                key={c.name}
-                country={c}
-                href={`/country/${countrySlug(c.name)}`}
-                onHover={() => prefetchCountry(c.name)}
-              />
-            ))}
-          </div>
+          {!loading && (
+            <div className="mt-8 md:mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
+              {visible.map((c) => (
+                <CountryRow
+                  key={c.slug}
+                  country={c}
+                  href={`/country/${c.slug}`}
+                  onHover={() => prefetchCountry(c.slug)}
+                />
+              ))}
+            </div>
+          )}
 
           {/* All Countries Button */}
-          {filtered.length > INITIAL_COUNT && !query && (
+          {!loading && filtered.length > INITIAL_COUNT && !query_ && (
             <div className="mt-8 md:mt-12 flex justify-center">
               <button
                 onClick={() => setExpanded((s) => !s)}
@@ -159,7 +198,7 @@ export default function CountriesNeedVisa() {
           )}
 
           {/* Empty state */}
-          {filtered.length === 0 && (
+          {!loading && filtered.length === 0 && (
             <p className="mt-8 md:mt-10 text-center text-black/70 text-[13px] md:text-[14px]">
               No countries match your search.
             </p>
@@ -185,14 +224,20 @@ function CountryRow({ country, href, onHover }: CountryRowProps) {
       onFocus={onHover}
       className="flex items-center gap-3 rounded-2xl px-4 py-3 hover:shadow-md transition-all"
     >
-      <span className="inline-block w-12 overflow-hidden rounded-md shadow-sm flex-shrink-0">
-        <ReactCountryFlag
-          svg
-          countryCode={country.code}
-          aria-label={country.name}
-          style={{ width: "100%", height: "auto", display: "block" }}
-        />
-      </span>
+      {country.code ? (
+        <span className="inline-block w-12 overflow-hidden rounded-md shadow-sm flex-shrink-0">
+          <ReactCountryFlag
+            svg
+            countryCode={country.code}
+            aria-label={country.name}
+            style={{ width: "100%", height: "auto", display: "block" }}
+          />
+        </span>
+      ) : (
+        <span className="inline-flex w-12 h-8 items-center justify-center rounded-md bg-slate-100 text-xs font-bold text-slate-500 flex-shrink-0">
+          {country.name.slice(0, 2).toUpperCase()}
+        </span>
+      )}
 
       <span className="text-[15px] font-normal text-black">{country.name}</span>
     </Link>

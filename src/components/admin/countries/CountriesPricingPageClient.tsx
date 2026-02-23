@@ -96,7 +96,7 @@ export default function CountriesPricingPageClient() {
             <h1 className="text-lg md:text-xl font-semibold text-slate-50">
               Countries &amp; Pricing
             </h1>
-            <p className="text-xs md:text-sm text-slate-400">
+            <p className="text-xs md:text-sm text-slate-600">
               Manage visa pricing for each country. Single &amp; multiple entry
               packages are controlled from here.
             </p>
@@ -129,13 +129,13 @@ export default function CountriesPricingPageClient() {
       {/* Stats strip */}
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-          <p className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+          <p className="text-[11px] font-medium uppercase tracking-wide text-slate-600">
             Total countries
           </p>
           <p className="mt-1 text-2xl font-semibold text-slate-50">
             {countries.length}
           </p>
-          <p className="mt-1 text-[11px] text-slate-500">
+          <p className="mt-1 text-[11px] text-slate-600">
             Connected to visa pricing
           </p>
         </div>
@@ -173,14 +173,14 @@ export default function CountriesPricingPageClient() {
             <p className="text-sm font-semibold text-slate-900">
               Country pricing overview
             </p>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-600">
               Click any row to manage that country’s visa packages.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <div className="relative">
-              <FiSearch className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-400" />
+              <FiSearch className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-xs text-slate-600" />
               <input
                 type="text"
                 value={search}
@@ -195,7 +195,7 @@ export default function CountriesPricingPageClient() {
         {/* Card body */}
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="flex items-center justify-center px-6 py-12 text-sm text-slate-500">
+            <div className="flex items-center justify-center px-6 py-12 text-sm text-slate-600">
               <div className="flex items-center gap-2">
                 <span className="h-2 w-2 animate-ping rounded-full bg-[#3946A7]" />
                 <span>Loading countries…</span>
@@ -206,7 +206,7 @@ export default function CountriesPricingPageClient() {
               {error}
             </div>
           ) : filtered.length === 0 ? (
-            <div className="px-6 py-10 text-center text-sm text-slate-500">
+            <div className="px-6 py-10 text-center text-sm text-slate-600">
               No countries found. Try adjusting your search or{" "}
               <button
                 type="button"
@@ -220,7 +220,7 @@ export default function CountriesPricingPageClient() {
           ) : (
             <table className="min-w-full text-left text-xs md:text-sm">
               <thead>
-                <tr className="border-b border-slate-200 bg-slate-50/70 text-[11px] uppercase tracking-[0.12em] text-slate-500">
+                <tr className="border-b border-slate-200 bg-slate-50/70 text-[11px] uppercase tracking-[0.12em] text-slate-600">
                   <th className="px-4 py-2.5">Country</th>
                   <th className="px-4 py-2.5">Slug</th>
                   <th className="px-4 py-2.5 text-center">Single entry</th>
@@ -254,13 +254,13 @@ export default function CountriesPricingPageClient() {
                             <span className="text-sm font-medium text-slate-900">
                               {country.name}
                             </span>
-                            <span className="text-[11px] text-slate-400">
+                            <span className="text-[11px] text-slate-600">
                               Public page: /country/{country.id}
                             </span>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 align-middle text-xs text-slate-500">
+                      <td className="px-4 py-3 align-middle text-xs text-slate-600">
                         {country.id}
                       </td>
                       <td className="px-4 py-3 align-middle text-center text-xs">

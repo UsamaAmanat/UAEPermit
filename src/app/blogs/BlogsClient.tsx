@@ -116,7 +116,7 @@ export default function BlogsClient() {
           </div>
 
           {/* Sort */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap md:flex-nowrap lg:flex-nowrap">
             <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400">
               Sort By
             </span>

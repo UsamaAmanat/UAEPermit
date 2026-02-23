@@ -356,11 +356,11 @@ function ApplyPaymentPageInner() {
                     WhatsApp:{" "}
                     <a
                       className="font-semibold text-[#62E9C9] hover:underline"
-                      href="https://wa.me/971558715533"
+                      href="https://wa.me/971562617646"
                       target="_blank"
                       rel="noreferrer"
                     >
-                      +971 55 871 5533
+                      +971 56 261 7646
                     </a>{" "}
                     · Email:{" "}
                     <a

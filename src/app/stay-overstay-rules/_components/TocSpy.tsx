@@ -85,7 +85,7 @@ export default function TocSpy({ items }: { items: readonly Item[] }) {
                   <Icon
                     className={[
                       "h-4 w-4 transition",
-                      isActive ? "text-[#0B1220]" : "text-[#1F2A64]",
+                      isActive ? "text-[#064e3b]" : "text-[#065f46]",
                     ].join(" ")}
                   />
                 </span>
@@ -94,7 +94,7 @@ export default function TocSpy({ items }: { items: readonly Item[] }) {
                   className={[
                     "text-sm transition",
                     isActive
-                      ? "text-[#0B1220] font-semibold"
+                      ? "text-[#064e3b] font-semibold"
                       : "text-[#34406A]",
                   ].join(" ")}
                 >
@@ -114,7 +114,7 @@ export default function TocSpy({ items }: { items: readonly Item[] }) {
               <span
                 className={[
                   "absolute left-1 top-1/2 -translate-y-1/2 h-7 w-[3px] rounded-full transition",
-                  isActive ? "bg-[#1F2A64]" : "bg-transparent",
+                  isActive ? "bg-[#065f46]" : "bg-transparent",
                 ].join(" ")}
               />
             </a>

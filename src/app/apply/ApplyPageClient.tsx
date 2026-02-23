@@ -3,7 +3,9 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useMemo, useState, useEffect } from "react";
-import { createApplication } from "@/lib/firestore/applications";
+import { createApplication, type LeadSource } from "@/lib/firestore/applications";
+import { useAuth } from "@/contexts/AuthContext";
+import { getFamilyMembers, type FamilyMember } from "@/lib/familyMembers";
 import { StepPlanSelection } from "./components/StepPlanSelection";
 import { StepDocsAndApplicants } from "./components/StepDocsAndApplicants";
 import { StepReviewAndPay } from "./components/StepReviewAndPay";
@@ -13,8 +15,9 @@ import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import type { Applicant, Plan, ApplicantDocs } from "./types";
 import { emptyDocs } from "./types";
-import { db } from "@/lib/firebaseClient";
-import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "@/lib/firebaseClient";
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from "firebase/firestore";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const STEPS = [
   { id: 1, label: "Visa & Plan" },
@@ -69,6 +72,7 @@ function isFutureDateISO(dateStr: string) {
 export default function ApplyPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { user } = useAuth();
 
   const countrySlug = searchParams.get("country") || "";
   const planId = searchParams.get("planId") || "";
@@ -118,8 +122,12 @@ export default function ApplyPageClient() {
 
   const [extraFastSelected, setExtraFastSelected] = useState(false);
   const [reviewConfirmed, setReviewConfirmed] = useState(false);
+  const [createAccount, setCreateAccount] = useState(false);
+  const [createAccountPassword, setCreateAccountPassword] = useState("");
+  const [createAccountConfirmPassword, setCreateAccountConfirmPassword] = useState("");
 
   const [applicationId, setApplicationId] = useState<string | null>(null);
+  const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
   const [savingApp, setSavingApp] = useState(false);
   const [redirectingToCheckout, setRedirectingToCheckout] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -220,7 +228,11 @@ export default function ApplyPageClient() {
     policy1 &&
     policy2;
 
-  const isStep3Valid = reviewConfirmed;
+  // Password match validation for account creation
+  const passwordsMatch = !createAccount ||
+    (createAccountPassword.length >= 6 && createAccountPassword === createAccountConfirmPassword);
+
+  const isStep3Valid = reviewConfirmed && passwordsMatch;
 
   const isCurrentStepValid =
     activeStep === 1
@@ -298,6 +310,30 @@ export default function ApplyPageClient() {
     setApplicants((prev) => [...prev, createEmptyApplicant()]);
   };
 
+  const handleAddApplicantFromFamily = (member: FamilyMember) => {
+    const applicant: Applicant = {
+      id: Date.now().toString(),
+      countryCode: member.countryCode || "+971",
+      phone: member.phone || "",
+      email: member.email || "",
+      firstName: member.firstName || "",
+      lastName: member.lastName || "",
+      nationality: member.nationality || "",
+      applyingFrom: member.applyingFrom || "",
+      passportNumber: member.passportNumber || "",
+      profession: member.profession || "",
+      purposeOfTravel: member.purposeOfTravel || "",
+      tentativeTravelDate: member.tentativeTravelDate || tomorrowISO(),
+    };
+    setApplicants((prev) => [...prev, applicant]);
+    setDocs((prev) => [...prev, emptyDocs()]);
+  };
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    getFamilyMembers(user.uid).then(setFamilyMembers).catch(() => setFamilyMembers([]));
+  }, [user?.uid]);
+
   const handleRemoveApplicant = (index: number) => {
     setApplicants((prev) => {
       if (prev.length === 1) return prev;
@@ -306,6 +342,24 @@ export default function ApplyPageClient() {
       return clone;
     });
   };
+
+  // ---------- UTM / Lead source ----------
+  const leadSource = useMemo((): LeadSource | null => {
+    const u = searchParams;
+    const src = u.get("utm_source")?.trim();
+    const med = u.get("utm_medium")?.trim();
+    const camp = u.get("utm_campaign")?.trim();
+    const term = u.get("utm_term")?.trim();
+    const content = u.get("utm_content")?.trim();
+    if (!src && !med && !camp && !term && !content) return null;
+    return {
+      utm_source: src || undefined,
+      utm_medium: med || undefined,
+      utm_campaign: camp || undefined,
+      utm_term: term || undefined,
+      utm_content: content || undefined,
+    };
+  }, [searchParams]);
 
   // ---------- FIRESTORE + STRIPE ----------
   const ensureApplicationCreated = async () => {
@@ -320,6 +374,11 @@ export default function ApplyPageClient() {
         applicants,
         docs,
         extraFastSelected,
+        extraFastFeePerApplicant,
+        grandTotal,
+        leadSource,
+        createAccount,
+        userId: user?.uid ?? null,
       });
 
       setApplicationId(id);
@@ -350,9 +409,45 @@ export default function ApplyPageClient() {
   const goToCheckout = async () => {
     try {
       const appId = await ensureApplicationCreated();
-      setRedirectingToCheckout(true);
       setSaveError(null);
 
+      if (createAccount && applicants[0]?.email) {
+        const email = applicants[0].email.trim();
+        const pwd = createAccountPassword;
+        const confirm = createAccountConfirmPassword;
+        if (pwd.length < 6) {
+          toast.error("Password must be at least 6 characters.");
+          return;
+        }
+        if (pwd !== confirm) {
+          toast.error("Password and confirm password do not match.");
+          return;
+        }
+        try {
+          const cred = await createUserWithEmailAndPassword(auth, email, pwd);
+          // Save user profile to Firestore users collection
+          await setDoc(doc(db, "users", cred.user.uid), {
+            displayName: `${applicants[0].firstName || ""} ${applicants[0].lastName || ""}`.trim(),
+            email: email,
+            phone: (applicants[0].phone || "").trim(),
+            nationality: (applicants[0].nationality || "").trim(),
+            createdAt: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          });
+          await updateDoc(doc(db, "applications", appId), {
+            userId: cred.user.uid,
+            updatedAt: serverTimestamp(),
+          });
+        } catch (err: any) {
+          if (err?.code === "auth/email-already-in-use") {
+            toast.error("An account with this email already exists. Please sign in or use a different email.");
+            return;
+          }
+          throw err;
+        }
+      }
+
+      setRedirectingToCheckout(true);
       router.push(
         `/apply/payment?appId=${encodeURIComponent(appId)}&amount=${encodeURIComponent(
           grandTotal,
@@ -384,12 +479,7 @@ export default function ApplyPageClient() {
     }
 
     if (activeStep === 2) {
-      try {
-        await ensureApplicationCreated();
-        setActiveStep(3);
-      } catch {
-        // handled by toast
-      }
+      setActiveStep(3);
       return;
     }
 
@@ -535,7 +625,7 @@ export default function ApplyPageClient() {
               {activeStep === 2 && (
                 <StepDocsAndApplicants
                   applicants={applicants}
-                  applicantErrors={applicantErrors} // ✅ ADD THIS
+                  applicantErrors={applicantErrors}
                   pricePerApplicant={plan.price}
                   policy1={policy1}
                   policy2={policy2}
@@ -548,6 +638,9 @@ export default function ApplyPageClient() {
                   onToggleExtraFast={setExtraFastSelected}
                   docs={docs}
                   onDocsChange={setDocs}
+                  familyMembers={familyMembers}
+                  onAddFromFamily={handleAddApplicantFromFamily}
+                  extraFastFeePerApplicant={extraFastFeePerApplicant}
                 />
               )}
 
@@ -559,6 +652,14 @@ export default function ApplyPageClient() {
                   applicationId={applicationId}
                   reviewConfirmed={reviewConfirmed}
                   onChangeReviewConfirmed={setReviewConfirmed}
+                  createAccount={createAccount}
+                  onChangeCreateAccount={setCreateAccount}
+                  createAccountPassword={createAccountPassword}
+                  onChangeCreateAccountPassword={setCreateAccountPassword}
+                  createAccountConfirmPassword={createAccountConfirmPassword}
+                  onChangeCreateAccountConfirmPassword={setCreateAccountConfirmPassword}
+                  isLoggedIn={!!user}
+                  extraFastFeePerApplicant={extraFastFeePerApplicant}
                 />
               )}
 
@@ -616,20 +717,20 @@ export default function ApplyPageClient() {
           {/* Right – Selected plan card */}
           <aside className="space-y-4">
             <div className="sticky top-24 space-y-4">
-              <div className="overflow-hidden rounded-2xl bg-gradient-to-b from-[#2f345c] via-[#343a66] to-[#222642] text-white shadow-xl">
-                <div className="px-5 pb-4 pt-5">
-                  <p className="text-[11px] uppercase tracking-[0.18em] text-[#62E9C9]">
+              <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-lg">
+                <div className="px-5 pb-4 pt-5 bg-gradient-to-r from-[#f0fdf9] to-[#f8fafc]">
+                  <p className="text-[11px] uppercase tracking-[0.18em] text-[#0c4d3d] font-semibold">
                     Selected Plan
                   </p>
-                  <h2 className="mt-1 text-lg font-semibold leading-tight">
+                  <h2 className="mt-1 text-lg font-semibold leading-tight text-slate-900">
                     {plan.visa}
                   </h2>
-                  <p className="mt-1 text-xs text-slate-200">
+                  <p className="mt-1 text-xs text-slate-600">
                     {plan.country} · {plan.entry}
                   </p>
                 </div>
 
-                <div className="space-y-3 bg-[#252949]/70 px-5 py-4 text-xs">
+                <div className="space-y-3 border-t border-slate-100 bg-slate-50/50 px-5 py-4 text-xs">
                   <SummaryRow
                     label="Processing time"
                     value={plan.processingTime}
@@ -645,7 +746,7 @@ export default function ApplyPageClient() {
                   />
                 </div>
 
-                <div className="border-t border-white/10 bg-[#181b30]/90 px-5 py-4 text-xs">
+                <div className="border-t border-slate-200 px-5 py-4 text-xs">
                   <div className="space-y-2">
                     <SummaryRow
                       label="Visa fee (per applicant)"
@@ -662,10 +763,10 @@ export default function ApplyPageClient() {
 
                     <div className="mt-3 flex items-start justify-between gap-3 text-[11px]">
                       <div className="flex flex-col">
-                        <span className="text-slate-200">
+                        <span className="text-slate-700">
                           Extra fast processing
                         </span>
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-[10px] text-slate-500">
                           ${extraFastFeePerApplicant} per applicant
                         </span>
                       </div>
@@ -674,7 +775,7 @@ export default function ApplyPageClient() {
                         className={`mt-0.5 rounded-full px-3 py-1 text-[11px] font-semibold ${
                           extraFastSelected
                             ? "bg-[#62E9C9] text-[#0c4d3d]"
-                            : "bg-slate-800/80 text-slate-100"
+                            : "bg-slate-100 text-slate-600 border border-slate-200"
                         }`}
                       >
                         {extraFastSelected
@@ -683,12 +784,12 @@ export default function ApplyPageClient() {
                       </span>
                     </div>
 
-                    <div className="mt-3 flex items-center justify-between rounded-xl bg-[#141726] px-3 py-2">
+                    <div className="mt-3 flex items-center justify-between rounded-xl bg-gradient-to-r from-slate-800 to-slate-700 px-3 py-2">
                       <div className="flex flex-col">
-                        <span className="text-[11px] uppercase tracking-[0.18em] text-slate-400">
+                        <span className="text-[11px] uppercase tracking-[0.18em] text-slate-200">
                           Total to pay
                         </span>
-                        <span className="text-[10px] text-slate-500">
+                        <span className="text-[10px] text-slate-300">
                           {applicantsCount} applicant
                           {applicantsCount > 1 ? "s" : ""}{" "}
                           {extraFastSelected ? "+ extra fast" : ""}

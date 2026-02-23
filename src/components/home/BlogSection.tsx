@@ -14,12 +14,6 @@ export default function BlogSection() {
       try {
         const all = await getAllBlogs();
         const published = all.filter((p) => p.published);
-
-        // optional: sort by date if you have it
-        // published.sort((a: any, b: any) =>
-        //   (b.publishedAt || "").localeCompare(a.publishedAt || "")
-        // );
-
         setPosts(published.slice(0, 3)); // show latest up to 3
       } finally {
         setLoading(false);
@@ -29,39 +23,40 @@ export default function BlogSection() {
 
   if (!loading && posts.length === 0) return null;
 
-  // dynamic grid classes to keep layout premium
   const getGridClasses = (count: number) => {
-    if (count === 1) {
-      // single card, nicely centered and not too wide
-      return "grid gap-8 md:grid-cols-1 max-w-md mx-auto";
-    }
-    if (count === 2) {
-      // two cards, centered in a tighter width
-      return "grid gap-8 md:grid-cols-2 max-w-4xl mx-auto";
-    }
-    // 3 or more – normal layout
-    return "grid gap-8 md:grid-cols-3";
+    if (count === 1) return "grid gap-6 md:grid-cols-1 max-w-sm mx-auto";
+    if (count === 2) return "grid gap-6 md:grid-cols-2 max-w-4xl mx-auto";
+    return "grid gap-6 md:grid-cols-3";
   };
 
   return (
-    <section className="py-16 md:py-20 bg-white">
-      <div className="max-w-6xl mx-auto px-4">
-        <h2 className="text-center text-3xl md:text-4xl font-extrabold text-[#3C4161] mb-10">
-          Latest UAE Visa News & Travel Guides
+    <section className="py-12 md:py-16 relative overflow-hidden bg-white">
+      {/* Background Dots Pattern */}
+      <div 
+        className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[80%] bg-[url('/images/home/BgDotspng.png')] bg-contain bg-center bg-no-repeat opacity-25 pointer-events-none"
+        aria-hidden="true"
+      />
+
+      <div className="max-w-[1200px] mx-auto px-4 relative z-10">
+        <h2 className="text-center text-3xl md:text-5xl font-medium text-slate-900 mb-12 md:mb-16 tracking-tight">
+          Blogs
         </h2>
 
         {loading ? (
-          <div className="grid gap-8 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-3">
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col animate-pulse"
+                className="bg-white rounded-3xl overflow-hidden flex flex-col animate-pulse shadow-[0_15px_40px_rgba(0,0,0,0.06)]"
               >
-                <div className="h-52 w-full bg-gray-200" />
-                <div className="p-6 space-y-3">
-                  <div className="h-4 bg-gray-200 rounded w-3/4" />
-                  <div className="h-3 bg-gray-200 rounded w-full" />
-                  <div className="h-3 bg-gray-200 rounded w-5/6" />
+                <div className="h-56 w-full bg-slate-200" />
+                <div className="p-7 space-y-4">
+                  <div className="h-4 bg-slate-200 rounded w-3/4" />
+                  <div className="space-y-2">
+                    <div className="h-3 bg-slate-100 rounded w-full" />
+                    <div className="h-3 bg-slate-100 rounded w-full" />
+                    <div className="h-3 bg-slate-100 rounded w-5/6" />
+                  </div>
                 </div>
               </div>
             ))}
@@ -70,7 +65,6 @@ export default function BlogSection() {
           <div className={getGridClasses(posts.length)}>
             {posts.map((post) => {
               const anyPost = post as any;
-
               const imageUrl =
                 anyPost.cardImageUrl ||
                 anyPost.coverImageUrl ||
@@ -78,38 +72,36 @@ export default function BlogSection() {
                 "/images/blog/blog-1.png";
 
               const excerpt =
-                anyPost.excerpt || anyPost.summary || anyPost.intro || "";
-
-              const readTimeLabel = `${post.readTime || 3} min read`;
+                anyPost.excerpt || anyPost.summary || anyPost.intro || "Learn more about the UAE visa requirements, travel tips, and documentation.";
 
               return (
                 <article
                   key={post.id}
-                  className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col"
+                  className="bg-white rounded-3xl shadow-[0_15px_40px_rgba(0,0,0,0.06)] overflow-hidden flex flex-col border border-white/40"
                 >
-                  <div className="relative h-52 w-full">
+                  <div className="relative h-60 w-full overflow-hidden shrink-0">
                     <Image
                       src={imageUrl}
                       alt={post.title}
                       fill
-                      className="object-cover"
+                      className="object-cover transition-transform duration-500 hover:scale-105"
                     />
                   </div>
 
-                  <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-lg font-semibold text-[#3C4161] mb-2">
+                  <div className="p-7 flex flex-col flex-1">
+                    <h3 className="text-lg font-bold text-slate-900 mb-3 leading-snug">
                       {post.title}
                     </h3>
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-3">
+                    <p className="text-sm font-medium text-slate-600 mb-6 line-clamp-4 leading-relaxed tracking-wide">
                       {excerpt}
                     </p>
-                    <div className="mt-auto flex items-center justify-between text-xs text-gray-500">
-                      <span>{readTimeLabel}</span>
+                    <div className="mt-auto flex justify-end">
                       <Link
                         href={`/blog/${post.slug}`}
-                        className="text-[#4CAF50] text-sm font-medium hover:underline"
+                        className="inline-flex items-center gap-2 text-[#62E9C9] font-medium text-sm hover:opacity-80 transition"
                       >
-                        Read more
+                        Read More
+                        <span className="flex h-[18px] w-[18px] items-center justify-center rounded-full bg-[#62E9C9]" />
                       </Link>
                     </div>
                   </div>

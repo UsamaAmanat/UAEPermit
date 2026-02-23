@@ -31,7 +31,7 @@ export default function AboutClient() {
         </div>
 
         {/* HERO CARD */}
-        <div className="rounded-[32px] bg-gradient-to-r from-[#3C4161] via-[#3C4161] to-[#0c4d3d] px-6 py-8 md:px-10 md:py-10 text-white shadow-[0_24px_60px_rgba(60,65,97,0.35)]">
+        <div className="rounded-[32px] bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-700 px-6 py-8 md:px-10 md:py-10 text-white shadow-lg">
           <div className="max-w-3xl">
             <p className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em]">
               <span className="h-1.5 w-1.5 rounded-full bg-[#62E9C9]" />
@@ -39,19 +39,16 @@ export default function AboutClient() {
             </p>
 
             <h1 className="mt-4 text-3xl sm:text-4xl lg:text-[2.6rem] font-extrabold tracking-tight leading-tight">
-              Your trusted partner for Dubai visas &amp; seamless travel.
+              Your trusted partner for Dubai visa services and effortless UAE travel.
             </h1>
 
             <p className="mt-4 text-sm sm:text-base text-slate-100/90 max-w-xl">
-              UAE Permit is a fast, secure, and hassle-free platform for Dubai
-              and UAE visa services. We specialise in helping tourists,
-              families, professionals, and business travellers complete their
-              visa process with confidence.
+              UAE Permit is a trusted platform delivering fast, secure, and hassle-free Dubai visa and UAE visa services. We specialize in assisting tourists, families, professionals, and business travelers with a streamlined and reliable visa process—ensuring every application is handled with accuracy, transparency, and confidence.
             </p>
 
             <div className="mt-7 flex flex-wrap items-center gap-3">
               <a
-                href="https://wa.me/971558715533"
+                href="https://wa.me/971562617646"
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center justify-center rounded-full border border-white px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition"
@@ -87,31 +84,13 @@ export default function AboutClient() {
                 Who We Are
               </h2>
               <p className="text-sm sm:text-base text-slate-700">
-                Welcome to <span className="font-semibold">UAE Permit</span>,
-                your trusted platform for fast, secure, and hassle-free Dubai
-                Visa and UAE Visa services. We specialise in simplifying the
-                visa process for tourists, families, professionals, and business
-                travellers— delivering seamless digital solutions backed by
-                industry expertise.
+                Welcome to <span className="font-semibold">UAEpermit.com</span>, your reliable gateway for fast, secure, and hassle-free Dubai visa and UAE visa services. We specialize in making the visa process simple and convenient for tourists, families, professionals, and business travelers, offering seamless Dubai visa online and UAE visa online solutions backed by years of industry expertise.
               </p>
               <p className="text-sm sm:text-base text-slate-700">
-                With years of experience processing UAE visa applications, our
-                team has assisted{" "}
-                <span className="font-semibold">100,000+ travellers</span> with
-                smooth, reliable, and timely visa approvals. We follow UAE
-                regulations, uphold strict service standards, and ensure full
-                transparency at every stage of the application journey.
+                Our experienced team has successfully assisted thousands of travelers with smooth, timely, and dependable UAE visa applications, ensuring compliance with UAE regulations while maintaining complete transparency throughout the process.
               </p>
               <p className="text-sm sm:text-base text-slate-700">
-                <span className="font-semibold">UAE Permit</span> is proudly
-                operated by{" "}
-                <span className="font-semibold">
-                  Budget Travel &amp; Tourism LLC
-                </span>
-                , a reputable and legally compliant entity in the UAE’s travel
-                industry. We operate with the highest commitment to
-                professionalism, customer satisfaction, and regulatory
-                compliance.
+                <span className="font-semibold">UAEpermit.com</span> is operated by <span className="font-semibold">Budget Travel & Tourism LLC</span>, a licensed and reputable travel agency in Dubai. We are dedicated to professionalism, customer satisfaction, and regulatory compliance, providing a trusted platform to make your Dubai visa and UAE visa application journey effortless and secure.
               </p>
             </Card>
 
@@ -122,20 +101,18 @@ export default function AboutClient() {
               <ul className="space-y-2 text-sm text-slate-700">
                 <li className="flex items-start gap-2">
                   <CheckCircle2 className="w-4 h-4 text-[#62E9C9] mt-[3px]" />
-                  <span>100K+ visa applications assisted across UAE.</span>
+                  <span>100,000+ Dubai visa and UAE visa applications assisted.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <ShieldCheck className="w-4 h-4 text-[#62E9C9] mt-[3px]" />
                   <span>
-                    Operated by Budget Travel &amp; Tourism LLC, a DTCM-licensed
-                    travel agency.
+                    Operated by Budget Travel & Tourism LLC, a DTCM-licensed agency.
                   </span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Globe2 className="w-4 h-4 text-[#62E9C9] mt-[3px]" />
                   <span>
-                    Supporting tourists, families, professionals, and business
-                    visitors worldwide.
+                    Supporting tourists and business travelers worldwide.
                   </span>
                 </li>
               </ul>
@@ -153,11 +130,7 @@ export default function AboutClient() {
                 Our Mission
               </h3>
               <p className="text-sm text-slate-700">
-                Our mission is to make UAE visa processing effortless,
-                transparent, and ultra-fast. We remove stress from the visa
-                journey with simplified forms, clear instructions, and dedicated
-                support—so visitors can focus on planning their travel, not
-                paperwork.
+                Our mission is to provide a seamless, transparent, and efficient Dubai visa and UAE visa experience. We simplify the UAE visa process with clear guidance and dedicated support, so travelers can focus on their journey to the UAE with confidence.
               </p>
             </Card>
 
@@ -166,20 +139,16 @@ export default function AboutClient() {
                 Clear Timelines
               </h3>
               <p className="text-sm text-slate-700">
-                Straightforward processing windows and realistic expectations
-                from the very beginning—no vague promises or confusing
-                timelines.
+                We provide transparent processing windows and realistic expectations from the outset—ensuring clarity, reliability, and no misleading promises throughout your Dubai visa or UAE visa application process.
               </p>
             </Card>
 
             <Card>
               <h3 className="text-lg font-semibold text-slate-900 mb-2">
-                Secure &amp; Human
+                Secure & Personalised Support
               </h3>
               <p className="text-sm text-slate-700">
-                Your data is handled using secure tools, while real visa
-                specialists are available on WhatsApp and email whenever you
-                need help.
+                Your information is protected through secure systems and strict data standards, while experienced visa specialists remain accessible via WhatsApp and email to provide prompt, reliable assistance whenever you need it.
               </p>
             </Card>
           </div>
@@ -193,40 +162,39 @@ export default function AboutClient() {
             What we offer
           </h2>
           <p className="text-sm sm:text-base text-slate-700 mb-7 max-w-2xl">
-            Everything you need for a smooth Dubai or UAE visa—combined into one
-            guided, online experience.
+            A complete, guided online experience for a smooth Dubai visa or UAE visa, providing all the support and tools you need in one seamless process.
           </p>
 
           <div className="grid gap-6 md:grid-cols-3">
             <FeatureCard
               icon={<Clock3 className="w-5 h-5" />}
               title="Fast approvals"
-              text="Streamlined processing for Dubai and UAE visas with minimal waiting time; many applications are processed within 24 hours, depending on type."
+              text="Efficient, streamlined processing for Dubai visa and UAE visa applications, with minimal waiting times; many approvals are completed within 24 hours, depending on the visa type."
             />
             <FeatureCard
               icon={<CreditCard className="w-5 h-5" />}
               title="Secure online checkout"
-              text="Safe payments via Visa, Mastercard, and other trusted gateways with SSL-secured processing."
+              text="Make safe payments using Visa, Mastercard, and other trusted gateways, all processed securely with SSL encryption for complete peace of mind."
             />
             <FeatureCard
               icon={<FileText className="w-5 h-5" />}
               title="All UAE visa types"
-              text="Tourist visas, visit visas, transit visas, visa extensions, and more—supported under one platform."
+              text="Tourist visas, visit visas, transit visas, visa extensions, and more—all conveniently supported through a single, reliable platform."
             />
             <FeatureCard
               icon={<Upload className="w-5 h-5" />}
               title="24/7 application tracking"
-              text="Real-time updates through our easy-to-use online tracking system, available anytime."
+              text="Get real-time updates on your Dubai visa and UAE visa applications through our intuitive online tracking system, available anytime, anywhere."
             />
             <FeatureCard
               icon={<Users className="w-5 h-5" />}
               title="Expert support team"
-              text="Friendly specialists ready to guide you from submission to approval, answering questions along the way."
+              text="Our experienced visa specialists provide guidance from application submission to approval, offering reliable answers and support every step of the way."
             />
             <FeatureCard
               icon={<ShieldCheck className="w-5 h-5" />}
               title="Transparent pricing"
-              text="No hidden fees—clear, upfront pricing and plan options you can trust."
+              text="No hidden charges—enjoy clear, upfront pricing for all Dubai visa and UAE visa services, giving you full confidence and peace of mind."
             />
           </div>
         </div>
@@ -315,7 +283,7 @@ export default function AboutClient() {
       {/* JOURNEY CTA – styled like FAQ Contact Support */}
       <section className="mt-16">
         <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-0">
-          <div className="rounded-[28px] bg-[#3C4161] text-white px-6 py-6 md:px-10 md:py-8 shadow-[0_20px_55px_rgba(60,65,97,0.35)]">
+          <div className="rounded-[28px] bg-gradient-to-r from-emerald-800 to-teal-700 text-white px-6 py-6 md:px-10 md:py-8 shadow-lg">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
               {/* Text */}
               <div className="max-w-2xl">
@@ -335,14 +303,14 @@ export default function AboutClient() {
                 {/* Primary – yellow, like Contact Support */}
                 <Link
                   href="/contact"
-                  className="inline-flex items-center justify-center rounded-full bg-[#62E9C9] px-5 py-2.5 text-sm font-semibold text-[#3C4161] hover:opacity-90 transition"
+                  className="inline-flex items-center justify-center rounded-full bg-[#62E9C9] px-5 py-2.5 text-sm font-semibold text-[#0c4d3d] hover:opacity-90 transition"
                 >
                   Contact support
                 </Link>
 
                 {/* Secondary – outline, like Chat on WhatsApp */}
                 <a
-                  href="https://wa.me/971558715533"
+                  href="https://wa.me/971562617646"
                   target="_blank"
                   rel="noreferrer"
                   className="inline-flex items-center justify-center rounded-full border border-white px-5 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition"
@@ -412,7 +380,7 @@ function StepCard({ step, title, text }: StepCardProps) {
   return (
     <div className="rounded-[26px] border border-slate-200 bg-white px-4 py-4 sm:px-5 sm:py-5 shadow-[0_16px_40px_rgba(15,23,42,0.06)]">
       <div className="flex items-center gap-2 mb-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#62E9C9] text-[#3C4161] text-sm font-bold shadow-[0_10px_26px_rgba(98,233,201,0.3)]">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#62E9C9] text-[#0c4d3d] text-sm font-bold shadow-sm">
           {step}
         </div>
         <h3 className="text-sm sm:text-base font-semibold text-slate-900">

@@ -497,7 +497,7 @@ export default function VisaTypeSection({
                     </div>
                   </div>
 
-                  <div className="rounded-2xl border border-slate-200 bg-gradient-to-r from-[#111827] to-[#0b1224] p-4 text-white">
+                  <div className="rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-700 to-emerald-900 p-4 text-white">
                     <p className="text-sm font-bold">
                       Need help choosing the right visa?
                     </p>
@@ -506,7 +506,7 @@ export default function VisaTypeSection({
                       requirements.
                     </p>
                     <a
-                      href="https://wa.me/971558715533"
+                      href="https://wa.me/971562617646"
                       target="_blank"
                       rel="noreferrer"
                       className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-white px-3 py-2 text-[12px] font-semibold text-[#111827] hover:opacity-95 transition"

@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import type { Applicant, Plan } from "../types";
 
 type Props = {
@@ -9,12 +11,19 @@ type Props = {
   applicationId: string | null;
   reviewConfirmed: boolean;
   onChangeReviewConfirmed: (value: boolean) => void;
+  createAccount: boolean;
+  onChangeCreateAccount: (value: boolean) => void;
+  createAccountPassword: string;
+  onChangeCreateAccountPassword: (value: string) => void;
+  createAccountConfirmPassword: string;
+  onChangeCreateAccountConfirmPassword: (value: string) => void;
+  /** When true, "Create account" checkbox is hidden (user is already logged in). */
+  isLoggedIn?: boolean;
+  /** Extra fast fee per applicant (from database) */
+  extraFastFeePerApplicant?: number;
 };
 
-// ✅ MUST MATCH your UI + sidebar: 100 per applicant
-const EXTRA_FAST_FEE_PER_APPLICANT = 100;
-
-// ✅ define what “complete” means at review step
+// define what "complete" means at review step
 function isApplicantComplete(a: Applicant) {
   const requiredFields: (keyof Applicant)[] = [
     "firstName",
@@ -42,6 +51,14 @@ export function StepReviewAndPay({
   applicationId,
   reviewConfirmed,
   onChangeReviewConfirmed,
+  createAccount,
+  onChangeCreateAccount,
+  createAccountPassword,
+  onChangeCreateAccountPassword,
+  createAccountConfirmPassword,
+  onChangeCreateAccountConfirmPassword,
+  isLoggedIn = false,
+  extraFastFeePerApplicant = 0,
 }: Props) {
   const applicantsCount = applicants.length;
   const hasApplicants = applicantsCount > 0;
@@ -50,19 +67,36 @@ export function StepReviewAndPay({
   const subtotal = priceNumber * applicantsCount;
 
   const extraFastFee = extraFastSelected
-    ? EXTRA_FAST_FEE_PER_APPLICANT * applicantsCount
+    ? extraFastFeePerApplicant * applicantsCount
     : 0;
 
   const total = subtotal + extraFastFee;
 
-  // ✅ premium: per applicant completion validation
+  // per applicant completion validation
   const incompleteCount = applicants.filter(
     (a) => !isApplicantComplete(a),
   ).length;
   const allComplete = hasApplicants && incompleteCount === 0;
 
-  // ✅ checkbox only usable when everything is complete
+  // checkbox only usable when everything is complete
   const canConfirm = allComplete;
+
+  // Password visibility toggles
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Password match check
+  const passwordsMatch =
+    createAccountPassword.length > 0 &&
+    createAccountPassword === createAccountConfirmPassword;
+  const showMismatchWarning =
+    createAccount &&
+    createAccountConfirmPassword.length > 0 &&
+    !passwordsMatch;
+  const passwordTooShort =
+    createAccount &&
+    createAccountPassword.length > 0 &&
+    createAccountPassword.length < 6;
 
   return (
     <div className="space-y-6">
@@ -221,11 +255,11 @@ export function StepReviewAndPay({
               Payment summary
             </p>
             <p className="mt-1 max-w-xs text-[11px] text-slate-300">
-              You’ll be charged on the next step for the selected visa and
+              You'll be charged on the next step for the selected visa and
               options.
             </p>
             {applicationId && (
-              <p className="mt-1 text-[10px] text-slate-500">
+              <p className="mt-1 text-[10px] text-slate-400">
                 Application ID:{" "}
                 <span className="font-medium text-slate-200">
                   {applicationId}
@@ -277,7 +311,7 @@ export function StepReviewAndPay({
 
           {extraFastSelected && (
             <p className="text-[10px] text-slate-400">
-              Extra fast fee: {EXTRA_FAST_FEE_PER_APPLICANT} $ ×{" "}
+              Extra fast fee: {extraFastFeePerApplicant} $ ×{" "}
               {applicantsCount} applicant
               {applicantsCount === 1 ? "" : "s"}
             </p>
@@ -306,6 +340,84 @@ export function StepReviewAndPay({
               or rejection.
             </span>
           </label>
+
+          {!isLoggedIn && (
+            <label className="flex items-start gap-2 text-[11px] text-slate-200">
+              <input
+                type="checkbox"
+                className="mt-0.5 h-4 w-4 rounded border-slate-400 text-[#62E9C9] focus:ring-[#62E9C9]"
+                checked={createAccount}
+                onChange={(e) => onChangeCreateAccount(e.target.checked)}
+              />
+              <span>
+                Create an account with the primary applicant&apos;s email so I can
+                track my applications and manage my profile later. (Optional)
+              </span>
+            </label>
+          )}
+
+          {!isLoggedIn && createAccount && (
+            <div className="space-y-2 rounded-xl border border-slate-600/50 bg-slate-800/30 p-3">
+              <p className="text-[11px] font-medium text-slate-200">Set your account password</p>
+              <div>
+                <label className="block text-[10px] text-slate-400 mb-1">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={createAccountPassword}
+                    onChange={(e) => onChangeCreateAccountPassword(e.target.value)}
+                    placeholder="At least 6 characters"
+                    minLength={6}
+                    className="w-full rounded-lg border border-slate-500 bg-slate-900/50 px-3 py-2 pr-10 text-xs text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-[#62E9C9]/30"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {passwordTooShort && (
+                  <p className="mt-1 text-[10px] text-amber-400">
+                    Password must be at least 6 characters.
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block text-[10px] text-slate-400 mb-1">Confirm password</label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={createAccountConfirmPassword}
+                    onChange={(e) => onChangeCreateAccountConfirmPassword(e.target.value)}
+                    placeholder="Re-enter password"
+                    minLength={6}
+                    className={`w-full rounded-lg border px-3 py-2 pr-10 text-xs text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-[#62E9C9]/30 bg-slate-900/50 ${
+                      showMismatchWarning ? "border-rose-400" : "border-slate-500"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {showMismatchWarning && (
+                  <p className="mt-1 text-[10px] text-rose-400">
+                    Passwords do not match. Payment button will be disabled until they match.
+                  </p>
+                )}
+                {passwordsMatch && createAccountPassword.length >= 6 && (
+                  <p className="mt-1 text-[10px] text-emerald-400">
+                    ✓ Passwords match
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
 
           <p className="max-w-xl text-[10px] text-slate-400">
             On the next step you will complete the payment using our secure

@@ -2,9 +2,10 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import "./globals.css";
-import Navbar from "@/components/ui/Navbar";
-import Footer from "@/components/home/Footer";
 import { Toaster } from "sonner";
+import { AuthProvider } from "@/contexts/AuthContext";
+import ConditionalShell from "@/components/layout/ConditionalShell";
+import NextTopLoader from "nextjs-toploader";
 
 // export const metadata: Metadata = {
 //   metadataBase: new URL("https://uaepermit.com"),
@@ -90,6 +91,13 @@ export default function RootLayout({
           }}
         /> */}
         {/* End Google Tag Manager */}
+
+        {/* Trustpilot Widget Script */}
+        <Script
+          type="text/javascript"
+          strategy="afterInteractive"
+          src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
+        />
       </head>
 
       <body>
@@ -104,10 +112,11 @@ export default function RootLayout({
         </noscript> */}
         {/* End Google Tag Manager (noscript) */}
 
-        <Navbar />
-        <div className="pt-10">{children}</div>
-        <Footer />
-        <Toaster position="top-right" richColors closeButton />
+        <AuthProvider>
+          <NextTopLoader color="#62E9C9" height={3} showSpinner={false} />
+          <ConditionalShell>{children}</ConditionalShell>
+          <Toaster position="top-right" richColors closeButton />
+        </AuthProvider>
       </body>
     </html>
   );

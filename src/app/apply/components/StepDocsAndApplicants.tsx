@@ -25,6 +25,7 @@ import { Switch } from "@headlessui/react";
 
 import type { Applicant, ApplicantDocs, DocKind } from "../types";
 import { emptyDocs } from "../types";
+import type { FamilyMember } from "@/lib/familyMembers";
 
 type DateFieldProps = {
   label: string;
@@ -288,9 +289,12 @@ type StepDocsAndApplicantsProps = {
 
   onAddApplicant: () => void;
   onRemoveApplicant: (index: number) => void;
+  familyMembers?: FamilyMember[];
+  onAddFromFamily?: (member: FamilyMember) => void;
 
   extraFastSelected: boolean;
   onToggleExtraFast: (value: boolean) => void;
+  extraFastFeePerApplicant?: number;
 
   // ✅ keep your existing docs types (no "any")
   docs: ApplicantDocs[];
@@ -779,6 +783,9 @@ export function StepDocsAndApplicants({
   onToggleExtraFast,
   docs,
   onDocsChange,
+  familyMembers = [],
+  onAddFromFamily,
+  extraFastFeePerApplicant = 0,
 }: StepDocsAndApplicantsProps) {
   const handleFilesChange = (
     applicantIndex: number,
@@ -1098,8 +1105,8 @@ export function StepDocsAndApplicants({
         );
       })}
 
-      {/* Add applicant button */}
-      <div className="flex items-center gap-3">
+      {/* Add applicant button + Add from family */}
+      <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={onAddApplicant}
@@ -1108,6 +1115,29 @@ export function StepDocsAndApplicants({
           <Plus className="h-3.5 w-3.5" />
           <span>Add Applicant</span>
         </button>
+        {familyMembers.length > 0 && onAddFromFamily && (
+          <div className="flex items-center gap-2">
+            <ChevronDown className="h-4 w-4 text-slate-500" />
+            <select
+              className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
+              value=""
+              onChange={(e) => {
+                const id = e.target.value;
+                if (!id) return;
+                const m = familyMembers.find((f) => f.id === id);
+                if (m) onAddFromFamily(m);
+                e.target.value = "";
+              }}
+            >
+              <option value="">Add from family…</option>
+              {familyMembers.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {[m.firstName, m.lastName].filter(Boolean).join(" ") || "Family member"}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
         {applicants.length > 1 && (
           <p className="text-[11px] text-slate-500">
             You can add separate details and documents for each traveller.
@@ -1117,25 +1147,23 @@ export function StepDocsAndApplicants({
 
       {/* Extra fast processing option */}
       <div
-        className="mt-6 rounded-2xl px-5 py-4 text-xs shadow-[0_18px_40px_rgba(15,23,42,0.45)] border border-slate-900"
-        style={{
-          background: extraFastSelected
-            ? "linear-gradient(90deg,#252b5a 0%,#303872 50%,#252b5a 100%)"
-            : "linear-gradient(90deg,#222749 0%,#1b2144 50%,#151938 100%)",
-          color: "#F9FAFB",
-        }}
+        className={`mt-6 rounded-2xl px-5 py-4 text-xs border transition-colors ${
+          extraFastSelected
+            ? "border-emerald-300 bg-emerald-50 shadow-sm"
+            : "border-slate-200 bg-slate-50 shadow-sm"
+        }`}
       >
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           {/* LEFT: title + text */}
           <div className="space-y-1 max-w-xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-100">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-800">
               Extra fast processing
             </p>
-            <p className="text-[13px] text-slate-50">
+            <p className="text-[13px] text-slate-700">
               Get your visa reviewed with{" "}
               <span className="font-semibold">priority</span>.
             </p>
-            <p className="text-[11px] leading-snug text-slate-200">
+            <p className="text-[11px] leading-snug text-slate-500">
               Optional add-on. We’ll try to process your application faster, but
               final decision time still depends on UAE authorities.
             </p>
@@ -1146,15 +1174,15 @@ export function StepDocsAndApplicants({
             {/* price + toggle */}
             <div className="flex items-center gap-4">
               <div className="text-right leading-tight">
-                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-200">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-500">
                   Extra fee
                 </p>
                 <p
                   className={`text-base font-semibold ${
-                    extraFastSelected ? "text-[#62E9C9]" : "text-slate-50"
+                    extraFastSelected ? "text-emerald-600" : "text-slate-700"
                   }`}
                 >
-                  + 100 $
+                  + {extraFastFeePerApplicant > 0 ? extraFastFeePerApplicant : "—"} $
                 </p>
               </div>
 
@@ -1182,8 +1210,8 @@ export function StepDocsAndApplicants({
             <span
               className={`inline-flex items-center justify-center rounded-full px-3 py-0.5 text-[10px] uppercase tracking-[0.14em] border transition-colors ${
                 extraFastSelected
-                  ? "bg-[#62E9C9] text-[#0c4d3d] border-[#52cfb4]"
-                  : "bg-slate-900/70 text-slate-200 border-slate-500/80"
+                  ? "bg-emerald-100 text-emerald-700 border-emerald-300"
+                  : "bg-slate-100 text-slate-500 border-slate-200"
               }`}
             >
               {extraFastSelected ? "Extra fast added" : "Extra fast optional"}

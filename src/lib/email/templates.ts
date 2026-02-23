@@ -33,23 +33,23 @@ export type AdminEmailPayload = {
 const FONT = "font-family:'Montserrat', sans-serif;";
 
 const S = {
-  pageBg: "background:#070A12;",
-  cardBg: "background:#0b1020;",
-  border: "border:1px solid rgba(255,255,255,.08);",
+  pageBg: "background:#f8f9fb;",
+  cardBg: "background:#ffffff;",
+  border: "border:1px solid #e2e8f0;",
   radius: "border-radius:22px;",
-  shadow: "box-shadow:0 26px 80px rgba(0,0,0,.45);",
-  text: "color:rgba(255,255,255,.86);",
-  muted: "color:rgba(255,255,255,.62);",
-  title: "color:#fff;font-weight:800;letter-spacing:-.02em;",
+  shadow: "box-shadow:0 26px 80px rgba(0,0,0,.08);",
+  text: "color:#1e293b;",
+  muted: "color:#64748b;",
+  title: "color:#1e293b;font-weight:800;letter-spacing:-.02em;",
   h1: "font-size:22px;line-height:1.18;",
   h2: "font-size:15px;line-height:1.45;",
   body: "font-size:13.5px;line-height:1.65;",
   small: "font-size:12.5px;line-height:1.55;",
   micro: "font-size:11.5px;line-height:1.45;",
-  pill: "display:inline-block;padding:7px 11px;border-radius:999px;background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.26);color:#34d399;font-weight:800;font-size:12px;",
+  pill: "display:inline-block;padding:7px 11px;border-radius:999px;background:rgba(98,233,201,.12);border:1px solid rgba(98,233,201,.30);color:#0c4d3d;font-weight:800;font-size:12px;",
   softBox:
-    "background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;",
-  divider: "border-top:1px solid rgba(255,255,255,.08);",
+    "background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;",
+  divider: "border-top:1px solid #e2e8f0;",
 };
 
 function esc(v: any) {
@@ -146,11 +146,11 @@ function trackingIdRowHtml(trackingId?: string) {
   if (!trackingId) return "";
   return `
     <div style="margin-top:10px;">
-      <div style="${FONT}${S.micro}color:rgba(255,255,255,.48);font-weight:900;letter-spacing:.10em;text-transform:uppercase;">
+      <div style="${FONT}${S.micro}color:#94a3b8;font-weight:900;letter-spacing:.10em;text-transform:uppercase;">
         Tracking ID
       </div>
-      <div style="${FONT}margin-top:6px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);
-        background:rgba(255,255,255,.03);color:#fff;font-weight:950;letter-spacing:.08em;font-size:13px;line-height:1;">
+      <div style="${FONT}margin-top:6px;padding:10px 12px;border-radius:14px;border:1px solid #e2e8f0;
+        background:#f8fafc;color:#1e293b;font-weight:950;letter-spacing:.08em;font-size:13px;line-height:1;">
         ${esc(trackingId)}
       </div>
     </div>
@@ -186,7 +186,7 @@ function logoBlockHtml(brandName: string, logoUrl: string) {
       brandName,
     )}" style="display:block;border:0;outline:none;text-decoration:none;height:auto;">`;
   }
-  return `<div style="${FONT}font-weight:900;font-size:16px;color:#ffffff;">${esc(
+  return `<div style="${FONT}font-weight:900;font-size:16px;color:#1e293b;">${esc(
     brandName,
   )}</div>`;
 }
@@ -202,19 +202,19 @@ function buttonHtml(label: string, href: string) {
        display:inline-block;
        padding:11px 16px;
        border-radius:13px;
-       background:linear-gradient(180deg,#25d48f,#0fb176);
-       color:#04110b;
+       background:linear-gradient(180deg,#62E9C9,#3cc9a5);
+       color:#0c4d3d;
        font-weight:900;
        font-size:13.5px;
        text-decoration:none;
-       box-shadow:0 14px 34px rgba(16,185,129,.22);
+       box-shadow:0 14px 34px rgba(98,233,201,.25);
      ">
      ${esc(label)} &nbsp;→
   </a>`;
 }
 
 function divider() {
-  return `<div style="height:1px;background:rgba(255,255,255,.08);margin:14px 0;"></div>`;
+  return `<div style="height:1px;background:#e2e8f0;margin:14px 0;"></div>`;
 }
 
 function pill(text: string) {
@@ -252,10 +252,10 @@ function trustRowCompactHtml(opts: {
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:12px;">
     <tr>
-      <td style="padding:10px 12px;border:1px solid rgba(255,255,255,.08);border-radius:16px;background:rgba(255,255,255,.03);">
+      <td style="padding:10px 12px;border:1px solid #e2e8f0;border-radius:16px;background:#f8fafc;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
           <tr>
-            <td style="${FONT}${S.micro}color:rgba(255,255,255,.50);font-weight:900;letter-spacing:.10em;text-transform:uppercase;">
+            <td style="${FONT}${S.micro}color:#94a3b8;font-weight:900;letter-spacing:.10em;text-transform:uppercase;">
               Trusted partners
             </td>
           </tr>
@@ -281,11 +281,11 @@ function paymentPanelHtml(opts: {
   const orderRow = opts.orderId
     ? `
       <div style="margin-top:10px;">
-        <div style="${FONT}${S.micro}color:rgba(255,255,255,.48);font-weight:900;letter-spacing:.10em;text-transform:uppercase;">
+        <div style="${FONT}${S.micro}color:#94a3b8;font-weight:900;letter-spacing:.10em;text-transform:uppercase;">
           Order ID
         </div>
-        <div style="${FONT}margin-top:6px;padding:10px 12px;border-radius:14px;border:1px solid rgba(255,255,255,.10);
-          background:rgba(255,255,255,.03);color:#fff;font-weight:900;letter-spacing:.04em;font-size:12.5px;line-height:1.2;word-break:break-all;">
+        <div style="${FONT}margin-top:6px;padding:10px 12px;border-radius:14px;border:1px solid #e2e8f0;
+          background:#f8fafc;color:#1e293b;font-weight:900;letter-spacing:.04em;font-size:12.5px;line-height:1.2;word-break:break-all;">
           ${esc(opts.orderId)}
         </div>
       </div>
@@ -296,25 +296,25 @@ function paymentPanelHtml(opts: {
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="${S.softBox}">
     <tr>
       <td style="${FONT}padding:14px 14px 12px 14px;">
-        <div style="${FONT}${S.micro}color:rgba(255,255,255,.48);font-weight:900;letter-spacing:.10em;text-transform:uppercase;">
+        <div style="${FONT}${S.micro}color:#94a3b8;font-weight:900;letter-spacing:.10em;text-transform:uppercase;">
           Payment
         </div>
 
-        <div style="${FONT}margin-top:7px;color:#fff;font-weight:950;letter-spacing:-.02em;font-size:20px;line-height:1.15;">
+        <div style="${FONT}margin-top:7px;color:#1e293b;font-weight:950;letter-spacing:-.02em;font-size:20px;line-height:1.15;">
           ${esc(opts.paid)}
         </div>
 
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:10px;">
           <tr>
-            <td style="${FONT}${S.small}color:rgba(255,255,255,.62);">
-              Applicants: <span style="color:#fff;font-weight:900;">${esc(
+            <td style="${FONT}${S.small}color:#64748b;">
+              Applicants: <span style="color:#1e293b;font-weight:900;">${esc(
                 String(opts.applicantsCount),
               )}</span>
             </td>
-            <td align="right" style="${FONT}${S.small}color:rgba(255,255,255,.58);">
+            <td align="right" style="${FONT}${S.small}color:#64748b;">
               ${
                 opts.submittedAt
-                  ? `Submitted: <span style="color:rgba(255,255,255,.84);font-weight:800;">${esc(
+                  ? `Submitted: <span style="color:#334155;font-weight:800;">${esc(
                       opts.submittedAt,
                     )}</span>`
                   : ""
@@ -349,8 +349,8 @@ function rightInfoPanelHtml(args: {
       const nat = a?.nationality ? esc(a.nationality) : "—";
 
       return `
-        <div style="${idx === 0 ? "margin-top:12px;" : "margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);"}">
-          <div style="${FONT}color:#fff;font-weight:900;font-size:13.5px;line-height:1.4;">
+        <div style="${idx === 0 ? "margin-top:12px;" : "margin-top:10px;padding-top:10px;border:1px solid #e2e8f0;"}">
+          <div style="${FONT}color:#1e293b;font-weight:900;font-size:13.5px;line-height:1.4;">
             ${idx + 1}. ${name}
           </div>
 
@@ -359,11 +359,11 @@ function rightInfoPanelHtml(args: {
             <tr>
               <td style="${FONT}${S.muted}font-size:12.8px;line-height:1.35;white-space:nowrap;">
                 Passport:
-                <span style="color:rgba(255,255,255,.88);font-weight:800;">${passport}</span>
+                <span style="color:#334155;font-weight:800;">${passport}</span>
               </td>
               <td align="right" style="${FONT}${S.muted}font-size:12.8px;line-height:1.35;white-space:nowrap;">
                 Nationality:
-                <span style="color:rgba(255,255,255,.88);font-weight:800;">${nat}</span>
+                <span style="color:#334155;font-weight:800;">${nat}</span>
               </td>
             </tr>
           </table>
@@ -377,12 +377,12 @@ function rightInfoPanelHtml(args: {
     <tr>
       <td style="${FONT}padding:14px;">
 
-        <div style="${FONT}${S.micro}color:rgba(255,255,255,.48);font-weight:900;letter-spacing:.10em;text-transform:uppercase;">
+        <div style="${FONT}${S.micro}color:#94a3b8;font-weight:900;letter-spacing:.10em;text-transform:uppercase;">
           Status
         </div>
 
-        <div style="${FONT}margin-top:7px;font-size:13.5px;line-height:1.55;color:rgba(255,255,255,.78);">
-          Applicants: <span style="color:#fff;font-weight:900;">${esc(String(args.applicantsCount))}</span>
+        <div style="${FONT}margin-top:7px;font-size:13.5px;line-height:1.55;color:#334155;">
+          Applicants: <span style="color:#1e293b;font-weight:900;">${esc(String(args.applicantsCount))}</span>
           &nbsp;&nbsp;•&nbsp;&nbsp;
           <span style="color:#34d399;font-weight:900;">Application received</span>
         </div>
@@ -391,7 +391,7 @@ function rightInfoPanelHtml(args: {
 
         ${
           remaining > 0
-            ? `<div style="${FONT}${S.small}margin-top:12px;color:rgba(255,255,255,.58);">
+            ? `<div style="${FONT}${S.small}margin-top:12px;color:#64748b;">
                 + ${esc(String(remaining))} more •
                 <a href="${esc(args.trackingUrl)}"
                    style="color:#34d399;text-decoration:none;font-weight:900;">View all</a>
@@ -410,16 +410,16 @@ function applicantsTable(applicants: ApplicantRow[]) {
     .map((a, i) => {
       return `
       <tr>
-        <td style="padding:10px 10px;border-top:1px solid rgba(255,255,255,.10);color:rgba(255,255,255,.60);${FONT}font-size:12px;">
+        <td style="padding:10px 10px;border:1px solid #e2e8f0;color:#64748b;${FONT}font-size:12px;">
           ${i + 1}
         </td>
-        <td style="padding:10px 10px;border-top:1px solid rgba(255,255,255,.10);color:#ffffff;${FONT}font-size:13px;font-weight:900;">
+        <td style="padding:10px 10px;border:1px solid #e2e8f0;color:#1e293b;${FONT}font-size:13px;font-weight:900;">
           ${esc(a.fullName)}
         </td>
-        <td style="padding:10px 10px;border-top:1px solid rgba(255,255,255,.10);color:rgba(255,255,255,.72);${FONT}font-size:12px;">
+        <td style="padding:10px 10px;border:1px solid #e2e8f0;color:#64748b;${FONT}font-size:12px;">
           ${a.passportNumber ? esc(a.passportNumber) : "—"}
         </td>
-        <td style="padding:10px 10px;border-top:1px solid rgba(255,255,255,.10);color:rgba(255,255,255,.72);${FONT}font-size:12px;">
+        <td style="padding:10px 10px;border:1px solid #e2e8f0;color:#64748b;${FONT}font-size:12px;">
           ${a.nationality ? esc(a.nationality) : "—"}
         </td>
       </tr>
@@ -429,19 +429,19 @@ function applicantsTable(applicants: ApplicantRow[]) {
 
   return `
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-    style="border:1px solid rgba(255,255,255,.10);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.03);">
+    style="border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;background:#f8fafc;">
     <thead>
       <tr>
-        <th align="left" style="padding:11px 10px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.58);${FONT}font-size:11px;letter-spacing:.10em;text-transform:uppercase;">
+        <th align="left" style="padding:11px 10px;background:#f8fafc;color:#64748b;${FONT}font-size:11px;letter-spacing:.10em;text-transform:uppercase;">
           #
         </th>
-        <th align="left" style="padding:11px 10px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.58);${FONT}font-size:11px;letter-spacing:.10em;text-transform:uppercase;">
+        <th align="left" style="padding:11px 10px;background:#f8fafc;color:#64748b;${FONT}font-size:11px;letter-spacing:.10em;text-transform:uppercase;">
           Applicant
         </th>
-        <th align="left" style="padding:11px 10px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.58);${FONT}font-size:11px;letter-spacing:.10em;text-transform:uppercase;">
+        <th align="left" style="padding:11px 10px;background:#f8fafc;color:#64748b;${FONT}font-size:11px;letter-spacing:.10em;text-transform:uppercase;">
           Passport
         </th>
-        <th align="left" style="padding:11px 10px;background:rgba(255,255,255,.05);color:rgba(255,255,255,.58);${FONT}font-size:11px;letter-spacing:.10em;text-transform:uppercase;">
+        <th align="left" style="padding:11px 10px;background:#f8fafc;color:#64748b;${FONT}font-size:11px;letter-spacing:.10em;text-transform:uppercase;">
           Nationality
         </th>
       </tr>
@@ -461,7 +461,7 @@ function heroHtml(heroImageUrl: string) {
   return `
   <tr>
     <td style="padding:0 18px 14px 18px;">
-      <div style="border-radius:18px;overflow:hidden;border:1px solid rgba(255,255,255,.08);">
+      <div style="border-radius:18px;overflow:hidden;border:1px solid #e2e8f0;">
         <img src="${esc(heroImageUrl)}" width="684" alt="Dubai"
           style="display:block;border:0;outline:none;text-decoration:none;height:auto;width:100%;max-width:684px;">
       </div>
@@ -523,18 +523,18 @@ export function buildCustomerApplicationReceivedEmail(
   <title>${esc(b.brandName)} - Application received</title>
 </head>
 
-<body style="margin:0;padding:0;background:#070A12;">
+<body style="margin:0;padding:0;background:#f8f9fb;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
     ${esc(preheader)}
   </div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#070A12;padding:18px 10px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;padding:18px 10px;">
     <tr>
       <td align="center">
 
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-          style="max-width:740px;border-radius:22px;overflow:hidden;background:#0b1020;border:1px solid rgba(255,255,255,.08);
-          box-shadow:0 26px 80px rgba(0,0,0,.45);">
+          style="max-width:740px;border-radius:22px;overflow:hidden;background:#ffffff;border:1px solid #e2e8f0;
+          box-shadow:0 26px 80px rgba(0,0,0,.08);">
 
           <!-- Header (tight) -->
           <tr>
@@ -563,11 +563,11 @@ export function buildCustomerApplicationReceivedEmail(
                   <!-- LEFT column -->
                   <td style="width:58%;vertical-align:top;padding-right:12px;">
 
-                    <div style="${FONT}color:#fff;">
+                    <div style="${FONT}color:#1e293b;">
                       <div style="${FONT}${S.title}${S.h1}">
                         Hello ${esc(data.customerName)},
                       </div>
-                      <div style="${FONT}${S.body}margin-top:7px;color:rgba(255,255,255,.76);">
+                      <div style="${FONT}${S.body}margin-top:7px;color:#334155;">
                         We received your visa application. We’ll keep you updated.
                       </div>
 
@@ -585,7 +585,7 @@ ${trackingId ? trackingIdRowHtml(trackingId) : ""}
                         ${buttonHtml("Track your application", trackUrl)}
                       </div>
 
-                      <div style="margin-top:10px;${FONT}${S.micro}color:rgba(255,255,255,.50);">
+                      <div style="margin-top:10px;${FONT}${S.micro}color:#94a3b8;">
                         If you didn’t make this request, ignore this email or contact support.
                       </div>
                     </div>
@@ -613,11 +613,11 @@ ${trackingId ? trackingIdRowHtml(trackingId) : ""}
 
           <!-- Footer (lighter, not a heavy bar) -->
           <tr>
-            <td style="padding:12px 18px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.08);">
+            <td style="padding:12px 18px;background:#f8fafc;border:1px solid #e2e8f0;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td align="left" style="${FONT}${S.small}color:rgba(255,255,255,.62);line-height:1.6;">
-                    <div style="font-weight:950;color:#fff;margin-bottom:4px;">${esc(
+                  <td align="left" style="${FONT}${S.small}color:#64748b;line-height:1.6;">
+                    <div style="font-weight:950;color:#1e293b;margin-bottom:4px;">${esc(
                       b.brandName,
                     )}</div>
                     <div>This is an automated message. Please do not reply.</div>
@@ -632,7 +632,7 @@ ${trackingId ? trackingIdRowHtml(trackingId) : ""}
 
         </table>
 
-        <div style="max-width:740px;color:rgba(255,255,255,.42);${FONT}${S.micro}margin-top:10px;">
+        <div style="max-width:740px;color:#94a3b8;${FONT}${S.micro}margin-top:10px;">
           © ${new Date().getFullYear()} ${esc(b.brandName)}. All rights reserved.
         </div>
 
@@ -674,7 +674,7 @@ function paymentBlockHtml(opts: {
               ${esc(opts.label || "Payment")}
             </td>
             <td align="right" style="${FONT}${S.muted}font-size:12px;font-weight:800;">
-              ${opts.submittedAt ? `Submitted: <span style="color:rgba(255,255,255,.86);font-weight:800;">${esc(opts.submittedAt)}</span>` : ""}
+              ${opts.submittedAt ? `Submitted: <span style="color:#334155;font-weight:800;">${esc(opts.submittedAt)}</span>` : ""}
             </td>
           </tr>
         </table>
@@ -685,7 +685,7 @@ function paymentBlockHtml(opts: {
 
         <div style="margin-top:8px;${FONT}${S.small}${S.muted}">
           Applicants:
-          <span style="color:#fff;font-weight:900;">${esc(String(opts.applicantsCount))}</span>
+          <span style="color:#1e293b;font-weight:900;">${esc(String(opts.applicantsCount))}</span>
         </div>
       </td>
     </tr>
@@ -724,12 +724,12 @@ export function buildAdminNewApplicationEmail(data: AdminEmailPayload) {
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
       style="${S.softBox} overflow:hidden;">
       <tr>
-        <td style="${FONT}padding:12px 14px;background:rgba(255,255,255,.04);">
+        <td style="${FONT}padding:12px 14px;background:#f8fafc;">
           <div style="${S.title}font-size:14px;font-weight:900;">
             Quick summary
           </div>
           <div style="${S.muted}font-size:13px;margin-top:4px;line-height:1.55;">
-            Applicants: <span style="color:#fff;font-weight:900;">${esc(String(applicantsCount))}</span><br/>
+            Applicants: <span style="color:#1e293b;font-weight:900;">${esc(String(applicantsCount))}</span><br/>
             Status: <span style="color:#34d399;font-weight:900;">New application</span>
           </div>
         </td>
@@ -742,14 +742,14 @@ export function buildAdminNewApplicationEmail(data: AdminEmailPayload) {
           const nat = a.nationality ? esc(a.nationality) : "—";
           return `
             <tr>
-              <td style="${FONT}padding:10px 14px;border-top:1px solid rgba(255,255,255,.10);">
-                <div style="color:#fff;font-weight:900;font-size:13px;line-height:1.35;">
+              <td style="${FONT}padding:10px 14px;border:1px solid #e2e8f0;">
+                <div style="color:#1e293b;font-weight:900;font-size:13px;line-height:1.35;">
                   ${idx + 1}. ${name}
                 </div>
                 <div style="${S.muted}font-size:12px;line-height:1.55;margin-top:4px;">
-                  Passport: <span style="color:rgba(255,255,255,.88);font-weight:800;">${passport}</span>
+                  Passport: <span style="color:#334155;font-weight:800;">${passport}</span>
                   &nbsp;&nbsp;•&nbsp;&nbsp;
-                  Nationality: <span style="color:rgba(255,255,255,.88);font-weight:800;">${nat}</span>
+                  Nationality: <span style="color:#334155;font-weight:800;">${nat}</span>
                 </div>
               </td>
             </tr>
@@ -761,7 +761,7 @@ export function buildAdminNewApplicationEmail(data: AdminEmailPayload) {
         remaining > 0
           ? `
         <tr>
-          <td style="${FONT}padding:10px 14px;border-top:1px solid rgba(255,255,255,.10);">
+          <td style="${FONT}padding:10px 14px;border:1px solid #e2e8f0;">
             <div style="${S.muted}font-size:12px;line-height:1.55;">
               + ${esc(String(remaining))} more applicant${remaining === 1 ? "" : "s"} •
               ${data.adminPanelUrl ? `<a href="${esc(data.adminPanelUrl)}" style="color:#34d399;text-decoration:none;font-weight:900;">View in admin</a>` : ""}
@@ -783,18 +783,18 @@ export function buildAdminNewApplicationEmail(data: AdminEmailPayload) {
           <div style="${S.muted}font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;">
             Application details
           </div>
-          <div style="margin-top:10px;${FONT}${S.body}color:rgba(255,255,255,.78);line-height:1.7;">
-            <b style="color:#fff;">Application ID:</b> ${esc(data.applicationId)}<br/>
-            ${data.orderId ? `<b style="color:#fff;">Order ID:</b> ${esc(data.orderId)}<br/>` : ""}
+          <div style="margin-top:10px;${FONT}${S.body}color:#334155;line-height:1.7;">
+            <b style="color:#1e293b;">Application ID:</b> ${esc(data.applicationId)}<br/>
+            ${data.orderId ? `<b style="color:#1e293b;">Order ID:</b> ${esc(data.orderId)}<br/>` : ""}
 
             ${
               data.customerEmail
-                ? `<b style="color:#fff;">Customer Email:</b> ${esc(data.customerEmail)}<br/>`
+                ? `<b style="color:#1e293b;">Customer Email:</b> ${esc(data.customerEmail)}<br/>`
                 : ""
             }
             ${
               data.customerPhone
-                ? `<b style="color:#fff;">Customer Phone:</b> ${esc(data.customerPhone)}<br/>`
+                ? `<b style="color:#1e293b;">Customer Phone:</b> ${esc(data.customerPhone)}<br/>`
                 : ""
             }
           </div>
@@ -813,18 +813,18 @@ export function buildAdminNewApplicationEmail(data: AdminEmailPayload) {
   <title>${esc(b.brandName)} - New application</title>
 </head>
 
-<body style="margin:0;padding:0;background:#070A12;">
+<body style="margin:0;padding:0;background:#f8f9fb;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
     ${esc(preheader)}
   </div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#070A12;padding:18px 10px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;padding:18px 10px;">
     <tr>
       <td align="center">
 
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-          style="max-width:720px;border-radius:22px;overflow:hidden;background:#0b1020;border:1px solid rgba(255,255,255,.08);
-          box-shadow:0 26px 80px rgba(0,0,0,.45);">
+          style="max-width:720px;border-radius:22px;overflow:hidden;background:#ffffff;border:1px solid #e2e8f0;
+          box-shadow:0 26px 80px rgba(0,0,0,.08);">
 
           <!-- Header (same logo block as customer) -->
           <tr>
@@ -850,13 +850,13 @@ export function buildAdminNewApplicationEmail(data: AdminEmailPayload) {
 
                   <!-- LEFT -->
                   <td style="width:58%;vertical-align:top;padding-right:10px;">
-                    <div style="${FONT}color:#fff;">
+                    <div style="${FONT}color:#1e293b;">
 
                       <div style="${FONT}font-size:20px;font-weight:950;letter-spacing:-.01em;margin-top:2px;">
                         New visa application submitted
                       </div>
 
-                      <div style="margin-top:6px;${FONT}font-size:13px;line-height:1.6;color:rgba(255,255,255,.78);">
+                      <div style="margin-top:6px;${FONT}font-size:13px;line-height:1.6;color:#334155;">
                         A customer completed payment and submitted an application.
                       </div>
 
@@ -874,7 +874,7 @@ export function buildAdminNewApplicationEmail(data: AdminEmailPayload) {
 
                       ${adminMetaHtml}
 
-                      <div style="margin-top:10px;${FONT}${S.small}color:rgba(255,255,255,.55);line-height:1.55;">
+                      <div style="margin-top:10px;${FONT}${S.small}color:#94a3b8;line-height:1.55;">
                         This is an automated notification.
                       </div>
 
@@ -893,11 +893,11 @@ export function buildAdminNewApplicationEmail(data: AdminEmailPayload) {
 
           <!-- Footer -->
           <tr>
-            <td style="padding:12px 18px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.08);">
+            <td style="padding:12px 18px;background:#f8fafc;border:1px solid #e2e8f0;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td align="left" style="${FONT}${S.small}color:rgba(255,255,255,.62);line-height:1.6;">
-                    <div style="font-weight:950;color:#fff;margin-bottom:4px;">${esc(b.brandName)}</div>
+                  <td align="left" style="${FONT}${S.small}color:#64748b;line-height:1.6;">
+                    <div style="font-weight:950;color:#1e293b;margin-bottom:4px;">${esc(b.brandName)}</div>
                     <div>Automated notification.</div>
                   </td>
                   <td align="right" style="${FONT}${S.small}">
@@ -1081,21 +1081,21 @@ export function buildCustomerStatusUpdatedEmail(
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="${S.softBox}">
     <tr>
       <td style="${FONT}padding:14px;">
-        <div style="${FONT}${S.micro}color:rgba(255,255,255,.48);font-weight:900;letter-spacing:.10em;text-transform:uppercase;">
+        <div style="${FONT}${S.micro}color:#94a3b8;font-weight:900;letter-spacing:.10em;text-transform:uppercase;">
           Current status
         </div>
 
-        <div style="${FONT}margin-top:7px;color:#fff;font-weight:950;letter-spacing:-.02em;font-size:20px;line-height:1.15;">
+        <div style="${FONT}margin-top:7px;color:#1e293b;font-weight:950;letter-spacing:-.02em;font-size:20px;line-height:1.15;">
           ${esc(label)}
         </div>
 
-        <div style="${FONT}${S.small}margin-top:10px;color:rgba(255,255,255,.62);line-height:1.65;">
+        <div style="${FONT}${S.small}margin-top:10px;color:#64748b;line-height:1.65;">
           ${
             isSingleApplicant
-              ? `Applicant: <span style="color:#fff;font-weight:900;">${esc(applicantName)}</span>`
-              : `Applicants: <span style="color:#fff;font-weight:900;">${esc(String(applicantsCount))}</span>`
+              ? `Applicant: <span style="color:#1e293b;font-weight:900;">${esc(applicantName)}</span>`
+              : `Applicants: <span style="color:#1e293b;font-weight:900;">${esc(String(applicantsCount))}</span>`
           }
-          ${submittedAt ? `&nbsp;&nbsp;•&nbsp;&nbsp;Updated: <span style="color:rgba(255,255,255,.86);font-weight:800;">${esc(submittedAt)}</span>` : ""}
+          ${submittedAt ? `&nbsp;&nbsp;•&nbsp;&nbsp;Updated: <span style="color:#334155;font-weight:800;">${esc(submittedAt)}</span>` : ""}
         </div>
 
         ${showTrackingId ? trackingIdRowHtml(trackingId) : ""}
@@ -1114,18 +1114,18 @@ export function buildCustomerStatusUpdatedEmail(
   <title>${esc(b.brandName)} - Status update</title>
 </head>
 
-<body style="margin:0;padding:0;background:#070A12;">
+<body style="margin:0;padding:0;background:#f8f9fb;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
     ${esc(preheader)}
   </div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#070A12;padding:18px 10px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;padding:18px 10px;">
     <tr>
       <td align="center">
 
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-          style="max-width:740px;border-radius:22px;overflow:hidden;background:#0b1020;border:1px solid rgba(255,255,255,.08);
-          box-shadow:0 26px 80px rgba(0,0,0,.45);">
+          style="max-width:740px;border-radius:22px;overflow:hidden;background:#ffffff;border:1px solid #e2e8f0;
+          box-shadow:0 26px 80px rgba(0,0,0,.08);">
 
           <!-- Header -->
           <tr>
@@ -1152,12 +1152,12 @@ export function buildCustomerStatusUpdatedEmail(
                 <tr>
 
                   <td style="width:58%;vertical-align:top;padding-right:12px;">
-                    <div style="${FONT}color:#fff;">
+                    <div style="${FONT}color:#1e293b;">
                       <div style="${FONT}${S.title}${S.h1}">
                         Hello ${esc(data.customerName)},
                       </div>
 
-                      <div style="${FONT}${S.body}margin-top:7px;color:rgba(255,255,255,.76);">
+                      <div style="${FONT}${S.body}margin-top:7px;color:#334155;">
                         ${esc(copy.body)}
                       </div>
 
@@ -1171,7 +1171,7 @@ export function buildCustomerStatusUpdatedEmail(
 
                       ${
                         data.visaFileUrl && s === "issued"
-                          ? `<div style="margin-top:10px;${FONT}${S.micro}color:rgba(255,255,255,.60);">
+                          ? `<div style="margin-top:10px;${FONT}${S.micro}color:#64748b;">
                                Your visa for <strong>${esc(applicantName)}</strong>:
                                <a href="${esc(data.visaFileUrl)}" style="color:#34d399;text-decoration:none;font-weight:900;">
                                  Download visa
@@ -1180,7 +1180,7 @@ export function buildCustomerStatusUpdatedEmail(
                           : ""
                       }
 
-                      <div style="margin-top:12px;${FONT}${S.micro}color:rgba(255,255,255,.50);">
+                      <div style="margin-top:12px;${FONT}${S.micro}color:#94a3b8;">
                         ${esc(copy.note)}
                       </div>
                     </div>
@@ -1206,11 +1206,11 @@ export function buildCustomerStatusUpdatedEmail(
 
           <!-- Footer -->
           <tr>
-            <td style="padding:12px 18px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.08);">
+            <td style="padding:12px 18px;background:#f8fafc;border:1px solid #e2e8f0;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td align="left" style="${FONT}${S.small}color:rgba(255,255,255,.62);">
-                    <div style="font-weight:950;color:#fff;margin-bottom:4px;">${esc(b.brandName)}</div>
+                  <td align="left" style="${FONT}${S.small}color:#64748b;">
+                    <div style="font-weight:950;color:#1e293b;margin-bottom:4px;">${esc(b.brandName)}</div>
                     <div>This is an automated message. Please do not reply.</div>
                   </td>
                   <td align="right" style="${FONT}${S.small}">
@@ -1225,7 +1225,7 @@ export function buildCustomerStatusUpdatedEmail(
 
         </table>
 
-        <div style="max-width:740px;color:rgba(255,255,255,.42);${FONT}${S.micro}margin-top:10px;">
+        <div style="max-width:740px;color:#94a3b8;${FONT}${S.micro}margin-top:10px;">
           © ${new Date().getFullYear()} ${esc(b.brandName)}. All rights reserved.
         </div>
 

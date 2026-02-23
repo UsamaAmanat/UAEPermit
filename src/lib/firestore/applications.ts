@@ -9,6 +9,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { customAlphabet } from "nanoid";
 import { db, storage } from "../firebaseClient"; // adjust path
 
 import type {
@@ -20,11 +21,26 @@ import type {
   ApplicantUploadedDocs,
 } from "@/app/apply/types";
 
+const nanoid = customAlphabet("0123456789ABCDEFGHJKLMNPQRSTUVWXYZ", 10);
+
+export type LeadSource = {
+  utm_source?: string;
+  utm_medium?: string;
+  utm_campaign?: string;
+  utm_term?: string;
+  utm_content?: string;
+};
+
 type CreateApplicationPayload = {
   plan: Plan;
   applicants: Applicant[];
   docs: ApplicantDocs[];
   extraFastSelected: boolean;
+  extraFastFeePerApplicant?: number;
+  grandTotal?: number;
+  leadSource?: LeadSource | null;
+  createAccount?: boolean;
+  userId?: string | null;
 };
 
 // --- helpers (small + safe) ---
@@ -51,16 +67,27 @@ export async function createApplication({
   applicants,
   docs,
   extraFastSelected,
+  extraFastFeePerApplicant = 0,
+  grandTotal = 0,
+  leadSource = null,
+  createAccount = false,
+  userId = null,
 }: CreateApplicationPayload): Promise<string> {
-  // 1) create Firestore doc with basic info
-  // ✅ Important: we now store per-applicant status/visaFile inside applicants[]
   const applicantsWithDefaults = normalizeApplicantsWithDefaults(applicants);
+  const trackingId = nanoid();
 
   const appRef = await addDoc(collection(db, "applications"), {
     plan,
     applicants: applicantsWithDefaults,
     extraFastSelected,
-status: "submitted",
+    extraFastFeePerApplicant: extraFastFeePerApplicant || 0,
+    grandTotal: grandTotal || 0,
+    status: "submitted",
+    trackingId,
+    orderId: null,
+    leadSource: leadSource && Object.keys(leadSource).length > 0 ? leadSource : null,
+    createAccount: !!createAccount,
+    userId: userId || null,
     createdAt: serverTimestamp(),
   });
 
@@ -121,7 +148,12 @@ export async function getApplicationById(applicationId: string) {
 
 export async function markApplicationPaidAndEmailed(
   applicationId: string,
-  data: { stripeSessionId: string; totalPaid?: number; currency?: string },
+  data: {
+    stripeSessionId: string;
+    totalPaid?: number;
+    currency?: string;
+    orderId?: string;
+  },
 ) {
   const refDoc = doc(db, "applications", applicationId);
 
@@ -132,8 +164,6 @@ export async function markApplicationPaidAndEmailed(
     ? existing.applicants
     : [];
 
-  // ✅ When payment is done, move each applicant forward
-  // IMPORTANT: use "processing" (your TrackPage maps it → paid UI step)
   const nextApplicants = existingApplicants.map((a: any) => ({
     ...a,
     status: "processing",
@@ -141,13 +171,14 @@ export async function markApplicationPaidAndEmailed(
 
   await updateDoc(refDoc, {
     paymentStatus: "paid",
-    status: "processing", // root legacy aligns with journey
+    status: "processing",
     stripeSessionId: data.stripeSessionId,
+    orderId: data.orderId ?? data.stripeSessionId ?? null,
     paidAmount: data.totalPaid ?? null,
     paidCurrency: data.currency ?? null,
     emailSent: true,
     emailSentAt: new Date().toISOString(),
-    ...(nextApplicants.length ? { applicants: nextApplicants } : {}), // don't overwrite if empty
+    ...(nextApplicants.length ? { applicants: nextApplicants } : {}),
     updatedAt: serverTimestamp(),
   });
 }

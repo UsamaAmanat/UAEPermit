@@ -14,7 +14,7 @@ import {
   createDefaultMultiplePackages,
 } from "@/data/countrySeed";
 
-const ALLOWED_ADMINS = ["admin@uaepermit.com"];
+import { isAdminEmail } from "@/lib/authConstants";
 
 const slugify = (name: string) =>
   name
@@ -36,13 +36,13 @@ export default function CountriesBulkImportPage() {
       if (!currentUser) {
         setUser(null);
         setChecking(false);
-        router.replace("/admin/login");
+        router.replace("/login");
         return;
       }
-      if (!currentUser.email || !ALLOWED_ADMINS.includes(currentUser.email)) {
+      if (!currentUser.email || !isAdminEmail(currentUser.email)) {
         setUser(null);
         setChecking(false);
-        router.replace("/admin/login");
+        router.replace("/login");
         return;
       }
       setUser(currentUser);
@@ -53,7 +53,7 @@ export default function CountriesBulkImportPage() {
 
   const handleLogout = async () => {
     await signOut(auth);
-    router.replace("/admin/login");
+    router.replace("/login");
   };
 
   const appendLog = (line: string) =>
@@ -110,7 +110,7 @@ export default function CountriesBulkImportPage() {
   if (checking) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0b1020]">
-        <p className="text-slate-400 text-sm">Checking admin access…</p>
+        <p className="text-slate-600 text-sm">Checking admin access…</p>
       </div>
     );
   }
@@ -132,7 +132,7 @@ export default function CountriesBulkImportPage() {
           <h1 className="text-2xl font-semibold tracking-tight text-white">
             Bulk import countries
           </h1>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-slate-600">
             One-time tool to create all countries with the default
             Single/Multiple visa packages (same structure as your current
             Firestore “china” document).
@@ -149,14 +149,14 @@ export default function CountriesBulkImportPage() {
             {running ? "Importing…" : "Import seed countries"}
           </button>
 
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-600">
             Safe to re-run: it uses <code>upsertCountry</code> so existing docs
             are updated, not duplicated.
           </p>
 
           <div className="mt-3 h-56 overflow-auto rounded-lg bg-slate-950/70 border border-white/10 px-3 py-2 text-[11px] font-mono text-slate-200">
             {log.length === 0 ? (
-              <span className="text-slate-500">
+              <span className="text-slate-600">
                 Log output will appear here after you click Import.
               </span>
             ) : (

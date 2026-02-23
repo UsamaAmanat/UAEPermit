@@ -14,7 +14,7 @@ import PremiumRichEditor from "@/components/admin/PremiumRichEditor";
 import BlogEditor from "@/components/admin/BlogEditor";
 import { Eye, Sparkles, Save, ExternalLink } from "lucide-react";
 
-const ALLOWED_ADMINS = ["admin@uaepermit.com"];
+import { isAdminEmail } from "@/lib/authConstants";
 
 const slugify = (name: string) =>
   name
@@ -91,13 +91,13 @@ export default function EditCountryPricingPage() {
       if (!currentUser) {
         setUser(null);
         setChecking(false);
-        router.replace("/admin/login");
+        router.replace("/login");
         return;
       }
-      if (!currentUser.email || !ALLOWED_ADMINS.includes(currentUser.email)) {
+      if (!currentUser.email || !isAdminEmail(currentUser.email)) {
         setUser(null);
         setChecking(false);
-        router.replace("/admin/login");
+        router.replace("/login");
         return;
       }
       setUser(currentUser);
@@ -200,14 +200,14 @@ export default function EditCountryPricingPage() {
 
   const handleLogout = async () => {
     await signOut(auth);
-    router.replace("/admin/login");
+    router.replace("/login");
   };
 
   if (checking || loading || !country || !user) {
     if (!checking && !loading && !user) return null;
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b1020]">
-        <p className="text-slate-400 text-sm">Loading country…</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <p className="text-slate-600 text-sm">Loading country…</p>
       </div>
     );
   }
@@ -412,39 +412,38 @@ export default function EditCountryPricingPage() {
         <button
           type="button"
           onClick={() => router.push("/admin/countries-pricing")}
-          className="inline-flex items-center text-xs font-medium text-slate-300 hover:text-white"
+          className="inline-flex items-center text-xs font-medium text-slate-600 hover:text-slate-900"
         >
           <span className="mr-1 text-lg">←</span>
           Back to countries
         </button>
 
         {/* Heading + meta */}
-        <div className="sticky top-16 z-30 -mx-6 px-6 pt-3 pb-3 bg-[#0b1020]/85 backdrop-blur border-b border-white/10">
+        <div className="sticky top-16 z-30 -mx-6 px-6 pt-3 pb-3 bg-white/95 backdrop-blur border-b border-slate-200">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 flex-wrap">
                 <input
-                  className="bg-transparent border-b border-transparent focus:border-[#DEE05B] focus:outline-none text-2xl font-semibold tracking-tight text-white placeholder:text-slate-600"
+                  className="bg-transparent border-b border-slate-300 focus:border-emerald-500 focus:outline-none text-2xl font-semibold tracking-tight text-slate-900 placeholder:text-slate-500"
                   placeholder="Enter country name"
                   value={country.name}
                   onChange={(e) =>
                     setCountry({ ...country, name: e.target.value })
                   }
                 />
-                <span className="inline-flex items-center rounded-full bg-slate-900/70 border border-white/10 px-3 py-0.5 text-[11px] font-medium text-slate-200">
+                <span className="inline-flex items-center rounded-full bg-slate-100 border border-slate-200 px-3 py-0.5 text-[11px] font-medium text-slate-700">
                   {isNew ? "New (not saved yet)" : country.status || "active"}
                 </span>
               </div>
-              <p className="mt-1 text-sm text-slate-400">
+              <p className="mt-1 text-sm text-slate-600">
                 Configure visa products for this country. These cards will
-                appear on the public <code>/country/{country.slug}</code> page.
+                appear on the public <code className="text-slate-700">/country/{country.slug}</code> page.
               </p>
             </div>
 
-            {/* Region + status */}
             <div className="flex flex-wrap gap-3 items-center">
               <select
-                className="rounded-full bg-slate-900/80 border border-white/15 px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/60"
+                className="rounded-full bg-white border border-slate-200 px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
                 value={country.region || ""}
                 onChange={(e) =>
                   setCountry({ ...country, region: e.target.value })
@@ -459,7 +458,7 @@ export default function EditCountryPricingPage() {
               </select>
 
               <select
-                className="rounded-full bg-slate-900/80 border border-white/15 px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/60"
+                className="rounded-full bg-white border border-slate-200 px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
                 value={country.status || "active"}
                 onChange={(e) =>
                   setCountry({
@@ -481,7 +480,7 @@ export default function EditCountryPricingPage() {
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="inline-flex items-center gap-2 rounded-full bg-[#DEE05B] px-6 py-2 text-sm font-semibold text-[#141729] shadow-[0_18px_45px_rgba(222,224,91,0.6)] hover:bg-[#f2f46d] disabled:opacity-60 disabled:cursor-not-allowed transition"
+                className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition"
               >
                 {saving ? "Saving…" : "Save changes"}
               </button>
@@ -492,16 +491,14 @@ export default function EditCountryPricingPage() {
         <div className="h-4" />
 
         {error && (
-          <div className="text-xs text-red-300 bg-red-500/10 border border-red-500/40 rounded-lg px-3 py-2">
+          <div className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
             {error}
           </div>
         )}
 
-        {/* Pricing editor card */}
-        <div className="rounded-2xl bg-[#050818] border border-white/10 shadow-[0_18px_45px_rgba(0,0,0,0.55)] overflow-hidden">
-          {/* Tabs */}
-          <div className="px-5 pt-4 border-b border-white/10">
-            <div className="inline-flex rounded-full bg-slate-900/60 p-1 gap-1">
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div className="px-5 pt-4 border-b border-slate-200">
+            <div className="inline-flex rounded-full bg-slate-100 p-1 gap-1">
               {(["single", "multiple"] as VisaEntryType[]).map((tab) => {
                 const active = activeTab === tab;
                 return (
@@ -511,8 +508,8 @@ export default function EditCountryPricingPage() {
                     onClick={() => setActiveTab(tab)}
                     className={`px-4 py-1.5 rounded-full text-xs font-semibold transition ${
                       active
-                        ? "bg-white text-[#141729] shadow-sm"
-                        : "text-slate-300 hover:text-white"
+                        ? "bg-white text-slate-900 shadow-sm border border-slate-200"
+                        : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
                     {tab === "single"
@@ -527,7 +524,7 @@ export default function EditCountryPricingPage() {
           {/* Cards list */}
           <div className="px-5 py-4 space-y-3">
             {cards.length === 0 && (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-600">
                 No {activeTab === "single" ? "single" : "multiple"}-entry
                 packages yet. Click &ldquo;Add card&rdquo; to create one.
               </p>
@@ -537,13 +534,12 @@ export default function EditCountryPricingPage() {
               {cards.map((card, index) => (
                 <div
                   key={card.id}
-                  className="rounded-2xl border border-white/10 bg-slate-900/60 px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:gap-4"
+                  className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 flex flex-col gap-3 md:flex-row md:items-center md:gap-4"
                 >
-                  {/* Left: basic fields */}
                   <div className="flex-1 space-y-2">
                     <div className="flex flex-col md:flex-row md:items-center md:gap-3">
                       <input
-                        className="w-full md:w-40 rounded-lg bg-slate-950/60 border border-white/15 px-3 py-1.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/70"
+                        className="w-full md:w-40 rounded-lg bg-white border border-slate-200 px-3 py-1.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
                         value={card.title}
                         onChange={(e) =>
                           updateCard(index, { title: e.target.value })
@@ -551,7 +547,7 @@ export default function EditCountryPricingPage() {
                         placeholder="Title (e.g. 30 Days)"
                       />
                       <input
-                        className="mt-2 md:mt-0 flex-1 rounded-lg bg-slate-950/60 border border-white/15 px-3 py-1.5 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/70"
+                        className="mt-2 md:mt-0 flex-1 rounded-lg bg-white border border-slate-200 px-3 py-1.5 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
                         value={card.subtitle}
                         onChange={(e) =>
                           updateCard(index, { subtitle: e.target.value })
@@ -561,7 +557,7 @@ export default function EditCountryPricingPage() {
                     </div>
 
                     <textarea
-                      className="w-full rounded-lg bg-slate-950/60 border border-white/15 px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/70"
+                      className="w-full rounded-lg bg-white border border-slate-200 px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
                       rows={2}
                       value={card.description || ""}
                       onChange={(e) =>
@@ -573,32 +569,32 @@ export default function EditCountryPricingPage() {
 
                   {/* Right: price + highlight + delete */}
                   <div className="flex flex-col items-start gap-2 md:items-end md:w-60">
-                    <label className="flex items-center gap-2 text-[11px] text-slate-300">
+                    <label className="flex items-center gap-2 text-[11px] text-slate-600">
                       <input
                         type="checkbox"
                         checked={!!card.highlight}
                         onChange={(e) =>
                           updateCard(index, { highlight: e.target.checked })
                         }
-                        className="h-3 w-3 rounded border-slate-500 bg-slate-900 text-[#DEE05B] focus:outline-none focus:ring-0"
+                        className="h-3 w-3 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                       />
                       Highlight this package (featured)
                     </label>
 
                     <div className="flex items-center gap-2">
-                      <span className="text-[11px] text-slate-400">USD</span>
+                      <span className="text-[11px] text-slate-600">USD</span>
 
-                      <div className="inline-flex items-center rounded-lg bg-slate-950/60 border border-white/15 overflow-hidden">
+                      <div className="inline-flex items-center rounded-lg bg-white border border-slate-200 overflow-hidden">
                         <button
                           type="button"
                           onClick={() => changePrice(index, -10)}
-                          className="px-2 py-1 text-xs text-slate-300 hover:bg-slate-800 hover:text-white"
+                          className="px-2 py-1 text-xs text-slate-600 hover:bg-slate-100"
                         >
                           −
                         </button>
                         <input
                           type="number"
-                          className="w-20 bg-transparent border-none text-sm text-slate-100 text-center focus:outline-none focus:ring-0 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          className="w-20 bg-transparent border-none text-sm text-slate-900 text-center focus:outline-none focus:ring-0 appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                           value={card.price === 0 ? "" : card.price}
                           onFocus={(e) => e.currentTarget.select()}
                           onChange={(e) => {
@@ -613,7 +609,7 @@ export default function EditCountryPricingPage() {
                         <button
                           type="button"
                           onClick={() => changePrice(index, 10)}
-                          className="px-2 py-1 text-xs text-slate-300 hover:bg-slate-800 hover:text-white"
+                          className="px-2 py-1 text-xs text-slate-600 hover:bg-slate-100"
                         >
                           +
                         </button>
@@ -623,7 +619,7 @@ export default function EditCountryPricingPage() {
                     <button
                       type="button"
                       onClick={() => removeCard(index)}
-                      className="text-[11px] text-red-300 hover:text-red-200"
+                      className="text-[11px] text-red-600 hover:text-red-700"
                     >
                       Remove
                     </button>
@@ -635,7 +631,7 @@ export default function EditCountryPricingPage() {
             <button
               type="button"
               onClick={addCard}
-              className="mt-2 inline-flex items-center gap-2 rounded-full border border-dashed border-slate-500/60 px-4 py-1.5 text-xs font-medium text-slate-300 hover:border-slate-300 hover:text-white transition"
+              className="mt-2 inline-flex items-center gap-2 rounded-full border border-dashed border-slate-300 px-4 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-400 hover:text-slate-900 transition"
             >
               <span className="text-base leading-none">+</span>
               Add card
@@ -643,16 +639,15 @@ export default function EditCountryPricingPage() {
           </div>
         </div>
 
-        {/* ✅ Add-ons (per country override) */}
-        <div className="rounded-2xl bg-[#050818] border border-white/10 shadow-[0_18px_45px_rgba(0,0,0,0.55)] overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/10 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-200 flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-600">
                 Add-ons (optional override)
               </p>
-              <p className="text-[12px] text-slate-500 mt-1">
+              <p className="text-[12px] text-slate-600 mt-1">
                 Extra Fast price is{" "}
-                <span className="text-slate-200 font-semibold">
+                <span className="text-slate-800 font-semibold">
                   per applicant
                 </span>
                 . If override is disabled, this country uses the global add-on
@@ -660,12 +655,12 @@ export default function EditCountryPricingPage() {
               </p>
             </div>
 
-            <label className="inline-flex items-center gap-2 text-xs text-slate-300">
+            <label className="inline-flex items-center gap-2 text-xs text-slate-600">
               <input
                 type="checkbox"
                 checked={useGlobalAddon}
                 onChange={(e) => setUseGlobalAddon(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-500 bg-slate-900 text-[#DEE05B] focus:outline-none focus:ring-0"
+                className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
               />
               Use global add-ons
             </label>
@@ -673,25 +668,25 @@ export default function EditCountryPricingPage() {
 
           <div className="px-5 py-4">
             {useGlobalAddon ? (
-              <div className="rounded-xl bg-slate-950/50 border border-white/10 p-4">
-                <p className="text-sm text-slate-200 font-semibold">
+              <div className="rounded-xl bg-slate-50 border border-slate-200 p-4">
+                <p className="text-sm text-slate-800 font-semibold">
                   Using global price
                 </p>
-                <p className="text-[12px] text-slate-500 mt-1">
+                <p className="text-[12px] text-slate-600 mt-1">
                   Configure it in{" "}
-                  <span className="text-slate-200">Countries & Pricing</span>{" "}
+                  <span className="text-slate-800">Countries & Pricing</span>{" "}
                   (top Add-ons card).
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-slate-900">
                       Extra Fast
                     </p>
 
-                    <label className="inline-flex items-center gap-2 text-xs text-slate-300">
+                    <label className="inline-flex items-center gap-2 text-xs text-slate-600">
                       <input
                         type="checkbox"
                         checked={countryExtraFast.enabled}
@@ -701,22 +696,22 @@ export default function EditCountryPricingPage() {
                             enabled: e.target.checked,
                           }))
                         }
-                        className="h-4 w-4 rounded border-slate-500 bg-slate-900 text-[#DEE05B] focus:outline-none focus:ring-0"
+                        className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
                       />
                       Enabled
                     </label>
                   </div>
 
-                  <p className="text-[11px] text-slate-500 mt-1">
+                  <p className="text-[11px] text-slate-600 mt-1">
                     Overrides global Extra Fast for this country only.
                   </p>
 
                   <div className="mt-4 flex items-center justify-between">
-                    <div className="text-[11px] text-slate-500">
+                    <div className="text-[11px] text-slate-600">
                       Price / applicant
                     </div>
                     <div className="inline-flex items-center gap-2">
-                      <span className="text-[11px] text-slate-400">USD</span>
+                      <span className="text-[11px] text-slate-600">USD</span>
                       <input
                         type="number"
                         value={countryExtraFast.amount}
@@ -726,18 +721,18 @@ export default function EditCountryPricingPage() {
                             amount: Number(e.target.value || 0),
                           }))
                         }
-                        className="h-9 w-28 rounded-xl bg-slate-900/70 border border-white/10 px-3 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/60"
+                        className="h-9 w-28 rounded-xl border border-slate-200 bg-white px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
                         min={0}
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
-                  <p className="text-sm font-semibold text-white">Example</p>
-                  <p className="text-[12px] text-slate-400 mt-2">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                  <p className="text-sm font-semibold text-slate-900">Example</p>
+                  <p className="text-[12px] text-slate-600 mt-2">
                     2 applicants →{" "}
-                    <span className="text-white font-semibold">
+                    <span className="text-slate-900 font-semibold">
                       $
                       {(countryExtraFast.enabled
                         ? countryExtraFast.amount * 2
@@ -746,7 +741,7 @@ export default function EditCountryPricingPage() {
                     </span>{" "}
                     extra fee when selected.
                   </p>
-                  <p className="text-[11px] text-slate-500 mt-2">
+                  <p className="text-[11px] text-slate-600 mt-2">
                     This fee is added on top of base visa price.
                   </p>
                 </div>
@@ -755,23 +750,22 @@ export default function EditCountryPricingPage() {
           </div>
         </div>
 
-        {/* ✅ SEO editor card */}
-        <div className="rounded-2xl bg-[#050818] border border-white/10 shadow-[0_18px_45px_rgba(0,0,0,0.55)] overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/10 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-200 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-600">
                 SEO (Meta Tags)
               </p>
-              <p className="text-[12px] text-slate-500 mt-1">
+              <p className="text-[12px] text-slate-600 mt-1">
                 Control Google title/description for this{" "}
-                <code>/country/{country.slug}</code> page.
+                <code className="text-slate-700">/country/{country.slug}</code> page.
               </p>
             </div>
 
             <button
               type="button"
               onClick={autoGenerateSEO}
-              className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-4 py-2 text-xs font-semibold text-slate-100 hover:bg-white/15 transition"
+              className="inline-flex items-center gap-2 rounded-full bg-slate-100 border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-200 transition"
             >
               <Sparkles className="h-4 w-4" />
               Auto-generate
@@ -779,13 +773,12 @@ export default function EditCountryPricingPage() {
           </div>
 
           <div className="px-5 py-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Meta title */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-medium text-slate-200">
+                <label className="text-xs font-medium text-slate-700">
                   Meta title
                 </label>
-                <span className="text-[11px] text-slate-500">
+                <span className="text-[11px] text-slate-600">
                   {seoTitleLen}/60
                 </span>
               </div>
@@ -798,9 +791,9 @@ export default function EditCountryPricingPage() {
                   })
                 }
                 placeholder="e.g. Dubai Visa for Pakistanis (2026) | Requirements & Fees"
-                className="w-full rounded-xl bg-slate-900/70 border border-white/10 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/60"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
               />
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-600">
                 Recommended: 50–60 characters. (This is your Google page title.)
               </p>
             </div>
@@ -808,10 +801,10 @@ export default function EditCountryPricingPage() {
             {/* Meta description */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-medium text-slate-200">
+                <label className="text-xs font-medium text-slate-700">
                   Meta description
                 </label>
-                <span className="text-[11px] text-slate-500">
+                <span className="text-[11px] text-slate-600">
                   {seoDescLen}/160
                 </span>
               </div>
@@ -828,16 +821,16 @@ export default function EditCountryPricingPage() {
                 }
                 rows={3}
                 placeholder="e.g. Apply for Dubai Visa online. Fast processing, secure payment, requirements & fees..."
-                className="w-full rounded-xl bg-slate-900/70 border border-white/10 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/60"
+                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
               />
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-600">
                 Recommended: 140–160 characters. (Shown under title in Google.)
               </p>
             </div>
 
             {/* OG image */}
             <div className="lg:col-span-2 space-y-2">
-              <label className="text-xs font-medium text-slate-200">
+              <label className="text-xs font-medium text-slate-700">
                 OG image (optional)
               </label>
               <div className="flex flex-col md:flex-row md:items-center gap-3">
@@ -850,33 +843,33 @@ export default function EditCountryPricingPage() {
                     })
                   }
                   placeholder="https://.../image.jpg"
-                  className="w-full rounded-xl bg-slate-900/70 border border-white/10 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/60"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
                 />
                 {country.seo?.ogImage?.trim() && (
                   <a
                     href={country.seo.ogImage}
                     target="_blank"
                     rel="noreferrer"
-                    className="shrink-0 inline-flex items-center justify-center rounded-full bg-white/10 border border-white/10 px-4 py-2 text-xs font-semibold text-slate-100 hover:bg-white/15 transition"
+                    className="shrink-0 inline-flex items-center justify-center rounded-full bg-slate-100 border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-200 transition"
                   >
                     Preview
                   </a>
                 )}
               </div>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-600">
                 Used for WhatsApp/Facebook previews. Leave blank if not needed.
               </p>
             </div>
           </div>
         </div>
-        <div className="rounded-2xl bg-[#050818] border border-white/10 shadow-[0_18px_45px_rgba(0,0,0,0.55)] overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/10 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-200 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-slate-400">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-600">
                 Country content (Website)
               </p>
-              <p className="text-[12px] text-slate-500 mt-1">
-                This content will appear on <code>/country/{country.slug}</code>{" "}
+              <p className="text-[12px] text-slate-600 mt-1">
+                This content will appear on <code className="text-slate-700">/country/{country.slug}</code>{" "}
                 under the visa packages.
               </p>
             </div>
@@ -890,17 +883,16 @@ export default function EditCountryPricingPage() {
                     "_blank",
                   )
                 }
-                className="inline-flex items-center gap-2 rounded-full bg-white/5 border border-white/10 px-4 py-2 text-xs font-semibold text-slate-100 hover:bg-white/10 transition"
+                className="inline-flex items-center gap-2 rounded-full bg-slate-100 border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-200 transition"
                 title="Preview content"
               >
-                {/* If you have lucide: <Eye className="h-4 w-4" /> */}
                 <Eye className="h-4 w-4" /> Preview
               </button>
 
               <button
                 type="button"
                 onClick={autoGenerateCountryContent}
-                className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-4 py-2 text-xs font-semibold text-slate-100 hover:bg-white/15 transition"
+                className="inline-flex items-center gap-2 rounded-full bg-slate-100 border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-800 hover:bg-slate-200 transition"
               >
                 <Sparkles className="h-4 w-4" />
                 Auto-generate
@@ -909,23 +901,21 @@ export default function EditCountryPricingPage() {
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="inline-flex items-center gap-2 rounded-full bg-[#DEE05B] px-6 py-2 text-sm font-semibold text-[#141729] shadow-[0_18px_45px_rgba(222,224,91,0.6)] hover:bg-[#f2f46d] disabled:opacity-60 disabled:cursor-not-allowed transition"
+                className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-6 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed transition"
               >
                 {saving ? "Saving…" : "Save changes"}
               </button>
             </div>
           </div>
 
-          {/* ✅ Single column layout (no right preview) */}
           <div className="px-5 py-4">
             <div className="space-y-4">
-              {/* Heading */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-slate-200">
+                  <label className="text-xs font-medium text-slate-700">
                     Section heading
                   </label>
-                  <span className="text-[11px] text-slate-500">
+                  <span className="text-[11px] text-slate-600">
                     {contentHeadingLen}/90
                   </span>
                 </div>
@@ -944,22 +934,21 @@ export default function EditCountryPricingPage() {
                   placeholder={`Dubai Visa for ${
                     country.name || "Your Country"
                   } – Requirements & Fees`}
-                  className="w-full rounded-xl bg-slate-900/70 border border-white/10 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/60"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
                 />
 
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-slate-600">
                   This shows as the heading of the content section on the
                   country page.
                 </p>
               </div>
 
-              {/* Summary */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-medium text-slate-200">
+                  <label className="text-xs font-medium text-slate-700">
                     Short summary (optional)
                   </label>
-                  <span className="text-[11px] text-slate-500">
+                  <span className="text-[11px] text-slate-600">
                     {contentSummaryLen}/180
                   </span>
                 </div>
@@ -977,26 +966,25 @@ export default function EditCountryPricingPage() {
                   }
                   rows={3}
                   placeholder="2–3 lines that explain what the user will learn…"
-                  className="w-full rounded-xl bg-slate-900/70 border border-white/10 px-4 py-3 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/60"
+                  className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
                 />
 
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-slate-600">
                   This appears under the heading. Keep it short and high-trust.
                 </p>
               </div>
 
-              {/* Editor */}
               <div className="space-y-2">
-                <label className="text-xs font-medium text-slate-200">
+                <label className="text-xs font-medium text-slate-700">
                   Main content
                 </label>
 
-                <div className="rounded-2xl border border-white/10 bg-slate-900/60 overflow-hidden">
-                  <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-200">
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 overflow-hidden">
+                  <div className="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
+                    <span className="text-xs font-semibold text-slate-700">
                       Editor
                     </span>
-                    <span className="text-[11px] text-slate-500">
+                    <span className="text-[11px] text-slate-600">
                       Tip: Use headings, lists, and short paragraphs.
                     </span>
                   </div>
@@ -1017,7 +1005,7 @@ export default function EditCountryPricingPage() {
                   </div>
                 </div>
 
-                <p className="text-[11px] text-slate-500">
+                <p className="text-[11px] text-slate-600">
                   Use the Preview button to see the final formatted output
                   exactly like the website.
                 </p>

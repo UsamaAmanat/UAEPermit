@@ -187,6 +187,8 @@ export default function ApplicationDrawer({
   const [uploadingVisa, setUploadingVisa] = useState(false);
 
   const [data, setData] = useState<any | null>(null);
+  const [internalNotes, setInternalNotes] = useState("");
+  const [savingNotes, setSavingNotes] = useState(false);
 
   // ✅ overall derived status (still stored for backward compatibility)
   const [status, setStatus] = useState<StatusType>("draft");
@@ -211,6 +213,7 @@ export default function ApplicationDrawer({
         }
 
         const d = snap.data() as any;
+        setInternalNotes((d?.internalNotes ?? "").toString());
 
         // normalize docs into array
         const documentsArray = normalizeDocuments(d.documents);
@@ -295,14 +298,14 @@ export default function ApplicationDrawer({
   };
 
   const safeStatusBadge = (s: StatusType) => {
-    const base = "rounded-full px-2 py-0.5 text-[10px] capitalize";
-    if (s === "issued") return `${base} bg-[#DEE05B]/20 text-[#DEE05B]`;
-    if (s === "paid") return `${base} bg-emerald-500/20 text-emerald-300`;
-    if (s === "pending") return `${base} bg-amber-500/20 text-amber-300`;
-    if (s === "processing") return `${base} bg-sky-500/20 text-sky-200`;
-    if (s === "rejected") return `${base} bg-rose-500/20 text-rose-200`;
-    if (s === "submitted") return `${base} bg-violet-500/20 text-violet-200`;
-    return `${base} bg-slate-700/40 text-slate-300`;
+    const base = "rounded-full border px-2 py-0.5 text-[10px] capitalize";
+    if (s === "issued") return `${base} bg-amber-100 text-amber-800 border-amber-200`;
+    if (s === "paid") return `${base} bg-emerald-100 text-emerald-800 border-emerald-200`;
+    if (s === "pending") return `${base} bg-amber-100 text-amber-800 border-amber-200`;
+    if (s === "processing") return `${base} bg-sky-100 text-sky-800 border-sky-200`;
+    if (s === "rejected") return `${base} bg-rose-100 text-rose-800 border-rose-200`;
+    if (s === "submitted") return `${base} bg-violet-100 text-violet-800 border-violet-200`;
+    return `${base} bg-slate-100 text-slate-700 border-slate-200`;
   };
 
   // ✅ Send email to a specific subset (usually ONE applicant)
@@ -440,6 +443,26 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
     }
   };
 
+  // ===================== INTERNAL NOTES =====================
+  const handleSaveInternalNotes = async () => {
+    if (!appId) return;
+    setSavingNotes(true);
+    try {
+      await updateDoc(doc(db, "applications", appId), {
+        internalNotes: internalNotes.trim() || null,
+        updatedAt: serverTimestamp(),
+      });
+      setData((prev: any) => (prev ? { ...prev, internalNotes: internalNotes.trim() || null } : prev));
+      toast.success("Internal notes saved");
+      onStatusChanged?.();
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to save notes");
+    } finally {
+      setSavingNotes(false);
+    }
+  };
+
   // ===================== VISA FILE UPLOAD (PER APPLICANT) =====================
   const handleVisaUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     if (!appId || !data) return;
@@ -546,21 +569,21 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
       <div className="flex-1 bg-black/40 backdrop-blur-sm" onClick={close} />
 
       {/* drawer */}
-      <div className="relative w-full max-w-xl bg-[#050818] text-slate-100 shadow-xl border-l border-white/10 flex flex-col">
+      <div className="relative w-full max-w-xl bg-white text-slate-900 shadow-xl border-l border-slate-200 flex flex-col">
         {/* HEADER */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">
+            <p className="text-[11px] uppercase tracking-wider text-slate-600">
               Application Details
             </p>
 
             <div className="flex items-center gap-2 mt-1">
-              <h2 className="text-sm font-semibold">{trackingId}</h2>
+              <h2 className="text-sm font-semibold text-slate-900">{trackingId}</h2>
               <span className={safeStatusBadge(status)}>{status}</span>
             </div>
 
             {createdAt && (
-              <p className="text-[10px] text-slate-500 mt-0.5">
+              <p className="text-[10px] text-slate-600 mt-0.5">
                 Created: {createdAt}
               </p>
             )}
@@ -568,7 +591,7 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
 
           <button
             onClick={close}
-            className="h-8 w-8 inline-flex items-center justify-center rounded-full bg-slate-900 hover:bg-slate-800 text-slate-300"
+            className="h-8 w-8 inline-flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200"
           >
             <X className="h-4 w-4" />
           </button>
@@ -576,29 +599,50 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
 
         {/* CONTENT */}
         <div className="flex-1 overflow-y-auto px-5 py-5 space-y-6">
+          {/* INTERNAL NOTES */}
+          <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+            <p className="text-[11px] uppercase tracking-wider text-slate-600">Internal notes</p>
+            <textarea
+              value={internalNotes}
+              onChange={(e) => setInternalNotes(e.target.value)}
+              placeholder="Add internal notes (not visible to customer)..."
+              rows={3}
+              className="w-full rounded-xl bg-white border border-slate-200 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+            />
+            <button
+              type="button"
+              onClick={handleSaveInternalNotes}
+              disabled={savingNotes}
+              className="inline-flex items-center gap-2 rounded-full bg-emerald-600 text-white text-[11px] font-semibold px-4 py-2 hover:bg-emerald-700 disabled:opacity-50"
+            >
+              {savingNotes ? <Loader2 className="h-3 w-3 animate-spin" /> : null}
+              Save notes
+            </button>
+          </section>
+
           {/* STATUS SECTION */}
-          <section className="rounded-2xl border border-white/10 bg-slate-950/50 p-4 space-y-4">
+          <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-4">
             <div className="flex items-center justify-between gap-3">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">
+                <p className="text-[11px] uppercase tracking-wider text-slate-600">
                   Overall status
                 </p>
-                <p className="text-xs mt-1">
+                <p className="text-xs mt-1 text-slate-700">
                   Derived:{" "}
-                  <span className="font-semibold capitalize">{status}</span>
+                  <span className="font-semibold capitalize text-slate-900">{status}</span>
                 </p>
 
-                <div className="mt-2 flex items-center gap-2 text-[10px] text-slate-500">
+                <div className="mt-2 flex items-center gap-2 text-[10px] text-slate-600">
                   <Users className="h-3.5 w-3.5" />
                   <span>
                     Applicants:{" "}
-                    <span className="text-slate-300 font-semibold">
+                    <span className="text-slate-700 font-semibold">
                       {applicants.length}
                     </span>
                   </span>
 
                   {(savingStatus || sendingEmail) && (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-slate-900/60 px-2 py-0.5 text-[10px] text-slate-300">
+                    <span className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] text-slate-600">
                       <Loader2 className="h-3 w-3 animate-spin" />
                       {savingStatus ? "Saving…" : "Sending email…"}
                     </span>
@@ -613,7 +657,7 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
     handleApplicantStatusSave(activeApplicantIdx, e.target.value as StatusType)
   }
   disabled={savingStatus || sendingEmail || uploadingVisa}
-  className="h-8 rounded-full bg-slate-900 border border-white/15 text-[11px] px-3 outline-none"
+  className="h-8 rounded-full bg-white border border-slate-200 text-slate-900 text-[11px] px-3 outline-none focus:ring-2 focus:ring-emerald-500/30"
   title="Updates selected applicant only (email goes to selected applicant)"
 >
   <option value="draft">Draft</option>
@@ -629,23 +673,23 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
             </div>
 
             {/* VISA UPLOAD */}
-            <div className="flex items-center justify-between pt-3 border-t border-white/10">
+            <div className="flex items-center justify-between pt-3 border-t border-slate-200">
               <div className="flex items-center gap-2">
-                <UploadCloud className="h-4 w-4 text-slate-400" />
+                <UploadCloud className="h-4 w-4 text-slate-600" />
                 <div>
-                  <p className="text-[11px] font-semibold text-slate-200">
+                  <p className="text-[11px] font-semibold text-slate-800">
                     Visa File (Selected applicant)
                   </p>
-                  <p className="text-[10px] text-slate-500">
+                  <p className="text-[10px] text-slate-600">
                     Upload final visa (PDF / image) for{" "}
-                    <span className="text-slate-200 font-semibold">
+                    <span className="text-slate-700 font-semibold">
                       {applicants?.[activeApplicantIdx]?.name || "Applicant"}
                     </span>
                   </p>
                 </div>
               </div>
 
-              <label className="inline-flex items-center justify-center rounded-full bg-[#DEE05B] text-slate-900 text-[11px] font-semibold px-3 py-1.5 cursor-pointer hover:bg-[#f1f48b]">
+              <label className="inline-flex items-center justify-center rounded-full bg-emerald-600 text-white text-[11px] font-semibold px-3 py-1.5 cursor-pointer hover:bg-emerald-700">
                 {uploadingVisa ? (
                   <>
                     <Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" />
@@ -668,14 +712,14 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
 
             {/* VISA CARD (shows selected applicant’s visa first) */}
             {displayVisa && (
-              <div className="mt-3 rounded-xl bg-slate-900/70 px-3 py-2 flex items-center justify-between">
+              <div className="mt-3 rounded-xl bg-white border border-slate-200 px-3 py-2 flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0">
-                  <FileText className="h-3.5 w-3.5 text-slate-300" />
+                  <FileText className="h-3.5 w-3.5 text-slate-600" />
                   <div className="min-w-0">
-                    <p className="text-[11px] font-semibold truncate">
+                    <p className="text-[11px] font-semibold truncate text-slate-900">
                       {displayVisa.name}
                     </p>
-                    <p className="text-[10px] text-slate-500">
+                    <p className="text-[10px] text-slate-600">
                       {formatBytes(displayVisa.size)}{" "}
                       {displayVisa.uploadedAt
                         ? `• ${new Date(displayVisa.uploadedAt).toLocaleString()}`
@@ -688,7 +732,7 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
                   href={displayVisa.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="text-[10px] text-[#DEE05B] underline whitespace-nowrap"
+                  className="text-[10px] text-emerald-600 font-medium underline whitespace-nowrap"
                 >
                   View
                 </a>
@@ -697,20 +741,20 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
           </section>
 
           {/* APPLICANTS (Tabs) */}
-          <section className="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+          <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">
+              <p className="text-[11px] uppercase tracking-wider text-slate-600">
                 Applicants
               </p>
 
-              <div className="inline-flex items-center gap-2 text-[10px] text-slate-500">
+              <div className="inline-flex items-center gap-2 text-[10px] text-slate-600">
                 <Mail className="h-3.5 w-3.5" />
                 <span>Emails are sent only to the selected applicant</span>
               </div>
             </div>
 
             {applicants.length === 0 ? (
-              <p className="mt-3 text-[11px] text-slate-500">
+              <p className="mt-3 text-[11px] text-slate-600">
                 No applicants found.
               </p>
             ) : (
@@ -735,16 +779,16 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
                         className={[
                           "group inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[11px] transition",
                           selected
-                            ? "border-[#DEE05B]/40 bg-[#DEE05B]/10 text-[#DEE05B]"
-                            : "border-white/10 bg-slate-900/40 text-slate-200 hover:border-white/20",
+                            ? "border-emerald-500 bg-emerald-50 text-emerald-800"
+                            : "border-slate-200 bg-white text-slate-700 hover:border-slate-300",
                         ].join(" ")}
                       >
                         <span
                           className={[
                             "h-6 w-6 rounded-full grid place-items-center text-[10px] font-bold",
                             selected
-                              ? "bg-[#DEE05B] text-slate-900"
-                              : "bg-slate-800 text-slate-200",
+                              ? "bg-emerald-600 text-white"
+                              : "bg-slate-200 text-slate-700",
                           ].join(" ")}
                         >
                           {initials(a.name)}
@@ -752,7 +796,7 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
 
                         <span className="max-w-[140px] truncate">{a.name}</span>
 
-                        <span className="rounded-full border border-white/10 bg-slate-950/50 px-2 py-0.5 text-[10px] text-slate-300">
+                        <span className="rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600">
                           {totalDocs} docs
                         </span>
 
@@ -760,9 +804,8 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
                           {a.status || "draft"}
                         </span>
 
-                        {/* ✅ tiny visa indicator */}
                         {hasVisa && (
-                          <span className="rounded-full border border-[#DEE05B]/30 bg-[#DEE05B]/10 px-2 py-0.5 text-[10px] text-[#DEE05B]">
+                          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] text-emerald-700">
                             visa
                           </span>
                         )}
@@ -773,43 +816,43 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
 
                 {/* Applicant quick info */}
                 <div className="mt-4 grid grid-cols-2 gap-3 text-[11px]">
-                  <div className="rounded-xl border border-white/10 bg-slate-900/40 p-3">
-                    <p className="text-slate-500">Name</p>
-                    <p className="text-slate-100 font-semibold truncate">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="text-slate-600">Name</p>
+                    <p className="text-slate-900 font-semibold truncate">
                       {applicants[activeApplicantIdx]?.name}
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-white/10 bg-slate-900/40 p-3">
-                    <p className="text-slate-500">Email</p>
-                    <p className="text-slate-100 font-semibold truncate">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="text-slate-600">Email</p>
+                    <p className="text-slate-900 font-semibold truncate">
                       {applicants[activeApplicantIdx]?.email || "—"}
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-white/10 bg-slate-900/40 p-3">
-                    <p className="text-slate-500">Phone</p>
-                    <p className="text-slate-100 font-semibold truncate">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="text-slate-600">Phone</p>
+                    <p className="text-slate-900 font-semibold truncate">
                       {applicants[activeApplicantIdx]?.phone || "—"}
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-white/10 bg-slate-900/40 p-3">
-                    <p className="text-slate-500">Nationality</p>
-                    <p className="text-slate-100 font-semibold truncate">
+                  <div className="rounded-xl border border-slate-200 bg-white p-3">
+                    <p className="text-slate-600">Nationality</p>
+                    <p className="text-slate-900 font-semibold truncate">
                       {applicants[activeApplicantIdx]?.nationality || "—"}
                     </p>
                   </div>
                 </div>
 
                 {/* ✅ Per-applicant status control */}
-                <div className="mt-3 rounded-xl border border-white/10 bg-slate-900/40 p-3">
+                <div className="mt-3 rounded-xl border border-slate-200 bg-white p-3">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-[10px] uppercase tracking-[0.14em] text-slate-500">
+                      <p className="text-[10px] uppercase tracking-wider text-slate-600">
                         Applicant status
                       </p>
-                      <p className="text-[11px] text-slate-300 mt-1">
+                      <p className="text-[11px] text-slate-600 mt-1">
                         Updates this applicant only. Email goes only to this applicant.
                       </p>
                     </div>
@@ -823,7 +866,7 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
                         )
                       }
                       disabled={savingStatus || sendingEmail || uploadingVisa}
-                      className="h-8 rounded-full bg-slate-900 border border-white/15 text-[11px] px-3 outline-none"
+                      className="h-8 rounded-full bg-white border border-slate-200 text-slate-900 text-[11px] px-3 outline-none focus:ring-2 focus:ring-emerald-500/30"
                     >
                       <option value="draft">Draft</option>
                       <option value="pending">Pending</option>
@@ -837,14 +880,14 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
 
                   {/* ✅ Per applicant visa button */}
                   {applicants?.[activeApplicantIdx]?.visaFile?.url && (
-                    <div className="mt-3 flex items-center justify-between rounded-xl border border-white/10 bg-slate-950/40 px-3 py-2">
+                    <div className="mt-3 flex items-center justify-between rounded-xl border border-slate-200 bg-emerald-50 px-3 py-2">
                       <div className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-[#DEE05B]" />
+                        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                         <div>
-                          <p className="text-[11px] font-semibold text-slate-200">
+                          <p className="text-[11px] font-semibold text-slate-800">
                             Visa available for this applicant
                           </p>
-                          <p className="text-[10px] text-slate-500">
+                          <p className="text-[10px] text-slate-600">
                             {safeStr(applicants[activeApplicantIdx]?.visaFile?.name)}
                           </p>
                         </div>
@@ -854,7 +897,7 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
                         href={safeStr(applicants[activeApplicantIdx]?.visaFile?.url)}
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 rounded-full bg-[#DEE05B] px-3 py-1 text-[10px] font-semibold text-slate-900 hover:bg-[#f1f48b]"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1 text-[10px] font-semibold text-white hover:bg-emerald-700"
                         title="Open visa"
                       >
                         <CheckCircle2 className="h-3.5 w-3.5" />
@@ -868,15 +911,15 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
           </section>
 
           {/* DOCUMENTS PER APPLICANT */}
-          <section className="rounded-2xl border border-white/10 bg-slate-950/50 p-4 space-y-3">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-slate-500">
+          <section className="rounded-2xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+            <p className="text-[11px] uppercase tracking-wider text-slate-600">
               Documents •{" "}
               {applicants[activeApplicantIdx]?.name ||
                 `Applicant ${activeApplicantIdx + 1}`}
             </p>
 
             {!currentDocs ? (
-              <p className="text-[11px] text-slate-500">No documents found.</p>
+              <p className="text-[11px] text-slate-600">No documents found.</p>
             ) : (
               <div className="space-y-4">
                 {(["photo", "passport", "ticket"] as DocKind[]).map((kind) => {
@@ -886,10 +929,10 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
                   return (
                     <div key={kind} className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <p className="text-[11px] font-semibold capitalize text-slate-300">
+                        <p className="text-[11px] font-semibold capitalize text-slate-700">
                           {kind}
                         </p>
-                        <span className="text-[10px] text-slate-500">
+                        <span className="text-[10px] text-slate-600">
                           {files.length} file{files.length > 1 ? "s" : ""}
                         </span>
                       </div>
@@ -906,30 +949,30 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
                           return (
                             <div
                               key={i}
-                              className="rounded-xl bg-slate-900/60 p-3 flex items-center justify-between gap-3 border border-white/5 hover:border-white/10 transition"
+                              className="rounded-xl bg-white border border-slate-200 p-3 flex items-center justify-between gap-3 hover:border-slate-300 transition"
                             >
                               <div className="flex items-center gap-2 min-w-0">
                                 {img ? (
                                   <img
                                     src={url}
                                     alt={name}
-                                    className="h-10 w-10 shrink-0 object-cover rounded-md border border-white/10"
+                                    className="h-10 w-10 shrink-0 object-cover rounded-md border border-slate-200"
                                   />
                                 ) : (
-                                  <div className="h-10 w-10 shrink-0 rounded-md border border-white/10 bg-slate-900/60 grid place-items-center">
-                                    <FileText className="h-4 w-4 text-slate-300" />
+                                  <div className="h-10 w-10 shrink-0 rounded-md border border-slate-200 bg-slate-100 grid place-items-center">
+                                    <FileText className="h-4 w-4 text-slate-600" />
                                   </div>
                                 )}
 
                                 <div className="min-w-0">
-                                  <p className="text-[11px] font-semibold text-slate-200 truncate">
+                                  <p className="text-[11px] font-semibold text-slate-800 truncate">
                                     {name}
                                   </p>
-                                  <p className="text-[10px] text-slate-500 truncate">
+                                  <p className="text-[10px] text-slate-600 truncate">
                                     {shortPath}
                                   </p>
                                   {(file?.size || 0) > 0 && (
-                                    <p className="text-[10px] text-slate-500">
+                                    <p className="text-[10px] text-slate-600">
                                       {formatBytes(file.size)}
                                     </p>
                                   )}
@@ -940,7 +983,7 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
                                 href={url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="text-[10px] text-[#DEE05B] font-semibold underline whitespace-nowrap shrink-0"
+                                className="text-[10px] text-emerald-600 font-semibold underline whitespace-nowrap shrink-0"
                               >
                                 Open
                               </a>
@@ -955,7 +998,7 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
                 {(["photo", "passport", "ticket"] as DocKind[]).every(
                   (k) => !(currentDocs?.[k] || []).length,
                 ) && (
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-slate-600">
                     No documents uploaded.
                   </p>
                 )}
@@ -965,12 +1008,12 @@ const handleApplicantStatusSave = async (idx: number, value: StatusType) => {
 
           {/* tiny safety note */}
           {status === "rejected" && (
-            <div className="rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-[11px] text-rose-200">
+            <div className="rounded-2xl border border-rose-200 bg-rose-50 p-4 text-[11px] text-rose-800">
               <div className="flex items-start gap-2">
                 <AlertCircle className="h-4 w-4 mt-0.5" />
                 <div>
                   <p className="font-semibold">Rejected status present</p>
-                  <p className="mt-1 text-rose-200/80">
+                  <p className="mt-1 text-rose-700">
                     Overall status becomes rejected if any applicant is rejected.
                   </p>
                 </div>

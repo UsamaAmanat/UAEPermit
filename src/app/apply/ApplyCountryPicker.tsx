@@ -1,51 +1,75 @@
 // src/app/apply/ApplyCountryPicker.tsx
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ReactCountryFlag from "react-country-flag";
-import { Search, SearchX } from "lucide-react";
-import { COUNTRIES, type Country } from "@/data/countries";
+import { Search, SearchX, Loader2 } from "lucide-react";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "@/lib/firebaseClient";
+
+type Country = { name: string; code: string };
 
 function countrySlug(name: string) {
   return name
     .toLowerCase()
     .replace(/&/g, "and")
     .replace(/[()]/g, "")
-    .replace(/['’]/g, "")
+    .replace(/['']/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
-}
-
-function clamp(n: number, min: number, max: number) {
-  return Math.max(min, Math.min(max, n));
 }
 
 export default function ApplyCountryPicker() {
   const router = useRouter();
   const [search, setSearch] = useState("");
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch active countries from Firestore
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const snap = await getDocs(
+          query(collection(db, "countries"), where("status", "==", "active"))
+        );
+        if (cancelled) return;
+        const list: Country[] = [];
+        snap.docs.forEach((d) => {
+          const data = d.data() as any;
+          const name = data?.name || d.id;
+          const code = data?.countryCode || data?.code || "";
+          list.push({ name, code });
+        });
+        list.sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
+        setCountries(list);
+      } catch (e) {
+        console.error("Failed to load countries:", e);
+        // Fallback: import static list
+        const { COUNTRIES } = await import("@/data/countries");
+        if (!cancelled) setCountries(COUNTRIES);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const filteredCountries = useMemo(() => {
     const q = search.trim().toLowerCase();
-
     const list = !q
-      ? COUNTRIES
-      : COUNTRIES.filter(
+      ? countries
+      : countries.filter(
           (c) =>
             c.name.toLowerCase().includes(q) ||
             c.code.toLowerCase().includes(q),
         );
-
     return [...list].sort((a, b) =>
       a.name.localeCompare(b.name, "en", { sensitivity: "base" }),
     );
-  }, [search]);
-
-  const visible = useMemo(() => {
-    // keep UI fast
-    return filteredCountries.slice(0, clamp(filteredCountries.length, 1, 200));
-  }, [filteredCountries]);
+  }, [search, countries]);
 
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#F5F6FB] pb-16">
@@ -67,7 +91,7 @@ export default function ApplyCountryPicker() {
               Apply for Dubai Visa
             </h1>
             <p className="mt-1 max-w-2xl text-sm text-slate-500">
-              Start by choosing your country. We’ll then show you the visa types
+              Start by choosing your country. We'll then show you the visa types
               and prices available for travellers from that country.
             </p>
           </div>
@@ -100,7 +124,11 @@ export default function ApplyCountryPicker() {
 
           {/* Scrollable list */}
           <div className="max-h-[520px] overflow-y-auto overflow-x-hidden pr-1">
-            {visible.length === 0 ? (
+            {loading ? (
+              <div className="flex h-44 items-center justify-center">
+                <Loader2 className="h-6 w-6 animate-spin text-emerald-600" />
+              </div>
+            ) : filteredCountries.length === 0 ? (
               <div className="flex h-44 flex-col items-center justify-center text-center">
                 <div className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-50">
                   <SearchX className="h-5 w-5 text-slate-400" />
@@ -122,13 +150,13 @@ export default function ApplyCountryPicker() {
               </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                {visible.map((c: Country) => {
+                {filteredCountries.map((c: Country) => {
                   const slug = countrySlug(c.name);
                   const href = `/country/${slug}`;
 
                   return (
                     <Link
-                      key={c.code}
+                      key={c.code || c.name}
                       href={href}
                       onMouseEnter={() => router.prefetch(href)}
                       onFocus={() => router.prefetch(href)}

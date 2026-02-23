@@ -72,7 +72,7 @@ export default function ConfirmDialog({
                         {title}
                       </Dialog.Title>
                       {description && (
-                        <p className="mt-1 text-xs text-slate-400">
+                        <p className="mt-1 text-xs text-slate-600">
                           {description}
                         </p>
                       )}

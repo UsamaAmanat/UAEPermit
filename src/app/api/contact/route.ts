@@ -54,26 +54,26 @@ function buildPremiumContactEmail(args: {
     "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Inter,Arial,sans-serif;";
 
   const S = {
-    pageBg: "background:#070A12;",
-    cardBg: "background:#0b1020;",
-    border: "border:1px solid rgba(255,255,255,.08);",
+    pageBg: "background:#f8f9fb;",
+    cardBg: "background:#ffffff;",
+    border: "border:1px solid #e2e8f0;",
     radius: "border-radius:22px;",
-    shadow: "box-shadow:0 26px 80px rgba(0,0,0,.45);",
-    muted: "color:rgba(255,255,255,.62);",
-    title: "color:#fff;font-weight:900;letter-spacing:-.01em;",
+    shadow: "box-shadow:0 26px 80px rgba(0,0,0,.08);",
+    muted: "color:#64748b;",
+    title: "color:#1e293b;font-weight:900;letter-spacing:-.01em;",
     micro:
-      "font-size:11.5px;line-height:1.45;color:rgba(255,255,255,.48);font-weight:900;letter-spacing:.10em;text-transform:uppercase;",
+      "font-size:11.5px;line-height:1.45;color:#94a3b8;font-weight:900;letter-spacing:.10em;text-transform:uppercase;",
     body: "font-size:13.5px;line-height:1.65;",
     softBox:
-      "background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;",
-    pill: "display:inline-block;padding:7px 11px;border-radius:999px;background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.26);color:#34d399;font-weight:900;font-size:12px;",
+      "background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;",
+    pill: "display:inline-block;padding:7px 11px;border-radius:999px;background:rgba(52,211,153,.10);border:1px solid rgba(52,211,153,.26);color:#0c4d3d;font-weight:900;font-size:12px;",
   };
 
   const logoBlock = args.logoUrl
     ? `<img src="${esc(args.logoUrl)}" width="120" alt="${esc(
         args.brandName,
       )}" style="display:block;border:0;outline:none;text-decoration:none;height:auto;">`
-    : `<div style="${FONT}font-weight:900;font-size:16px;color:#ffffff;">${esc(
+    : `<div style="${FONT}font-weight:900;font-size:16px;color:#1e293b;">${esc(
         args.brandName,
       )}</div>`;
 
@@ -99,10 +99,10 @@ function buildPremiumContactEmail(args: {
     if (!v) return "";
     return `
       <tr>
-        <td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,.10);${FONT}font-size:12.5px;line-height:1.55;color:rgba(255,255,255,.62);width:140px;white-space:nowrap;">
+        <td style="padding:10px 12px;border-top:1px solid #e2e8f0;${FONT}font-size:12.5px;line-height:1.55;color:#64748b;width:140px;white-space:nowrap;">
           ${esc(label)}
         </td>
-        <td style="padding:10px 12px;border-top:1px solid rgba(255,255,255,.10);${FONT}font-size:13px;line-height:1.55;color:rgba(255,255,255,.88);font-weight:800;">
+        <td style="padding:10px 12px;border-top:1px solid #e2e8f0;${FONT}font-size:13px;line-height:1.55;color:#1e293b;font-weight:800;">
           ${esc(v)}
         </td>
       </tr>
@@ -123,18 +123,18 @@ function buildPremiumContactEmail(args: {
   <title>${esc(args.brandName)} - Contact message</title>
 </head>
 
-<body style="margin:0;padding:0;background:#070A12;">
+<body style="margin:0;padding:0;background:#f8f9fb;">
   <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
     ${esc(preheader)}
   </div>
 
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#070A12;padding:18px 10px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;padding:18px 10px;">
     <tr>
       <td align="center">
 
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-          style="max-width:740px;border-radius:22px;overflow:hidden;background:#0b1020;border:1px solid rgba(255,255,255,.08);
-          box-shadow:0 26px 80px rgba(0,0,0,.45);">
+          style="max-width:740px;border-radius:22px;overflow:hidden;background:#ffffff;border:1px solid #e2e8f0;
+          box-shadow:0 26px 80px rgba(0,0,0,.08);">
 
           <!-- Header -->
           <tr>
@@ -163,8 +163,8 @@ function buildPremiumContactEmail(args: {
                     <div style="${FONT}${S.title}font-size:20px;line-height:1.18;">
                       New Contact Message
                     </div>
-                    <div style="${FONT}${S.body}margin-top:6px;color:rgba(255,255,255,.74);">
-                      A visitor submitted the contact form on <b style="color:#fff;">${esc(
+                    <div style="${FONT}${S.body}margin-top:6px;color:#475569;">
+                      A visitor submitted the contact form on <b style="color:#1e293b;">${esc(
                         args.submittedAt,
                       )}</b>.
                     </div>
@@ -172,8 +172,8 @@ function buildPremiumContactEmail(args: {
                     <div style="margin-top:14px;${S.softBox}">
                       <div style="${FONT}padding:14px;">
                         <div style="${FONT}${S.micro}">Message</div>
-                        <div style="${FONT}margin-top:10px;padding:12px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.10);
-                          background:rgba(255,255,255,.03);color:#fff;font-weight:700;font-size:13.5px;line-height:1.65;">
+                        <div style="${FONT}margin-top:10px;padding:12px 12px;border-radius:16px;border:1px solid #e2e8f0;
+                          background:#f8fafc;color:#1e293b;font-weight:700;font-size:13.5px;line-height:1.65;">
                           ${msgHtml}
                         </div>
 
@@ -181,7 +181,7 @@ function buildPremiumContactEmail(args: {
                           ${button("Reply via email", `mailto:${args.email}`)}
                         </div>
 
-                        <div style="margin-top:10px;${FONT}${S.micro}color:rgba(255,255,255,.50);text-transform:none;letter-spacing:0;font-weight:700;">
+                        <div style="margin-top:10px;${FONT}${S.micro}color:#94a3b8;text-transform:none;letter-spacing:0;font-weight:700;">
                           Replying will email the customer directly.
                         </div>
                       </div>
@@ -196,7 +196,7 @@ function buildPremiumContactEmail(args: {
                           <div style="${FONT}${S.micro}">Contact details</div>
 
                           <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-                            style="margin-top:10px;border:1px solid rgba(255,255,255,.10);border-radius:16px;overflow:hidden;background:rgba(255,255,255,.03);">
+                            style="margin-top:10px;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;background:#f8fafc;">
                             ${metaRow("Name", args.fullName)}
                             ${metaRow("Email", args.email)}
                             ${metaRow("Phone", args.phone)}
@@ -219,11 +219,11 @@ function buildPremiumContactEmail(args: {
 
           <!-- Footer -->
           <tr>
-            <td style="padding:12px 18px;background:rgba(255,255,255,.02);border-top:1px solid rgba(255,255,255,.08);">
+            <td style="padding:12px 18px;background:#f8fafc;border-top:1px solid #e2e8f0;">
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                 <tr>
-                  <td align="left" style="${FONT}font-size:12.5px;line-height:1.6;color:rgba(255,255,255,.62);">
-                    <div style="font-weight:900;color:#fff;margin-bottom:4px;">${esc(
+                  <td align="left" style="${FONT}font-size:12.5px;line-height:1.6;color:#64748b;">
+                    <div style="font-weight:900;color:#1e293b;margin-bottom:4px;">${esc(
                       args.brandName,
                     )}</div>
                     <div>Automated contact form notification.</div>
@@ -238,7 +238,7 @@ function buildPremiumContactEmail(args: {
 
         </table>
 
-        <div style="max-width:740px;color:rgba(255,255,255,.42);${FONT}font-size:11.5px;line-height:1.45;margin-top:10px;">
+        <div style="max-width:740px;color:#94a3b8;${FONT}font-size:11.5px;line-height:1.45;margin-top:10px;">
           © ${new Date().getFullYear()} ${esc(args.brandName)}. All rights reserved.
         </div>
 

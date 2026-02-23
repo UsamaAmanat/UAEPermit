@@ -5,8 +5,9 @@ import Image from "next/image";
 import ReactCountryFlag from "react-country-flag";
 import { X, Search as SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Country } from "@/data/countries";
-import { COUNTRIES } from "@/data/countries";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "@/lib/firebaseClient";
+import { COUNTRIES as STATIC_COUNTRIES, type Country } from "@/data/countries";
 
 // ----------------------------------------------------------------------
 function toSlug(name: string) {
@@ -19,26 +20,51 @@ function toSlug(name: string) {
 }
 
 export default function Hero() {
-  // NEW: prefetch helper
-
-  const [query, setQuery] = useState("");
+  const [query_, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState<Country | null>(null);
+  const [countries, setCountries] = useState<Country[]>(STATIC_COUNTRIES);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
   const panelRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
 
+  // Fetch countries from Firestore
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const snap = await getDocs(
+          query(collection(db, "countries"), where("status", "==", "active"))
+        );
+        if (cancelled) return;
+        const list: Country[] = [];
+        snap.docs.forEach((d) => {
+          const data = d.data() as any;
+          const name = data?.name || d.id;
+          const code = data?.countryCode || data?.code || "";
+          list.push({ name, code });
+        });
+        list.sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
+        if (list.length > 0) setCountries(list);
+      } catch (e) {
+        console.error("Failed to fetch countries for hero:", e);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
   const prefetchCountry = (country: Country) => {
     const slug = toSlug(country.name);
     router.prefetch(`/country/${slug}`);
   };
+
   // Filtered countries
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return COUNTRIES;
-    return COUNTRIES.filter((c) => c.name.toLowerCase().includes(q));
-  }, [query]);
+    const q = query_.trim().toLowerCase();
+    if (!q) return countries;
+    return countries.filter((c) => c.name.toLowerCase().includes(q));
+  }, [query_, countries]);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -86,7 +112,7 @@ export default function Hero() {
     }
   }
 
-  const inputValue = query || selected?.name || "";
+  const inputValue = query_ || selected?.name || "";
 
   return (
     <section className="container pt-16 md:pt-28 md:h-[800px] md:pt-35 pb-8 md:pb-20 md:bg-[url('/images/hero/hero-bg.png')] bg-no-repeat bg-right md:bg-[length:750px]">
@@ -94,17 +120,17 @@ export default function Hero() {
         {/* Left */}
         <div>
           <h1 className="font-normal text-[24px] md:text-[32px] lg:text-[36px] leading-[32px] md:leading-[44px] lg:leading-[48px] tracking-tight">
-            The Quickest Method to
-            <br /> Obtain Your
-            <span className="font-bold"> UAE PERMIT</span>
+            The Express Solution for Obtaining 
+            <br /> Your Dubai Visa & 
+            <span className="font-bold"> UAE Visa </span>Online
           </h1>
 
           <p className="mt-3 md:mt-5 font-medium text-[13px] md:text-[14px] leading-[22px] md:leading-[26px] max-w-[800px]">
-            Our expertise lies in providing permit assistance and travel-related
-            services to individuals and businesses in the United Arab Emirates.
-            As a licensed private agency, we simplify the process of obtaining
-            travel permits and documentation with professionalism and
-            transparency.
+           
+            We provide expert assistance for Dubai visa and UAE visa services as a government-licensed private agency in the United Arab Emirates. We simplify the entire UAE visa online application process with fast, secure, and transparent support.
+</p><p className="mt-3 md:mt-5 font-medium text-[13px] md:text-[14px] leading-[22px] md:leading-[26px] max-w-[800px]">
+Whether you need a Dubai tourist visa, UAE tourist visa, Dubai visit visa, Dubai entry visa, or UAE travel visa, we make it easy to Apply Dubai visa online and complete your Dubai visa online process smoothly and efficiently.
+
           </p>
 
           {/* Search */}
@@ -134,7 +160,7 @@ export default function Hero() {
                         }
                       }}
                       placeholder="Type your Country to proceed"
-                      className="w-full outline-none bg-white text-[#3C4161] placeholder-gray-400 text-sm md:text-base"
+                      className="w-full outline-none bg-white text-slate-800 placeholder-gray-400 text-sm md:text-base"
                     />
 
                     {inputValue && (
@@ -144,7 +170,7 @@ export default function Hero() {
                         aria-label="Clear"
                         className="mr-2 grid h-8 w-8 place-items-center rounded-full hover:bg-black/5"
                       >
-                        <X className="h-4 w-4 text-[#3C4161]/60 cursor-pointer" />
+                        <X className="h-4 w-4 text-slate-500 cursor-pointer" />
                       </button>
                     )}
 
@@ -167,13 +193,13 @@ export default function Hero() {
                              scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
                 >
                   {filtered.length === 0 ? (
-                    <div className="px-4 py-4 text-sm text-[#3C4161]/70">
+                    <div className="px-4 py-4 text-sm text-slate-500">
                       No countries found. Try another spelling.
                     </div>
                   ) : (
                     <ul className="py-2">
                       {filtered.map((c) => (
-                        <li key={c.code}>
+                        <li key={c.code || c.name}>
                           <button
                             type="button"
                             onMouseEnter={() => prefetchCountry(c)}
@@ -193,7 +219,7 @@ export default function Hero() {
                                 }}
                               />
                             </span>
-                            <span className="text-[15px] text-[#3C4161]">
+                            <span className="text-[15px] text-slate-800">
                               {c.name}
                             </span>
                           </button>
@@ -226,7 +252,7 @@ export default function Hero() {
           width={297}
           height={456}
           priority
-          className="absolute -left-35 top-100"
+          className="absolute -left-35 top-100 z-[-1]"
         />
       </div>
     </section>

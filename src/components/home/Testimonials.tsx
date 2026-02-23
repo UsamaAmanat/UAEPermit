@@ -12,64 +12,78 @@ const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isMobile, setIsMobile] = useState(false);
 
-  const reviews = [
-    {
-      id: 1,
-      name: "Roy Alan Facey",
-      rating: 5,
-      review:
-        "The process of obtaining the visa was made very simple – bearing in mind that <strong>I am not as tech savvy as some younger people.</strong>",
-    },
-    {
-      id: 2,
-      name: "Jo Bronte",
-      rating: 5,
-      review:
-        "Very easy application process, totally digital and super fast approval, less <strong>than 24 hours.</strong>",
-    },
-    {
-      id: 3,
-      name: "Arshad Mahmood",
-      rating: 5,
-      review:
-        "The iVisa Team granted full help and support at every step of visa application <strong>process, ultimately achieved success in getting visitor visa.</strong>",
-    },
-    {
-      id: 4,
-      name: "Sarah Johnson",
-      rating: 5,
-      review:
-        "Excellent service and <strong>very professional team</strong> that helped throughout the entire process.",
-    },
-    {
-      id: 5,
-      name: "Michael Chen",
-      rating: 5,
-      review:
-        "Quick turnaround and <strong>seamless experience</strong> from start to finish. Highly recommend!",
-    },
-    {
-      id: 6,
-      name: "Emma Wilson",
-      rating: 5,
-      review:
-        "The support team was incredibly helpful and <strong>answered all my questions promptly.</strong>",
-    },
-    {
-      id: 7,
-      name: "David Brown",
-      rating: 5,
-      review:
-        "Simple process and <strong>great value for money.</strong> Will definitely use again.",
-    },
-    {
-      id: 8,
-      name: "Lisa Anderson",
-      rating: 5,
-      review:
-        "Professional service with <strong>clear instructions</strong> at every step of the way.",
-    },
-  ];
+const reviews = [
+  {
+    id: 1,
+    name: "Yuting Hygge",
+    rating: 5,
+    review:
+      "Process was so fast — submitted docs in morning, visa done by evening.",
+  },
+  {
+    id: 2,
+    name: "Syrine Chedly",
+    rating: 5,
+    review:
+      "Extremely satisfied — smooth, transparent, professional visa service.",
+  },
+  {
+    id: 3,
+    name: "Panos Voulgaris",
+    rating: 5,
+    review:
+      "Super fast service — visa for my wife in less than <strong>24 hours.</strong>",
+  },
+  {
+    id: 4,
+    name: "Prashant Bahadur",
+    rating: 5,
+    review:
+      "Professional service — visa in less than <strong>12 hours</strong>, highly recommended.",
+  },
+  {
+    id: 5,
+    name: "Nazmira Singh",
+    rating: 5,
+    review:
+      "Friendly consultant and fast services from start to finish.",
+  },
+  {
+    id: 6,
+    name: "Hardip Nagra",
+    rating: 5,
+    review:
+      "Great communication and excellent response despite time difference.",
+  },
+  {
+    id: 7,
+    name: "Melle",
+    rating: 5,
+    review:
+      "Quick and easy! Responded via WhatsApp, got fast approval.",
+  },
+  {
+    id: 8,
+    name: "Clifford",
+    rating: 5,
+    review:
+      "Seamless, easy process — visa in hand within hours.",
+  },
+  {
+    id: 9,
+    name: "Dipta Chopra",
+    rating: 5,
+    review:
+      "Easiest experience — guided via WhatsApp, visa done in under <strong>24 hrs.</strong>",
+  },
+  {
+    id: 10,
+    name: "Annelia Els",
+    rating: 5,
+    review:
+      "Excellent assistance, clear communication and hassle free process.",
+  },
+];
 
   // Duplicate reviews for seamless infinite scroll
   const duplicatedReviews = [...reviews, ...reviews, ...reviews];

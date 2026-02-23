@@ -77,7 +77,7 @@ export default function ContactPage() {
                       24/7 Emergency Line
                     </p>
                     <p className="mt-1 text-2xl font-semibold">
-                      +971 55 871 5533
+                      +971 56 261 7646
                     </p>
                   </div>
                 </div>
@@ -97,7 +97,7 @@ export default function ContactPage() {
 
                 <div className="mt-7 flex flex-col sm:flex-row gap-3">
                   <a
-                    href="https://wa.me/971558715533"
+                    href="https://wa.me/971562617646"
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#25D366] px-5 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(0,0,0,0.32)] hover:brightness-105 hover:-translate-y-0.5 active:translate-y-0 transition cursor-pointer"
@@ -106,7 +106,7 @@ export default function ContactPage() {
                     Chat on WhatsApp
                   </a>
                   <a
-                    href="tel:+971558715533"
+                    href="tel:+971562617646"
                     className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/40 px-5 text-sm font-semibold text-white hover:bg-white/10 hover:-translate-y-0.5 active:translate-y-0 transition cursor-pointer"
                   >
                     <Phone className="h-4 w-4" />

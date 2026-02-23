@@ -12,7 +12,7 @@ export function SummaryRow({ label, value, hint, emphasize }: Props) {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0">
-        <p className="text-[11px] text-slate-300/90">{label}</p>
+        <p className="text-[11px] text-slate-500">{label}</p>
         {hint ? (
           <p className="mt-0.5 text-[10px] leading-snug text-slate-400">
             {hint}
@@ -22,8 +22,8 @@ export function SummaryRow({ label, value, hint, emphasize }: Props) {
 
       <p
         className={[
-          "text-right text-[11px] font-medium text-slate-50 tabular-nums leading-snug",
-          emphasize ? "text-white font-semibold" : "",
+          "text-right text-[11px] font-medium text-slate-800 tabular-nums leading-snug",
+          emphasize ? "text-slate-900 font-semibold" : "",
         ].join(" ")}
         title={value}
       >

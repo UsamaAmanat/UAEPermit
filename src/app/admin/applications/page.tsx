@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth, db } from "@/lib/firebaseClient";
@@ -18,7 +19,7 @@ import { toast } from "sonner";
 import ApplicationDrawer from "@/components/admin/ApplicationDrawer";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 
-const ALLOWED_ADMINS = ["admin@uaepermit.com"];
+import { isAdminEmail } from "@/lib/authConstants";
 
 type RawStatusBase =
   | "draft"
@@ -45,6 +46,9 @@ interface Application {
   appStatus: RawStatus | "pending";
   createdAt: string;
   primaryApplicant?: string;
+  leadSource?: string | null;
+  internalNotes?: string | null;
+  extraFastSelected?: boolean;
 }
 
 const normalizeStatus = (value: any): RawStatus => {
@@ -69,18 +73,18 @@ const statusPillClass = (status: RawStatus) => {
   switch (status) {
     case "paid":
     case "issued":
-      return "bg-slate-500/15 text-emerald-200";
+      return "bg-emerald-100 text-emerald-800 border-emerald-200";
     case "processing":
     case "submitted":
-      return "bg-sky-500/15 text-sky-200";
+      return "bg-sky-100 text-sky-800 border-sky-200";
     case "pending":
-      return "bg-amber-500/15 text-amber-200";
+      return "bg-amber-100 text-amber-800 border-amber-200";
     case "draft":
-      return "bg-slate-500/15 text-slate-200";
+      return "bg-slate-100 text-slate-700 border-slate-200";
     case "rejected":
-      return "bg-rose-500/15 text-rose-200";
+      return "bg-rose-100 text-rose-800 border-rose-200";
     default:
-      return "bg-slate-500/15 text-slate-200";
+      return "bg-slate-100 text-slate-700 border-slate-200";
   }
 };
 
@@ -88,18 +92,18 @@ const statusDotClass = (status: RawStatus) => {
   switch (status) {
     case "paid":
     case "issued":
-      return "bg-emerald-400";
+      return "bg-emerald-500";
     case "processing":
     case "submitted":
-      return "bg-sky-400";
+      return "bg-sky-500";
     case "pending":
-      return "bg-amber-400";
+      return "bg-amber-500";
     case "draft":
-      return "bg-white";
+      return "bg-slate-400";
     case "rejected":
-      return "bg-rose-400";
+      return "bg-rose-500";
     default:
-      return "bg-slate-300";
+      return "bg-slate-400";
   }
 };
 
@@ -134,7 +138,7 @@ function ApplicantsCell({ names }: { names: string[] }) {
         {preview.map((n, idx) => (
           <div
             key={`${n}-${idx}`}
-            className="h-7 w-7 rounded-full border border-white/10 bg-slate-900/70 shadow-[0_10px_22px_rgba(0,0,0,0.35)] flex items-center justify-center text-[11px] font-extrabold text-slate-100"
+            className="h-7 w-7 rounded-full border border-slate-200 bg-slate-100 flex items-center justify-center text-[11px] font-semibold text-slate-700"
             title={n}
           >
             {initials(n)}
@@ -142,7 +146,7 @@ function ApplicantsCell({ names }: { names: string[] }) {
         ))}
         {remaining > 0 && (
           <div
-            className="h-7 w-7 rounded-full border border-white/10 bg-slate-900/70 shadow-[0_10px_22px_rgba(0,0,0,0.35)] flex items-center justify-center text-[10px] font-extrabold text-slate-200"
+            className="h-7 w-7 rounded-full border border-slate-200 bg-slate-100 flex items-center justify-center text-[10px] font-semibold text-slate-600"
             title={`${remaining} more`}
           >
             +{remaining}
@@ -154,20 +158,19 @@ function ApplicantsCell({ names }: { names: string[] }) {
       <div className="min-w-0">
         <div className="flex items-center gap-2 min-w-0">
           <span
-            className="text-slate-100 font-semibold text-sm truncate max-w-[170px]"
+            className="text-slate-900 font-semibold text-sm truncate max-w-[170px]"
             title={primary}
           >
             {primary}
           </span>
 
-          <span className="inline-flex items-center rounded-full bg-slate-900/70 border border-white/10 px-2 py-0.5 text-[11px] font-semibold text-slate-200 whitespace-nowrap">
+          <span className="inline-flex items-center rounded-full bg-slate-100 border border-slate-200 px-2 py-0.5 text-[11px] font-medium text-slate-700 whitespace-nowrap">
             {count} applicant{count === 1 ? "" : "s"}
           </span>
         </div>
 
-        {/* subtle hint */}
         {count > 1 && (
-          <div className="text-[10px] text-slate-500 mt-1">
+          <div className="text-[10px] text-slate-600 mt-1">
             Hover to preview
           </div>
         )}
@@ -175,8 +178,8 @@ function ApplicantsCell({ names }: { names: string[] }) {
 
       {/* Tooltip (all names) */}
       {count > 1 && (
-        <div className="pointer-events-none absolute left-0 top-full z-20 mt-2 hidden w-[280px] rounded-2xl border border-white/10 bg-[#050818] p-3 shadow-[0_18px_45px_rgba(0,0,0,0.55)] group-hover:block">
-          <p className="text-[10px] uppercase tracking-[0.16em] text-slate-500">
+        <div className="pointer-events-none absolute left-0 top-full z-20 mt-2 hidden w-[280px] rounded-xl border border-slate-200 bg-white p-3 shadow-lg group-hover:block">
+          <p className="text-[10px] uppercase tracking-wider text-slate-600 font-medium">
             Applicants
           </p>
           <div className="mt-2 space-y-1.5">
@@ -186,17 +189,17 @@ function ApplicantsCell({ names }: { names: string[] }) {
                 className="flex items-center justify-between gap-3"
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-[11px] text-slate-500 font-semibold">
+                  <span className="text-[11px] text-slate-600 font-semibold">
                     {i + 1}.
                   </span>
                   <span
-                    className="text-[12px] text-slate-200 truncate"
+                    className="text-sm text-slate-800 truncate"
                     title={n}
                   >
                     {n}
                   </span>
                 </div>
-                <span className="text-[10px] text-slate-500 font-semibold">
+                <span className="text-[10px] text-slate-600 font-semibold">
                   {initials(n)}
                 </span>
               </div>
@@ -227,6 +230,11 @@ export default function ApplicationsPage() {
   const [filterStatus, setFilterStatus] = useState<
     "all" | RawStatus | "pending"
   >("all");
+  const [filterVisaType, setFilterVisaType] = useState("");
+  const [filterCountry, setFilterCountry] = useState("");
+  const [filterLeadSource, setFilterLeadSource] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   // pagination
   const [page, setPage] = useState(1);
@@ -244,11 +252,11 @@ export default function ApplicationsPage() {
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       if (!currentUser) {
-        router.replace("/admin/login");
+        router.replace("/login");
         return;
       }
-      if (!ALLOWED_ADMINS.includes(currentUser.email || "")) {
-        router.replace("/admin/login");
+      if (!isAdminEmail(currentUser.email)) {
+        router.replace("/login");
         return;
       }
       setUser(currentUser);
@@ -344,7 +352,17 @@ export default function ApplicationsPage() {
           (perApplicantPrice + extraFastPerApplicant) * applicantsCount;
 
         const totalAmount =
-          Number(data.totalAmount ?? data.amountTotal ?? 0) || computedTotal;
+          Number(data.paidAmount ?? data.grandTotal ?? data.totalAmount ?? data.amountTotal ?? 0) || computedTotal;
+
+        const extraFastSelected = !!(data.extraFastSelected ?? data.extraFastEnabled);
+
+        const ls = data.leadSource;
+        const leadSourceStr =
+          ls && typeof ls === "object"
+            ? [ls.utm_source, ls.utm_medium, ls.utm_campaign].filter(Boolean).join(" / ") || "—"
+            : typeof ls === "string"
+              ? ls
+              : "—";
 
         return {
           id: d.id,
@@ -365,6 +383,9 @@ export default function ApplicationsPage() {
           appStatus: rawStatus,
           createdAt: createdIso,
           primaryApplicant,
+          leadSource: leadSourceStr,
+          internalNotes: data.internalNotes ?? null,
+          extraFastSelected: extraFastSelected,
         };
       });
 
@@ -440,8 +461,47 @@ export default function ApplicationsPage() {
       list = list.filter((a) => a.appStatus === filterStatus);
     }
 
+    if (filterVisaType.trim()) {
+      const v = filterVisaType.toLowerCase();
+      list = list.filter(
+        (a) =>
+          (a.visaType || "").toLowerCase().includes(v) ||
+          (a.product || "").toLowerCase().includes(v),
+      );
+    }
+
+    if (filterCountry.trim()) {
+      const c = filterCountry.toLowerCase();
+      list = list.filter((a) => (a.country || "").toLowerCase().includes(c));
+    }
+
+    if (filterLeadSource.trim()) {
+      const ls = filterLeadSource.toLowerCase();
+      list = list.filter((a) =>
+        (a.leadSource || "").toLowerCase().includes(ls),
+      );
+    }
+
+    if (dateFrom) {
+      list = list.filter((a) => a.createdAt >= dateFrom);
+    }
+    if (dateTo) {
+      const end = dateTo + "T23:59:59.999Z";
+      list = list.filter((a) => a.createdAt <= end);
+    }
+
     return list;
-  }, [applications, searchTerm, filterPayment, filterStatus]);
+  }, [
+    applications,
+    searchTerm,
+    filterPayment,
+    filterStatus,
+    filterVisaType,
+    filterCountry,
+    filterLeadSource,
+    dateFrom,
+    dateTo,
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(filteredApps.length / pageSize));
   const currentPage = Math.min(page, totalPages);
@@ -453,7 +513,7 @@ export default function ApplicationsPage() {
 
   useEffect(() => {
     setPage(1);
-  }, [searchTerm, filterPayment, filterStatus]);
+  }, [searchTerm, filterPayment, filterStatus, filterVisaType, filterCountry, filterLeadSource, dateFrom, dateTo]);
 
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleString("en-US", {
@@ -471,8 +531,8 @@ export default function ApplicationsPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0b1020]">
-        <p className="text-slate-400 text-sm">Checking admin access…</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <p className="text-slate-600 text-sm">Checking access…</p>
       </div>
     );
   }
@@ -485,7 +545,7 @@ export default function ApplicationsPage() {
         <button
           type="button"
           onClick={() => router.push("/admin")}
-          className="inline-flex items-center text-xs font-medium text-slate-300 hover:text-white"
+          className="inline-flex items-center text-xs font-medium text-slate-600 hover:text-slate-900"
         >
           <span className="mr-1 text-lg">←</span>
           Back to dashboard
@@ -493,12 +553,8 @@ export default function ApplicationsPage() {
 
         <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">
-              Applications
-            </h1>
-            <p className="mt-1 text-sm text-slate-400">
-              Review all visa applications submitted by users.
-            </p>
+            <h1 className="text-2xl font-semibold text-slate-900">Applications</h1>
+            <p className="mt-1 text-sm text-slate-600">Review all visa applications submitted by users.</p>
           </div>
 
           <div className="flex items-center gap-3">
@@ -514,13 +570,11 @@ export default function ApplicationsPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-[#050818] border border-white/10 shadow-[0_18px_45px_rgba(0,0,0,0.55)] overflow-hidden">
-          <div className="px-5 py-4 border-b border-white/5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-slate-200 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                Applications list
-              </p>
-              <p className="text-[11px] text-slate-500 mt-0.5">
+              <p className="text-xs font-medium uppercase tracking-wider text-slate-600">Applications list</p>
+              <p className="text-xs text-slate-600 mt-0.5">
                 {filteredApps.length} result{filteredApps.length !== 1 && "s"}{" "}
                 matching your filters.
               </p>
@@ -528,7 +582,7 @@ export default function ApplicationsPage() {
 
             <div className="flex flex-wrap gap-2 md:justify-end">
               <div className="relative">
-                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+                <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-600">
                   <svg
                     className="w-4 h-4"
                     xmlns="http://www.w3.org/2000/svg"
@@ -548,7 +602,7 @@ export default function ApplicationsPage() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Search by tracking ID, country or applicant…"
-                  className="h-9 w-64 rounded-full bg-slate-900/70 border border-white/10 pl-9 pr-3 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#DEE05B]/70 focus:border-transparent"
+                  className="h-9 w-64 rounded-lg border border-slate-200 bg-white pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
                 />
               </div>
 
@@ -557,7 +611,7 @@ export default function ApplicationsPage() {
                 onChange={(e) =>
                   setFilterPayment(e.target.value as "all" | "paid" | "pending")
                 }
-                className="h-9 rounded-full bg-slate-900/70 border border-white/10 text-xs text-slate-100 px-3 focus:outline-none"
+                className="h-9 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 px-3 focus:outline-none"
               >
                 <option value="all">All payments</option>
                 <option value="paid">Paid</option>
@@ -571,7 +625,7 @@ export default function ApplicationsPage() {
                     e.target.value as "all" | RawStatus | "pending",
                   )
                 }
-                className="h-9 rounded-full bg-slate-900/70 border border-white/10 text-xs text-slate-100 px-3 focus:outline-none"
+                className="h-9 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 px-3 focus:outline-none"
               >
                 <option value="all">All statuses</option>
                 <option value="draft">Draft</option>
@@ -581,13 +635,47 @@ export default function ApplicationsPage() {
                 <option value="rejected">Rejected</option>
                 <option value="pending">Pending</option>
               </select>
+
+              <input
+                type="text"
+                value={filterVisaType}
+                onChange={(e) => setFilterVisaType(e.target.value)}
+                placeholder="Visa type"
+                className="h-9 w-28 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 px-3 placeholder:text-slate-600 focus:outline-none"
+              />
+              <input
+                type="text"
+                value={filterCountry}
+                onChange={(e) => setFilterCountry(e.target.value)}
+                placeholder="Country"
+                className="h-9 w-28 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 px-3 placeholder:text-slate-600 focus:outline-none"
+              />
+              <input
+                type="text"
+                value={filterLeadSource}
+                onChange={(e) => setFilterLeadSource(e.target.value)}
+                placeholder="Lead source"
+                className="h-9 w-28 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 px-3 placeholder:text-slate-600 focus:outline-none"
+              />
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => setDateFrom(e.target.value)}
+                className="h-9 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 px-3 focus:outline-none"
+              />
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => setDateTo(e.target.value)}
+                className="h-9 rounded-lg border border-slate-200 bg-white text-sm text-slate-900 px-3 focus:outline-none"
+              />
             </div>
           </div>
 
           {/* ✅ keep horizontal scroll, but Actions stays visible */}
           <div className="overflow-x-auto">
             <table className="min-w-full text-left">
-              <thead className="text-[10px] uppercase tracking-[0.18em] text-slate-500 bg-slate-900/40">
+              <thead className="text-xs uppercase tracking-wider text-slate-600 bg-slate-100">
                 <tr>
                   <th className="px-4 py-3">
                     <input
@@ -608,7 +696,7 @@ export default function ApplicationsPage() {
                           );
                         }
                       }}
-                      className="h-4 w-4 rounded border-slate-500 bg-slate-800"
+                      className="h-4 w-4 rounded border-slate-300"
                     />
                   </th>
 
@@ -616,24 +704,25 @@ export default function ApplicationsPage() {
                   <th className="px-4 py-3">Visa type</th>
                   <th className="px-4 py-3">Product</th>
                   <th className="px-4 py-3">Country</th>
+                  <th className="px-4 py-3">Lead source</th>
                   <th className="px-4 py-3">Applicants</th>
                   <th className="px-4 py-3">Amount</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Created</th>
 
                   {/* ✅ Sticky Actions header */}
-                  <th className="px-4 py-3 text-right sticky right-0 z-10 bg-slate-900/60 backdrop-blur border-l border-white/5">
+                  <th className="px-4 py-3 text-right sticky right-0 z-10 bg-slate-100 border-l border-slate-200">
                     Actions
                   </th>
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-white/5 text-sm">
+              <tbody className="divide-y divide-slate-200 text-sm">
                 {loading ? (
                   <tr>
                     <td
                       colSpan={11}
-                      className="py-10 text-center text-slate-400 text-xs"
+                      className="py-10 text-center text-slate-600 text-xs"
                     >
                       Loading applications…
                     </td>
@@ -642,7 +731,7 @@ export default function ApplicationsPage() {
                   <tr>
                     <td
                       colSpan={11}
-                      className="py-10 text-center text-slate-400 text-xs"
+                      className="py-10 text-center text-slate-600 text-xs"
                     >
                       No applications found.
                     </td>
@@ -651,49 +740,50 @@ export default function ApplicationsPage() {
                   paginatedApps.map((app) => (
                     <tr
                       key={app.id}
-                      className="hover:bg-white/5 transition-colors"
+                      className="hover:bg-slate-50 transition-colors"
                     >
                       <td className="px-4 py-3">
                         <input
                           type="checkbox"
                           checked={selected.includes(app.id)}
                           onChange={() => toggleSelect(app.id)}
-                          className="h-4 w-4 rounded border-slate-500 bg-slate-800"
+                          className="h-4 w-4 rounded border-slate-300"
                         />
                       </td>
 
                       <td className="px-4 py-3">
-                        <span className="inline-flex items-center rounded-full bg-slate-50 text-[11px] font-semibold text-slate-900 px-3 py-1 shadow-[0_6px_16px_rgba(15,23,42,0.35)]">
+                        <span className="inline-flex items-center rounded-lg bg-slate-100 text-xs font-semibold text-slate-900 px-2.5 py-1">
                           {app.trackingId}
                         </span>
                       </td>
 
-                      <td className="px-4 py-3 text-slate-100">
-                        {app.visaType}
+                      <td className="px-4 py-3 text-slate-900">{app.visaType}</td>
+                      <td className="px-4 py-3 text-slate-900">{app.product}</td>
+                      <td className="px-4 py-3 text-slate-900">{app.country}</td>
+                      <td className="px-4 py-3 text-slate-600 text-xs max-w-[120px] truncate" title={app.leadSource || ""}>
+                        {app.leadSource || "—"}
                       </td>
-                      <td className="px-4 py-3 text-slate-100">
-                        {app.product}
-                      </td>
-                      <td className="px-4 py-3 text-slate-100">
-                        {app.country}
-                      </td>
-
                       <td className="px-4 py-3">
                         <ApplicantsCell names={app.applicantNames} />
                       </td>
 
                       <td className="px-4 py-3">
-                        <div className="text-[10px] uppercase text-slate-500">
+                        <div className="text-[10px] uppercase text-slate-600">
                           {app.currency}
                         </div>
-                        <div className="text-sm font-semibold text-slate-100">
+                        <div className="text-sm font-semibold text-slate-900">
                           {app.amount.toFixed(2)}
                         </div>
+                        {app.extraFastSelected && (
+                          <span className="inline-flex items-center gap-0.5 rounded-full bg-amber-50 border border-amber-200 px-1.5 py-0.5 text-[9px] font-semibold text-amber-700 mt-0.5" title="Extra fast processing">
+                            ⚡ Extra fast
+                          </span>
+                        )}
                       </td>
 
                       <td className="px-4 py-3 align-middle">
                         <span
-                          className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-medium ${statusPillClass(
+                          className={`inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium ${statusPillClass(
                             app.appStatus as RawStatus,
                           )}`}
                         >
@@ -706,22 +796,24 @@ export default function ApplicationsPage() {
                         </span>
                       </td>
 
-                      <td className="px-4 py-3 text-slate-100 whitespace-nowrap">
+                      <td className="px-4 py-3 text-slate-900 whitespace-nowrap">
                         {formatDate(app.createdAt)}
                       </td>
 
-                      {/* ✅ Sticky Actions cell */}
-                      <td className="px-4 py-3 text-right sticky right-0 z-10 bg-[#050818]/85 backdrop-blur border-l border-white/5">
-                        <button
-                          type="button"
-                          onClick={() => openDrawer(app.id)}
-                          className="inline-flex items-center gap-2 rounded-full bg-white text-slate-900 text-xs font-semibold px-4 py-1.5 shadow-[0_10px_24px_rgba(15,23,42,0.55)] hover:bg-slate-100"
+                      <td className="px-4 py-3 text-right sticky right-0 z-10 bg-white border-l border-slate-200">
+                        <Link
+                          href={`/admin/applications/${app.id}`}
+                          className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 text-white text-xs font-semibold px-4 py-1.5 hover:bg-emerald-700"
                         >
                           View
-                          <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-900 text-white text-[11px]">
-                            →
-                          </span>
-                        </button>
+                        </Link>
+                        {/* <button
+                          type="button"
+                          onClick={() => openDrawer(app.id)}
+                          className="ml-2 inline-flex items-center rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                        >
+                          Quick view
+                        </button> */}
                       </td>
                     </tr>
                   ))
@@ -731,7 +823,7 @@ export default function ApplicationsPage() {
           </div>
 
           {!loading && filteredApps.length > 0 && (
-            <div className="px-5 py-3 border-t border-white/5 flex items-center justify-between text-[11px] text-slate-400">
+            <div className="px-5 py-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-600">
               <p>
                 Showing{" "}
                 <span className="font-semibold">
@@ -751,7 +843,7 @@ export default function ApplicationsPage() {
                   type="button"
                   disabled={currentPage === 1}
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  className="px-3 py-1 rounded-full bg-slate-900 text-slate-200 disabled:opacity-40 text-[11px]"
+                  className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-slate-700 disabled:opacity-40 text-xs"
                 >
                   Prev
                 </button>
@@ -763,7 +855,7 @@ export default function ApplicationsPage() {
                   type="button"
                   disabled={currentPage === totalPages}
                   onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  className="px-3 py-1 rounded-full bg-slate-900 text-slate-200 disabled:opacity-40 text-[11px]"
+                  className="px-3 py-1 rounded-lg border border-slate-200 bg-white text-slate-700 disabled:opacity-40 text-xs"
                 >
                   Next
                 </button>

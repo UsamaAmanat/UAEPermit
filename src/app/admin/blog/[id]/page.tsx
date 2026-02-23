@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useState, useRef  } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import { auth } from "@/lib/firebaseClient";
+import { isAdminEmail } from "@/lib/authConstants";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { getBlogById, updateBlog, makeSlug, BlogPost } from "@/lib/blogs";
 import BlogEditor from "@/components/admin/BlogEditor";
@@ -21,10 +24,31 @@ export default function EditBlogPage() {
   const params = useParams<{ id: string }>();
   const id = params.id;
   const router = useRouter();
-
+  const [user, setUser] = useState<User | null>(null);
+  const [checking, setChecking] = useState(true);
   const [post, setPost] = useState<BlogPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
+      if (!currentUser) {
+        setUser(null);
+        setChecking(false);
+        router.replace("/login");
+        return;
+      }
+      if (!isAdminEmail(currentUser.email)) {
+        setUser(null);
+        setChecking(false);
+        router.replace("/login");
+        return;
+      }
+      setUser(currentUser);
+      setChecking(false);
+    });
+    return () => unsub();
+  }, [router]);
 
   // local form state
   const [title, setTitle] = useState("");
@@ -34,6 +58,7 @@ export default function EditBlogPage() {
   const [coverImageUrl, setCoverImageUrl] = useState("");
   const [readTime, setReadTime] = useState("3");
   const [published, setPublished] = useState(true);
+  const [category, setCategory] = useState("");
 
   // 👉 new: for cover upload
   const coverFileInputRef = useRef<HTMLInputElement | null>(null);
@@ -77,6 +102,7 @@ export default function EditBlogPage() {
       setCoverImageUrl(data.coverImageUrl || ""); // existing cover shows here
       setReadTime(String(data.readTime || 3));
       setPublished(data.published);
+      setCategory(data.category || "");
       setLoading(false);
     })();
   }, [id, router]);
@@ -97,6 +123,7 @@ export default function EditBlogPage() {
         coverImageUrl: coverImageUrl.trim(),
         readTime: Number(readTime || "3"),
         published,
+        category: category.trim() || undefined,
       });
 
       toast.success("Post updated");
@@ -109,151 +136,93 @@ export default function EditBlogPage() {
     }
   };
 
+  if (checking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <p className="text-slate-600 text-sm">Checking access…</p>
+      </div>
+    );
+  }
+  if (!user) return null;
+
   if (loading) {
     return (
-      <AdminLayout>
-        <div className="p-8 text-sm text-slate-400">Loading post…</div>
+      <AdminLayout userEmail={user.email} onLogout={() => signOut(auth)}>
+        <div className="p-8 text-sm text-slate-600">Loading post…</div>
       </AdminLayout>
     );
   }
 
   return (
-    <AdminLayout>
+    <AdminLayout userEmail={user.email} onLogout={() => signOut(auth)}>
       <div className="px-8 py-8 max-w-5xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-semibold text-white">
-              Edit blog post
-            </h1>
-            <p className="text-sm text-slate-400">
-              /blog/{slug || post?.slug}
-            </p>
+            <h1 className="text-2xl font-semibold text-slate-900">Edit blog post</h1>
+            <p className="text-sm text-slate-600">/blog/{slug || post?.slug}</p>
           </div>
         </div>
 
-        {/* same form as create */}
         <div className="space-y-5">
           <div>
-            <label className="text-sm text-slate-300">Title</label>
+            <label className="block text-sm font-medium text-slate-700">Title</label>
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               onBlur={() => !slug && setSlug(makeSlug(title))}
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-white outline-none focus:border-emerald-400"
+              className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
             />
           </div>
 
           <div className="grid gap-5 md:grid-cols-[2fr,1fr]">
             <div>
-              <label className="text-sm text-slate-300">Slug (URL)</label>
-              <input
-                value={slug}
-                onChange={(e) => setSlug(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-white outline-none focus:border-emerald-400"
-              />
+              <label className="block text-sm font-medium text-slate-700">Slug (URL)</label>
+              <input value={slug} onChange={(e) => setSlug(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/30" />
             </div>
-
             <div>
-              <label className="text-sm text-slate-300">Read time</label>
-              <input
-                type="number"
-                min={1}
-                value={readTime}
-                onChange={(e) => setReadTime(e.target.value)}
-                className="mt-1 w-24 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-white outline-none focus:border-emerald-400"
-              />
+              <label className="block text-sm font-medium text-slate-700">Read time</label>
+              <input type="number" min={1} value={readTime} onChange={(e) => setReadTime(e.target.value)} className="mt-1 w-24 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/30" />
               <div className="mt-3 flex items-center gap-2">
-                <input
-                  id="published-edit"
-                  type="checkbox"
-                  checked={published}
-                  onChange={(e) => setPublished(e.target.checked)}
-                />
-                <label
-                  htmlFor="published-edit"
-                  className="text-xs text-slate-300"
-                >
-                  Published
-                </label>
+                <input id="published-edit" type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} className="h-4 w-4 rounded border-slate-300" />
+                <label htmlFor="published-edit" className="text-xs text-slate-600">Published</label>
               </div>
             </div>
           </div>
 
           <div>
-            <label className="text-sm text-slate-300">Short summary</label>
-            <textarea
-              value={excerpt}
-              onChange={(e) => setExcerpt(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-4 py-2 text-sm text-white outline-none focus:border-emerald-400"
-              rows={3}
-            />
+            <label className="block text-sm font-medium text-slate-700">Category (optional)</label>
+            <input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="e.g. Visa Tips, Documents" className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-emerald-500/30" />
           </div>
 
-          {/* Cover image */}
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Short summary</label>
+            <textarea value={excerpt} onChange={(e) => setExcerpt(e.target.value)} className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-500 outline-none focus:ring-2 focus:ring-emerald-500/30" rows={3} />
+          </div>
+
           <div className="space-y-2">
-            <label className="text-sm text-slate-300">Cover image</label>
+            <label className="block text-sm font-medium text-slate-700">Cover image</label>
             <div className="flex gap-2">
-              <input
-                type="text"
-                value={coverImageUrl}
-                onChange={(e) => setCoverImageUrl(e.target.value)}
-                placeholder="Paste image link or use Upload"
-                className="flex-1 rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-              />
-              <button
-                type="button"
-                onClick={triggerCoverUpload}
-                className="rounded-lg bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-900 hover:bg-emerald-400"
-              >
-                Upload
-              </button>
+              <input type="text" value={coverImageUrl} onChange={(e) => setCoverImageUrl(e.target.value)} placeholder="Paste image link or use Upload" className="flex-1 rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/30" />
+              <button type="button" onClick={triggerCoverUpload} className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700">Upload</button>
             </div>
-
-            <input
-              ref={coverFileInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleCoverFileChange}
-            />
-
+            <input ref={coverFileInputRef} type="file" accept="image/*" className="hidden" onChange={handleCoverFileChange} />
             {coverImageUrl && (
-              <div className="mt-2 rounded-lg border border-slate-700 bg-slate-900/60 p-2">
-                <div className="mb-1 text-[11px] text-slate-400">
-                  Cover preview
-                </div>
-                <img
-                  src={coverImageUrl}
-                  alt="Cover preview"
-                  className="h-40 w-full rounded-md object-cover"
-                />
+              <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50 p-2">
+                <div className="mb-1 text-[11px] text-slate-600">Cover preview</div>
+                <img src={coverImageUrl} alt="Cover preview" className="h-40 w-full rounded-md object-cover" />
               </div>
             )}
           </div>
-
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm text-slate-300">Main content</label>
-          <BlogEditor  value={content} onChange={setContent} />
+          <label className="block text-sm font-medium text-slate-700">Main content</label>
+          <BlogEditor value={content} onChange={setContent} />
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
-          <button
-            type="button"
-            onClick={() => router.push("/admin/blog")}
-            className="px-4 py-2 rounded-full border border-slate-600 text-sm text-slate-200 hover:border-slate-400"
-          >
-            Cancel
-          </button>
-          <button
-            type="button"
-            disabled={saving}
-            onClick={handleSave}
-            className="px-6 py-2 rounded-full bg-emerald-500 text-sm font-medium text-slate-900 hover:bg-emerald-400 disabled:opacity-60"
-          >
-            {saving ? "Saving…" : "Save changes"}
-          </button>
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200">
+          <button type="button" onClick={() => router.push("/admin/blog")} className="px-4 py-2 rounded-full border border-slate-200 text-sm text-slate-700 hover:bg-slate-50">Cancel</button>
+          <button type="button" disabled={saving} onClick={handleSave} className="px-6 py-2 rounded-full bg-emerald-600 text-sm font-medium text-white hover:bg-emerald-700 disabled:opacity-60">{saving ? "Saving…" : "Save changes"}</button>
         </div>
       </div>
     </AdminLayout>

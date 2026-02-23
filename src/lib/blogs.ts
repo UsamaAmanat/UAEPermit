@@ -24,6 +24,7 @@ export type BlogPost = {
   readTime: number;      // minutes
   published: boolean;
   tags: string[];
+  category?: string;     // e.g. "Visa Tips", "Documents"
   createdAt?: Date | null;
   updatedAt?: Date | null;
   seoTitle?: string;
@@ -43,9 +44,17 @@ export function makeSlug(title: string) {
 
 // PUBLIC – only published posts, newest first
 export async function getPublishedBlogs(): Promise<BlogPost[]> {
-  const q = query(colRef, where("published", "==", true), orderBy("createdAt", "desc"));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => toBlogPost(d.id, d.data()));
+  // Avoid requiring a Firestore composite index by fetching all
+  // and filtering client-side
+  const snap = await getDocs(colRef);
+  const all = snap.docs.map((d) => toBlogPost(d.id, d.data()));
+  return all
+    .filter((b) => b.published === true)
+    .sort((a, b) => {
+      const da = a.createdAt ? a.createdAt.getTime() : 0;
+      const db_ = b.createdAt ? b.createdAt.getTime() : 0;
+      return db_ - da; // newest first
+    });
 }
 
 // PUBLIC – by slug
@@ -102,6 +111,7 @@ function toBlogPost(id: string, data: any): BlogPost {
     readTime: data.readTime ?? 3,
     published: !!data.published,
     tags: data.tags ?? [],
+    category: data.category ?? "",
     seoTitle: data.seoTitle ?? data.title ?? "",
     seoDescription: data.seoDescription ?? data.excerpt ?? "",
     createdAt: data.createdAt?.toDate?.() ?? null,

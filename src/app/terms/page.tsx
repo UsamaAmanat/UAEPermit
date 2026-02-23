@@ -33,7 +33,7 @@ export default function TermsPage() {
         </div>
 
         {/* Hero – tuned to site theme (navy + lime) */}
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#3C4161] via-[#3C4161] to-[#0c4d3d] px-6 py-10 sm:px-10 sm:py-12 mb-10">
+        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-700 px-6 py-10 sm:px-10 sm:py-12 mb-10">
           <div className="relative z-10 max-w-2xl">
             <p className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.16em] text-[#62E9C9] mb-4">
               Legal &amp; Compliance
@@ -476,7 +476,7 @@ export default function TermsPage() {
                     support@uaepermit.com
                   </a>
                 </li>
-                <li>Phone: +971 55 871 5533</li>
+                <li>Phone: +971 56 261 7646</li>
                 <li>Company: Budget Travel &amp; Tourism LLC</li>
                 <li>Website: https://www.uaepermit.com</li>
               </ul>

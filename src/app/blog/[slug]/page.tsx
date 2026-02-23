@@ -115,10 +115,11 @@ export default async function BlogDetailPage({ params }: PageProps) {
   return (
     <main className="min-h-screen bg-[#f5f7ff] pt-[5rem] pb-20">
       {/* Hero band */}
-      <section className="relative w-full bg-gradient-to-r from-[#0f172a] via-[#132146] to-[#1e293b]">
+      <section className="relative w-full bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-700">
+        <div className="absolute inset-0 bg-[url('/images/home/circle-left.png')] bg-no-repeat bg-left-top opacity-10" />
         <div className="relative max-w-5xl mx-auto px-3 lg:px-0 pt-4 pb-10 text-white">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-[11px] uppercase tracking-[0.18em]">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[11px] uppercase tracking-[0.18em]">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-300" />
             <span>Dubai Visa Guide</span>
           </div>
 
@@ -126,23 +127,23 @@ export default async function BlogDetailPage({ params }: PageProps) {
             {post.title}
           </h1>
 
-          <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-slate-200/85">
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-emerald-100/90">
             {formattedDate && <span>{formattedDate}</span>}
             {post.readTime ? (
               <>
-                <span className="h-1 w-1 rounded-full bg-slate-400" />
+                <span className="h-1 w-1 rounded-full bg-emerald-300/60" />
                 <span>{post.readTime} min read</span>
               </>
             ) : null}
 
             {post.tags?.length ? (
               <>
-                <span className="hidden h-1 w-1 rounded-full bg-slate-400 md:inline-flex" />
+                <span className="hidden h-1 w-1 rounded-full bg-emerald-300/60 md:inline-flex" />
                 <div className="flex flex-wrap gap-1">
                   {post.tags.map((t) => (
                     <span
                       key={t}
-                      className="rounded-full bg-white/10 px-2 py-0.5 text-[11px]"
+                      className="rounded-full bg-white/15 px-2 py-0.5 text-[11px]"
                     >
                       {t}
                     </span>

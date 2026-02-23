@@ -147,7 +147,7 @@ export default function ApplicationRow({
           <span className="font-semibold text-[#3C4161]">
             {applicantName || "—"}
           </span>
-          <span className="text-xs text-slate-500">
+          <span className="text-xs text-slate-600">
             {countryName || "Country not set"}
           </span>
         </div>
@@ -181,7 +181,7 @@ export default function ApplicationRow({
           className="
             inline-flex items-center justify-center
             w-8 h-8 rounded-full
-            text-slate-400
+            text-slate-600
             group-hover:text-[#3946A7]
             group-hover:bg-[#3946A7]/8
             transition-colors

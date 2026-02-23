@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getApplicationById, markApplicationPaidAndEmailed } from "@/lib/firestore/applications";
 import { sendApplicationEmailsToMany } from "@/lib/email/sendApplicationEmails";
 import { adminDB } from "@/lib/firebaseAdmin";
+import { createUserFromApplicationIfRequested } from "@/lib/userFromApplication";
 import { FieldValue } from "firebase-admin/firestore";
 
 export const runtime = "nodejs";
@@ -177,9 +178,20 @@ export async function POST(req: Request) {
         stripeSessionId: pi.id,
         totalPaid: paidAmount,
         currency: paidCurrency,
+        orderId: pi.id,
       });
 
-      // ensure lock removed so it doesn't block future updates
+      if (typeof paidAmount === "number" && paidAmount > 0) {
+        try {
+          await adminDB.doc("settings/stats").set(
+            { totalRevenue: FieldValue.increment(paidAmount), updatedAt: FieldValue.serverTimestamp() },
+            { merge: true }
+          );
+        } catch (e) {
+          console.warn("Revenue stats update failed:", e);
+        }
+      }
+
       await clearEmailLock(applicationId);
 
       return NextResponse.json({ received: true, skipped: "no_customer_emails" });
@@ -216,10 +228,29 @@ export async function POST(req: Request) {
         stripeSessionId: pi.id,
         totalPaid: paidAmount,
         currency: paidCurrency,
+        orderId: pi.id,
       });
 
-      // ✅ extra safety: store PI + clear lock even if your helper doesn't
+      if (typeof paidAmount === "number" && paidAmount > 0) {
+        try {
+          await adminDB.doc("settings/stats").set(
+            { totalRevenue: FieldValue.increment(paidAmount), updatedAt: FieldValue.serverTimestamp() },
+            { merge: true }
+          );
+        } catch (e) {
+          console.warn("Revenue stats update failed:", e);
+        }
+      }
+
       await stampProcessedPI(applicationId, pi.id);
+
+      // ✅ Optional: create user account if customer chose "Create account" at checkout
+      try {
+        const accountResult = await createUserFromApplicationIfRequested(applicationId);
+        if (accountResult.created) console.log("✅ User account created for:", applicationId);
+      } catch (accountErr: any) {
+        console.warn("Account creation skipped or failed:", accountErr?.message);
+      }
 
       console.log("✅ Done. Took:", Date.now() - startedAt, "ms");
       return NextResponse.json({ received: true, emailedTo: uniqueEmails.length });

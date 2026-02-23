@@ -86,9 +86,9 @@ export default function FaqsClient() {
   return (
     <main className="bg-[#F5F6FB]">
       {/* HERO – shorter height now */}
-      <section className="relative overflow-hidden pt-16 md:pt-20 pb-4 bg-white">
+      <section className="relative overflow-hidden pt-16 md:pt-20 pb-4 ">
         {/* subtle background accent (also reduced height) */}
-        <div className="pointer-events-none absolute inset-x-0 -bottom-24 h-40 bg-[radial-gradient(circle_at_top,_rgba(240,233,96,0.18),_transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-x-0 -bottom-24 h-40" />
 
         <div className="relative max-w-4xl mx-auto px-4 md:px-6 lg:px-0 text-center ">
           <p className="inline-flex items-center  gap-2 px-4 py-1.5 rounded-full bg-[#62E9C9]/30 text-[11px] md:text-xs font-semibold uppercase tracking-[0.16em] text-[#62E9C9] shadow-sm">
@@ -294,7 +294,7 @@ export default function FaqsClient() {
                       you on the best option for your trip.
                     </p>
                   </div>
-                  <div className="flex gap-3 text-nowrap items-center">
+                  <div className="flex gap-3 text-nowrap items-center flex-wrap md:flex-nowrap lg:flex-nowrap">
                     <a
                       href="/contact"
                       className="inline-flex items-center justify-center rounded-full bg-[#62E9C9] px-5 py-2.5 text-sm font-semibold text-[#0c4d3d] shadow-sm hover:shadow-md hover:opacity-90 transition"

@@ -8,6 +8,7 @@ import WhyChooseUs from "@/components/home/WhyChooseUs";
 import Authorized from "@/components/home/Authorized";
 import CountriesNeedVisa from "@/components/home/CountriesNeedVisa";
 import BlogSection from "@/components/home/BlogSection";
+import HomeFaqs from "@/components/home/HomeFaqs";
 
 import type { Metadata } from "next";
 import HomeSchema from "@/components/seo/HomeSchema";
@@ -38,8 +39,10 @@ export default function Home() {
       {/* <WhyChooseUs /> */}
       {/* <Authorized /> */}
       <CountriesNeedVisa />
+      <HomeFaqs />
+      <BlogSection />
       <CTABanner />
-      {/* <BlogSection /> */}
+    
       {/* <TempHome /> */}
     </>
   );

@@ -353,9 +353,9 @@ export default function BlogEditor({ value, onChange }: Props) {
   };
 
   return (
-    <div className="rounded-xl border border-slate-700 bg-slate-900/80">
+    <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
       {/* TOOLBAR */}
-      <div className="blog-editor-toolbar flex flex-wrap items-center gap-1 border-b border-slate-700 bg-slate-950/95 px-3 py-2 text-xs text-slate-200 backdrop-blur">
+      <div className="blog-editor-toolbar flex flex-wrap items-center gap-1 border-b border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 backdrop-blur">
         {/* Headings */}
         <ToolbarButton onClick={() => handleHeading(1)}>H1</ToolbarButton>
         <ToolbarButton onClick={() => handleHeading(2)}>H2</ToolbarButton>
@@ -378,13 +378,13 @@ export default function BlogEditor({ value, onChange }: Props) {
 
         {/* Font size */}
         <ToolbarDivider />
-        <span className="ml-1 text-[11px] text-slate-400">Size</span>
+        <span className="ml-1 text-[11px] text-slate-500">Size</span>
         <select
           value={fontSizePreset}
           onChange={(e) =>
             handleFontSizePresetChange(e.target.value as "sm" | "md" | "lg")
           }
-          className="rounded-md bg-slate-900 border border-slate-700 px-1 py-[1px] text-[11px]"
+          className="rounded-md bg-white border border-slate-200 px-1 py-[1px] text-[11px] text-slate-700"
         >
           <option value="sm">Small</option>
           <option value="md">Normal</option>
@@ -393,7 +393,7 @@ export default function BlogEditor({ value, onChange }: Props) {
 
         {/* Font family */}
         <ToolbarDivider />
-        <span className="ml-1 text-[11px] text-slate-400">Font</span>
+        <span className="ml-1 text-[11px] text-slate-500">Font</span>
         <select
           value={fontFamilyPreset}
           onChange={(e) =>
@@ -401,7 +401,7 @@ export default function BlogEditor({ value, onChange }: Props) {
               e.target.value as "default" | "inter" | "georgia" | "system"
             )
           }
-          className="rounded-md bg-slate-900 border border-slate-700 px-1 py-[1px] text-[11px]"
+          className="rounded-md bg-white border border-slate-200 px-1 py-[1px] text-[11px] text-slate-700"
         >
           <option value="default">Default</option>
           <option value="inter">Inter / Sans</option>
@@ -417,7 +417,7 @@ export default function BlogEditor({ value, onChange }: Props) {
 
         {/* Line height */}
         <ToolbarDivider />
-        <span className="ml-1 mr-[2px] text-[11px] text-slate-400">Line</span>
+        <span className="ml-1 mr-[2px] text-[11px] text-slate-500">Line</span>
         <ToolbarButton onClick={() => setLineHeight("tight")}>1.4</ToolbarButton>
         <ToolbarButton onClick={() => setLineHeight("normal")}>
           1.7
@@ -435,7 +435,7 @@ export default function BlogEditor({ value, onChange }: Props) {
 
         {/* Text color */}
         <ToolbarDivider />
-        <span className="ml-1 mr-1 text-[11px] text-slate-400">Color</span>
+        <span className="ml-1 mr-1 text-[11px] text-slate-500">Color</span>
         <ColorDot
           onClick={() => applyTextColor("#e5e7eb")}
           className="bg-slate-100"
@@ -459,7 +459,7 @@ export default function BlogEditor({ value, onChange }: Props) {
 
         {/* Highlight – more colors */}
         <ToolbarDivider />
-        <span className="ml-1 mr-1 text-[11px] text-slate-400">Highlight</span>
+        <span className="ml-1 mr-1 text-[11px] text-slate-500">Highlight</span>
         <ColorDot
           onClick={() => applyHighlight("#facc15")}
           className="bg-yellow-300"
@@ -482,7 +482,7 @@ export default function BlogEditor({ value, onChange }: Props) {
         />
         <ColorDot
           onClick={() => applyHighlight("transparent")}
-          className="bg-transparent border border-slate-600"
+          className="bg-transparent border border-slate-300"
         />
 
         {/* Links & media */}
@@ -493,15 +493,15 @@ export default function BlogEditor({ value, onChange }: Props) {
         <ToolbarButton onClick={triggerUpload}>Upload</ToolbarButton>
 
         {uploadingImage && (
-          <span className="ml-2 flex items-center gap-1 text-[11px] text-emerald-300">
-            <span className="h-3 w-3 rounded-full border border-emerald-400 border-t-transparent animate-spin" />
+          <span className="ml-2 flex items-center gap-1 text-[11px] text-emerald-600">
+            <span className="h-3 w-3 rounded-full border border-emerald-500 border-t-transparent animate-spin" />
             Uploading…
           </span>
         )}
 
         {/* Image size controls */}
         <ToolbarDivider />
-        <span className="ml-1 mr-1 text-[11px] text-slate-400">Image</span>
+        <span className="ml-1 mr-1 text-[11px] text-slate-500">Image</span>
         <ToolbarButton onClick={() => setImageSize("sm")}>S</ToolbarButton>
         <ToolbarButton onClick={() => setImageSize("md")}>M</ToolbarButton>
         <ToolbarButton onClick={() => setImageSize("lg")}>Full</ToolbarButton>
@@ -523,7 +523,7 @@ export default function BlogEditor({ value, onChange }: Props) {
 
       {/* ✅ Reset confirm */}
       {showResetConfirm && (
-        <div className="flex items-center justify-between gap-3 border-b border-amber-500/50 bg-amber-500/10 px-4 py-2 text-xs text-amber-100">
+        <div className="flex items-center justify-between gap-3 border-b border-amber-300 bg-amber-50 px-4 py-2 text-xs text-amber-900">
           <span>
             This will{" "}
             <span className="font-semibold">clear the entire article</span>. Are
@@ -533,14 +533,14 @@ export default function BlogEditor({ value, onChange }: Props) {
             <button
               type="button"
               onClick={confirmReset}
-              className="rounded-full bg-amber-500 px-3 py-1 text-[11px] font-semibold text-slate-900 hover:bg-amber-400"
+              className="rounded-full bg-amber-500 px-3 py-1 text-[11px] font-semibold text-white hover:bg-amber-600"
             >
               Reset now
             </button>
             <button
               type="button"
               onClick={cancelReset}
-              className="rounded-full border border-amber-500/60 px-3 py-1 text-[11px] text-amber-100 hover:bg-amber-500/10"
+              className="rounded-full border border-amber-300 px-3 py-1 text-[11px] text-amber-700 hover:bg-amber-100"
             >
               Cancel
             </button>
@@ -551,30 +551,30 @@ export default function BlogEditor({ value, onChange }: Props) {
       {/* 🔗 Link URL bar */}
       {showLinkBar && (
         <InlineBar>
-          <span className="text-xs text-slate-300 mr-2">Link</span>
+          <span className="text-xs text-slate-600 mr-2">Link</span>
           <input
             value={linkUrl}
             onChange={(e) => setLinkUrl(e.target.value)}
             placeholder="https://example.com"
-            className="flex-1 rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="flex-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
           />
           <input
             value={linkText}
             onChange={(e) => setLinkText(e.target.value)}
             placeholder="Optional link text"
-            className="flex-1 rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="flex-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
           />
           <button
             type="button"
             onClick={handleApplyLink}
-            className="ml-2 rounded-md bg-emerald-500 px-3 py-1 text-[11px] font-semibold text-slate-900 hover:bg-emerald-400"
+            className="ml-2 rounded-md bg-emerald-500 px-3 py-1 text-[11px] font-semibold text-white hover:bg-emerald-600"
           >
             Apply
           </button>
           <button
             type="button"
             onClick={() => setShowLinkBar(false)}
-            className="ml-1 rounded-md border border-slate-700 px-3 py-1 text-[11px] text-slate-200 hover:bg-slate-800"
+            className="ml-1 rounded-md border border-slate-200 px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-50"
           >
             Cancel
           </button>
@@ -584,24 +584,24 @@ export default function BlogEditor({ value, onChange }: Props) {
       {/* 🖼 Image URL bar */}
       {showImageUrlBar && (
         <InlineBar>
-          <span className="text-xs text-slate-300 mr-2">Image URL</span>
+          <span className="text-xs text-slate-600 mr-2">Image URL</span>
           <input
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
             placeholder="https://..."
-            className="flex-1 rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+            className="flex-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-emerald-500"
           />
           <button
             type="button"
             onClick={handleInsertImageUrl}
-            className="ml-2 rounded-md bg-emerald-500 px-3 py-1 text-[11px] font-semibold text-slate-900 hover:bg-emerald-400"
+            className="ml-2 rounded-md bg-emerald-500 px-3 py-1 text-[11px] font-semibold text-white hover:bg-emerald-600"
           >
             Insert
           </button>
           <button
             type="button"
             onClick={() => setShowImageUrlBar(false)}
-            className="ml-1 rounded-md border border-slate-700 px-3 py-1 text-[11px] text-slate-200 hover:bg-slate-800"
+            className="ml-1 rounded-md border border-slate-200 px-3 py-1 text-[11px] text-slate-700 hover:bg-slate-50"
           >
             Cancel
           </button>
@@ -611,7 +611,7 @@ export default function BlogEditor({ value, onChange }: Props) {
       {/* EDITOR AREA – no inner scrollbar, page scrolls, toolbar stays sticky */}
       <div
         ref={editorRef}
-        className="blog-editor-area min-h-[260px] bg-slate-950 px-4 py-3 text-sm text-slate-100 focus:outline-none break-words"
+        className="blog-editor-area min-h-[260px] bg-white px-4 py-3 text-sm text-slate-900 focus:outline-none break-words rounded-b-xl"
         style={{
           lineHeight:
             lineHeight === "tight" ? 1.4 : lineHeight === "normal" ? 1.7 : 2.0,
@@ -667,7 +667,7 @@ export default function BlogEditor({ value, onChange }: Props) {
 
         .blog-editor-area hr {
           border: 0;
-          border-top: 1px dashed #475569;
+          border-top: 1px dashed #cbd5e1;
           margin: 1.5rem 0;
         }
 
@@ -708,7 +708,7 @@ export default function BlogEditor({ value, onChange }: Props) {
         }
 
         .blog-editor-area a {
-          color: #22c55e;
+          color: #059669;
           text-decoration: underline;
         }
       `}</style>
@@ -728,7 +728,7 @@ function ToolbarButton({ children, onClick }: BtnProps) {
     <button
       type="button"
       onClick={onClick}
-      className="rounded-md px-2 py-1 hover:bg-slate-800/80 active:bg-slate-700 text-[11px]"
+      className="rounded-md px-2 py-1 hover:bg-slate-100 active:bg-slate-200 text-[11px]"
     >
       {children}
     </button>
@@ -736,7 +736,7 @@ function ToolbarButton({ children, onClick }: BtnProps) {
 }
 
 function ToolbarDivider() {
-  return <span className="mx-1 h-4 w-px bg-slate-700" />;
+  return <span className="mx-1 h-4 w-px bg-slate-200" />;
 }
 
 type ColorProps = {
@@ -749,7 +749,7 @@ function ColorDot({ onClick, className = "" }: ColorProps) {
     <button
       type="button"
       onClick={onClick}
-      className={`h-4 w-4 rounded-full border border-slate-700 hover:ring-2 hover:ring-emerald-400/60 ${className}`}
+      className={`h-4 w-4 rounded-full border border-slate-200 hover:ring-2 hover:ring-emerald-400/60 ${className}`}
     />
   );
 }
@@ -760,7 +760,7 @@ type InlineBarProps = {
 
 function InlineBar({ children }: InlineBarProps) {
   return (
-    <div className="flex items-center gap-2 border-b border-slate-800 bg-slate-900 px-4 py-2 text-xs">
+    <div className="flex items-center gap-2 border-b border-slate-200 bg-slate-50 px-4 py-2 text-xs">
       {children}
     </div>
   );

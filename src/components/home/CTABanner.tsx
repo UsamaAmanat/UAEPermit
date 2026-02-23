@@ -7,14 +7,11 @@ const CTABanner = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8">
           <div>
-            <h2 className="text-[24px] md:text-[28px] lg:text-[36px] font-medium text-[#62E9C9] mb-2 md:mb-3">
-              Need fast assistance to UAE travel?
+            <h2 className="text-[24px] md:text-[28px] lg:text-[30px] font-medium text-[#62E9C9] mb-2 md:mb-3">
+              Need Fast and Expert Assistance for Your Dubai Visa or UAE Visa?
             </h2>
-            <p className="text-[16px] md:text-[20px] lg:text-[26px] font-medium text-white leading-relaxed">
-              Apply now to get professional assistance and quick processing
-              support
-              <br />
-              from our licensed travel agency.
+            <p className="text-[16px] md:text-[20px] lg:text-[22px] font-medium text-white leading-relaxed">
+              Apply now for expert assistance with your Dubai visa and UAE visa online, and enjoy fast, secure, and hassle-free processing from our licensed travel agency.
             </p>
           </div>
 
@@ -29,17 +26,11 @@ const CTABanner = () => {
         {/* Disclaimer */}
         <div className="mt-6 md:mt-8 pt-6 md:pt-8 border-t border-white/20">
           <p className="text-[11px] md:text-[12px] font-medium text-white/90 leading-relaxed">
-            Disclaimer: uaepermit.com is operated by Budget Travel & Tourism LLC
-            (License No. 1202281), a licensed private travel and tourism agency
-            based in Dubai, United Arab Emirates. We provide professional
-            assistance and support for UAE visit visa applications and related
-            travel documentation. uaepermit.com is not affiliated with the UAE
-            Government or any official immigration authority. Our services
-            include consultation, document preparation, and customer support.
-            Service fees apply in addition to any applicable government visa
-            charges. Applicants may also choose to apply directly through
-            official UAE government channels at a lower cost, without using our
-            private support services.
+            Disclaimer: UAEpermit.com is operated by Budget Travel & Tourism LLC (License No. 1202281), a licensed private travel and tourism agency based in Dubai, United Arab Emirates. We provide professional assistance and expert support for Dubai visa, UAE visa, Dubai visa online, and UAE visa online applications, including consultation, document preparation, and dedicated customer support.
+            </p>
+            <p className="text-[11px] md:text-[12px] font-medium text-white/90 leading-relaxed">
+Service fees include all applicable government visa charges. Alternatively, applicants may choose to submit their applications directly through official UAE government channels without utilizing our private support services.
+
           </p>
         </div>
       </div>

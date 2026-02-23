@@ -683,39 +683,39 @@ export default function TrackPageClient() {
 
         {/* RIGHT PANEL */}
         <aside className="w-full max-w-md lg:w-80 space-y-4">
-          <div className="rounded-2xl border border-slate-900/80 bg-slate-900 p-4 text-xs text-slate-100 shadow-lg">
+          <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-4 text-xs text-slate-700 shadow-sm">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#62E9C9] text-[#0c4d3d] shadow">
+              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#62E9C9] text-[#0c4d3d] shadow-sm">
                 <Plane className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-[11px] uppercase text-slate-300 font-semibold tracking-[0.16em]">
+                <p className="text-[11px] uppercase text-emerald-800 font-semibold tracking-[0.16em]">
                   Need help while tracking?
                 </p>
-                <p className="mt-1 text-[11px]">
-                  Our visa experts are available on WhatsApp & email.
+                <p className="mt-1 text-[11px] text-slate-500">
+                  Our visa experts are available on WhatsApp &amp; email.
                 </p>
               </div>
             </div>
 
-            <div className="mt-4 space-y-2 rounded-xl bg-slate-800/60 p-3">
-              <button className="flex items-center justify-between w-full rounded-full bg-[#62E9C9] px-3 py-2 text-[11px] font-semibold text-[#0c4d3d] shadow hover:-translate-y-0.5 transition">
-                <span className="inline-flex items-center gap-1.5">
+            <div className="mt-4 space-y-2 rounded-xl bg-emerald-50/60 border border-emerald-100 p-3">
+              <button className="flex items-center justify-between w-full rounded-full bg-[#62E9C9] px-3 py-2 text-[11px] font-semibold text-[#0c4d3d] shadow-sm hover:-translate-y-0.5 transition">
+                <span className="inline-flex items-center gap-1.5  text-[11px]">
                   <MessageCircle className="h-3.5 w-3.5" />
-                  Chat on WhatsApp
+                  WhatsApp
                 </span>
-                +971 55 871 5533
+                +971 56 261 7646
               </button>
 
-              <button className="flex items-center justify-between w-full rounded-full border border-slate-600 bg-slate-900/60 px-3 py-2 text-[11px] font-semibold text-slate-100 hover:border-slate-400 hover:bg-slate-800">
-                <span className="inline-flex items-center gap-1.5">
+              <button className="flex items-center justify-between w-full rounded-full border border-slate-200 bg-white px-3 py-2 text-[11px] font-semibold text-slate-700 hover:border-emerald-300 hover:bg-emerald-50/50 transition">
+                <span className="inline-flex items-center gap-1.5  text-[11px]">
                   <Mail className="h-3.5 w-3.5" />
-                  Email our team
+                  Email
                 </span>
                 support@uaepermit.com
               </button>
 
-              <div className="flex items-start gap-2 text-[10px] pt-1">
+              <div className="flex items-start gap-2 text-[10px] text-slate-500 pt-1">
                 <PhoneCall className="h-3.5 w-3.5" />
                 Prefer a call? Mention your tracking ID for faster help.
               </div>

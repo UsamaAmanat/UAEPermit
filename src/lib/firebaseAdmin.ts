@@ -1,5 +1,6 @@
 import "server-only";
 import { cert, initializeApp, getApps } from "firebase-admin/app";
+import { getAuth } from "firebase-admin/auth";
 import { getFirestore } from "firebase-admin/firestore";
 
 function loadAdminCreds() {
@@ -25,3 +26,4 @@ const app =
       });
 
 export const adminDB = getFirestore(app);
+export const adminAuth = getAuth(app);

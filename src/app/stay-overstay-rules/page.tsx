@@ -69,10 +69,10 @@ function SectionCard({
       <div className="p-6 sm:p-8">
         <div className="flex items-start gap-4">
           <div className="h-12 w-12 rounded-2xl bg-[#F3F6FF] ring-1 ring-[#E6ECFF] flex items-center justify-center">
-            <Icon className="h-6 w-6 text-[#1F2A64]" />
+            <Icon className="h-6 w-6 text-[#065f46]" />
           </div>
           <div className="flex-1">
-            <h2 className="text-xl sm:text-2xl font-extrabold text-[#0B1220] tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-[#064e3b] tracking-tight">
               {title}
             </h2>
             {subtitle ? (
@@ -106,8 +106,8 @@ function Bullet({
       : "bg-[#F7FAFF] ring-[#E6ECFF]";
   const iconWrap =
     tone === "warn" ? "bg-white/90 ring-[#FED7AA]" : "bg-white ring-black/5";
-  const iconColor = tone === "warn" ? "text-[#B45309]" : "text-[#1F2A64]";
-  const titleColor = tone === "warn" ? "text-[#7C2D12]" : "text-[#0B1220]";
+  const iconColor = tone === "warn" ? "text-[#B45309]" : "text-[#065f46]";
+  const titleColor = tone === "warn" ? "text-[#7C2D12]" : "text-[#064e3b]";
   const textColor = tone === "warn" ? "text-[#9A3412]" : "text-[#5B668C]";
 
   return (
@@ -142,11 +142,11 @@ function KeyWarningsStrip() {
         <div className="px-5 sm:px-7 py-5">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <div className="flex items-start gap-3">
-              <div className="h-11 w-11 rounded-2xl bg-[#0B1220] flex items-center justify-center shadow-[0_16px_40px_rgba(11,18,32,0.22)]">
+              <div className="h-11 w-11 rounded-2xl bg-[#064e3b] flex items-center justify-center shadow-[0_16px_40px_rgba(11,18,32,0.22)]">
                 <AlertTriangle className="h-5 w-5 text-[#62E9C9]" />
               </div>
               <div>
-                <div className="text-sm font-extrabold text-[#0B1220] tracking-tight">
+                <div className="text-sm font-extrabold text-[#064e3b] tracking-tight">
                   Key warnings (read before you travel)
                 </div>
                 <div className="mt-1 text-sm text-[#5B668C] leading-relaxed">
@@ -160,20 +160,20 @@ function KeyWarningsStrip() {
               <a
                 href="#overstay-policy"
                 className="inline-flex items-center gap-2 rounded-full
-bg-white px-4 py-2 text-sm font-semibold text-[#0B1220]
+bg-white px-4 py-2 text-sm font-semibold text-[#064e3b]
 ring-1 ring-[#E6ECFF]
 shadow-[0_6px_18px_rgba(20,30,80,0.08)]
 hover:bg-[#F7FAFF] hover:ring-[#D6DEFF]
 transition"
               >
-                <FileWarning className="h-4 w-4 text-[#1F2A64]" />
+                <FileWarning className="h-4 w-4 text-[#065f46]" />
                 Overstay policy
                 <ChevronRight className="h-4 w-4 opacity-60" />
               </a>
               <a
                 href="#travel-advisory"
                 className="inline-flex items-center gap-2 rounded-full
-bg-[#1F2A64] px-4 py-2 text-sm font-semibold text-white
+bg-[#065f46] px-4 py-2 text-sm font-semibold text-white
 shadow-[0_14px_36px_rgba(31,42,100,0.28)]
 hover:bg-[#263170] hover:-translate-y-[1px]
 transition"
@@ -212,7 +212,7 @@ transition"
                   <Banknote className="h-5 w-5 text-[#B45309]" />
                 </div>
                 <div>
-                  <div className="text-sm font-semibold text-[#0B1220]">
+                  <div className="text-sm font-semibold text-[#064e3b]">
                     AED 5,000 penalty
                   </div>
                   <div className="mt-1 text-xs text-[#5B668C] leading-relaxed">
@@ -226,10 +226,10 @@ transition"
             <div className="rounded-2xl bg-[#F7FAFF] ring-1 ring-[#E6ECFF] p-4">
               <div className="flex items-start gap-3">
                 <div className="h-10 w-10 rounded-2xl bg-white ring-1 ring-black/5 flex items-center justify-center">
-                  <CalendarX2 className="h-5 w-5 text-[#1F2A64]" />
+                  <CalendarX2 className="h-5 w-5 text-[#065f46]" />
                 </div>
                 <div>
-                  <div className="text-sm font-semibold text-[#0B1220]">
+                  <div className="text-sm font-semibold text-[#064e3b]">
                     Weekend/holiday delays
                   </div>
                   <div className="mt-1 text-xs text-[#5B668C] leading-relaxed">
@@ -256,18 +256,18 @@ export default function StayOverstayRulesPage() {
         {/* Breadcrumb row */}
         <div className="flex flex-wrap items-center justify-between gap-3 py-6">
           <div className="text-sm text-[#6B74A6]">
-            <Link href="/" className="hover:text-[#1F2A64] transition-colors">
+            <Link href="/" className="hover:text-[#065f46] transition-colors">
               Home
             </Link>
             <span className="mx-2 text-[#A4ADD3]">/</span>
-            <span className="font-semibold text-[#0B1220]">
+            <span className="font-semibold text-[#064e3b]">
               Stay & Overstay Rules
             </span>
           </div>
 
           <div className="text-sm text-[#6B74A6]">
             Last updated:{" "}
-            <span className="font-semibold text-[#0B1220]">
+            <span className="font-semibold text-[#064e3b]">
               05 December 2025
             </span>
           </div>
@@ -275,7 +275,7 @@ export default function StayOverstayRulesPage() {
 
         {/* Hero */}
         <section className="relative overflow-hidden rounded-[28px] border border-[#E6ECFF] shadow-[0_28px_90px_rgba(18,30,80,0.18)]">
-          <div className="absolute inset-0 bg-gradient-to-r from-[#0B1220] via-[#1F2A64] to-[#0c4d3d]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#064e3b] via-[#065f46] to-[#0c4d3d]" />
           <div className="absolute inset-0 opacity-[0.25] bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.35),transparent_45%),radial-gradient(circle_at_80%_30%,rgba(255,255,255,0.22),transparent_40%)]" />
 
           <div className="relative p-8 sm:p-10 lg:p-12">
@@ -297,7 +297,7 @@ export default function StayOverstayRulesPage() {
             <div className="mt-8 flex flex-wrap gap-3">
               <a
                 href="#overstay-policy"
-                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#0B1220] shadow-[0_18px_45px_rgba(0,0,0,0.25)] hover:translate-y-[-1px] transition"
+                className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#064e3b] shadow-[0_18px_45px_rgba(0,0,0,0.25)] hover:translate-y-[-1px] transition"
               >
                 <FileWarning className="h-4 w-4" />
                 Overstay policy details
@@ -439,10 +439,10 @@ export default function StayOverstayRulesPage() {
               <div className="rounded-2xl bg-[#F7FAFF] ring-1 ring-[#E6ECFF] p-5 sm:p-6 transition hover:-translate-y-[1px] hover:shadow-[0_14px_40px_rgba(20,30,80,0.10)]">
                 <div className="flex items-start gap-3">
                   <div className="h-10 w-10 rounded-2xl bg-white ring-1 ring-black/5 flex items-center justify-center">
-                    <PlaneTakeoff className="h-5 w-5 text-[#1F2A64]" />
+                    <PlaneTakeoff className="h-5 w-5 text-[#065f46]" />
                   </div>
                   <div className="flex-1">
-                    <div className="font-semibold text-[#0B1220]">
+                    <div className="font-semibold text-[#064e3b]">
                       Recommended actions before expiry
                     </div>
                     <ul className="mt-3 space-y-2 text-sm text-[#5B668C]">
@@ -505,10 +505,10 @@ export default function StayOverstayRulesPage() {
                 >
                   <div className="flex items-start gap-3">
                     <div className="h-10 w-10 rounded-2xl bg-[#FFFDE6] ring-1 ring-[#EDE68A] flex items-center justify-center">
-                      <Building2 className="h-5 w-5 text-[#1F2A64]" />
+                      <Building2 className="h-5 w-5 text-[#065f46]" />
                     </div>
                     <div className="flex-1">
-                      <div className="font-semibold text-[#0B1220]">
+                      <div className="font-semibold text-[#064e3b]">
                         Dubai visa records managed by
                       </div>
                       <p className="mt-2 text-sm text-[#5B668C] leading-relaxed">
@@ -522,10 +522,10 @@ export default function StayOverstayRulesPage() {
                 <div className="rounded-2xl bg-white ring-1 ring-[#E6ECFF] p-5 sm:p-6 shadow-[0_18px_60px_rgba(20,30,80,0.08)] transition hover:-translate-y-[1px]">
                   <div className="flex items-start gap-3">
                     <div className="h-10 w-10 rounded-2xl bg-[#F3F6FF] ring-1 ring-[#E6ECFF] flex items-center justify-center">
-                      <Landmark className="h-5 w-5 text-[#1F2A64]" />
+                      <Landmark className="h-5 w-5 text-[#065f46]" />
                     </div>
                     <div className="flex-1">
-                      <div className="font-semibold text-[#0B1220]">
+                      <div className="font-semibold text-[#064e3b]">
                         National regulations overseen by
                       </div>
                       <p className="mt-2 text-sm text-[#5B668C] leading-relaxed">
@@ -543,7 +543,7 @@ export default function StayOverstayRulesPage() {
           <aside className="lg:col-span-4">
             <div className="lg:sticky lg:top-[6.5rem] space-y-4">
               <div className="rounded-3xl border border-[#E6ECFF] bg-white shadow-[0_18px_60px_rgba(20,30,80,0.08)] p-5 sm:p-6">
-                <div className="text-sm font-semibold text-[#0B1220]">
+                <div className="text-sm font-semibold text-[#064e3b]">
                   On this page
                 </div>
 
@@ -552,7 +552,7 @@ export default function StayOverstayRulesPage() {
               </div>
 
               <div className="rounded-3xl border border-[#E6ECFF] bg-gradient-to-br from-white to-[#F7FAFF] shadow-[0_18px_60px_rgba(20,30,80,0.08)] p-5 sm:p-6 transition hover:-translate-y-[1px]">
-                <div className="text-sm font-semibold text-[#0B1220]">
+                <div className="text-sm font-semibold text-[#064e3b]">
                   Need urgent help?
                 </div>
                 <p className="mt-2 text-sm text-[#5B668C] leading-relaxed">
@@ -562,11 +562,11 @@ export default function StayOverstayRulesPage() {
                 <div className="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
                   {/* WhatsApp */}
                   <a
-                    href="https://wa.me/971558715533"
+                    href="https://wa.me/971562617646"
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full
-    bg-[#1F2A64] px-4 py-2.5 text-sm font-semibold text-white
+    bg-[#065f46] px-4 py-2.5 text-sm font-semibold text-white
     shadow-[0_14px_36px_rgba(31,42,100,0.28)]
     hover:bg-[#263170] hover:-translate-y-[1px]
     transition"
@@ -580,13 +580,13 @@ export default function StayOverstayRulesPage() {
 
                   {/* Call */}
                   <a
-                    href="tel:+971558715533"
+                    href="tel:+971562617646"
                     className="inline-flex w-full sm:w-auto items-center justify-center gap-2 rounded-full
-    bg-white px-4 py-2.5 text-sm font-semibold text-[#0B1220]
+    bg-white px-4 py-2.5 text-sm font-semibold text-[#064e3b]
     ring-1 ring-[#E6ECFF] hover:bg-[#F5F7FF] transition text-nowrap"
                   >
                     <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#F3F6FF] ring-1 ring-[#E6ECFF]">
-                      <PhoneCall className="h-4 w-4 text-[#1F2A64]" />
+                      <PhoneCall className="h-4 w-4 text-[#065f46]" />
                     </span>
                     Call now
                   </a>
