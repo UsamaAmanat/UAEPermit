@@ -38,16 +38,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const now = new Date();
 
-  // ✅ choose ONE (match your actual routes)
-  const BLOG_BASE = "/blog"; // change to "/blogs" if your route is /blogs
-
   const entries: MetadataRoute.Sitemap = [
     { url: `${SITE}/`, lastModified: now },
     { url: `${SITE}/apply`, lastModified: now },
     { url: `${SITE}/track`, lastModified: now },
     { url: `${SITE}/faq`, lastModified: now },
-    { url: `${SITE}${BLOG_BASE}`, lastModified: now },
-    { url: `${SITE}/contact`, lastModified: now },
+    { url: `${SITE}/blog`, lastModified: now },
+    { url: `${SITE}/contact-us`, lastModified: now },
 
     // ✅ Countries MUST be /country/{slug}
     ...countrySlugs.map((slug) => ({
@@ -55,9 +52,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
     })),
 
-    // ✅ Blogs MUST match BLOG_BASE
+    // ✅ Blogs are at the root level /slug
     ...blogSlugs.map((slug) => ({
-      url: `${SITE}${BLOG_BASE}/${slug}`,
+      url: `${SITE}/${slug}`,
       lastModified: now,
     })),
   ];

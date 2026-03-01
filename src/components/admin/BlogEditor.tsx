@@ -95,12 +95,16 @@ export default function BlogEditor({ value, onChange }: Props) {
 
     if (!html) return;
 
-    const wrapper = document.createElement("div");
-    wrapper.innerHTML = html;
+    let cleanHtml = html;
+    // Strip MS Word and generic HTML comments
+    cleanHtml = cleanHtml.replace(/<!--[\s\S]*?-->/g, "");
 
-    // remove designy media elements (icons, hero images, etc.)
+    const wrapper = document.createElement("div");
+    wrapper.innerHTML = cleanHtml;
+
+    // remove designy media elements and HEAD/metadata tags that shouldn't be unwrapped
     wrapper
-      .querySelectorAll("img, svg, picture, figure")
+      .querySelectorAll("img, svg, picture, figure, style, script, meta, link")
       .forEach((el) => el.remove());
 
     // clean attributes + unwrap unsupported tags

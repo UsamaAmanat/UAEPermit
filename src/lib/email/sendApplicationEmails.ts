@@ -74,6 +74,11 @@ export async function sendApplicationEmails(args: {
   const trackingUrl = buildUrl(args.trackingIdOrPath);
   const adminPanelUrl = args.adminPanelPath ? buildUrl(args.adminPanelPath) : undefined;
 
+  if (!mailTransporter) {
+    console.warn("⚠️ Email skipped (SMTP not configured):", args.customerEmail);
+    return;
+  }
+
   const applicants = normalizeApplicants(args.applicants);
 
   // Customer
@@ -115,7 +120,7 @@ export async function sendApplicationEmails(args: {
     : MAIL_ADMIN_TO;
 
   await Promise.all([
-    mailTransporter.sendMail({
+    mailTransporter!.sendMail({
       from: MAIL_FROM,
       to: args.customerEmail,
       subject: customerEmail.subject,
@@ -123,7 +128,7 @@ export async function sendApplicationEmails(args: {
       text: customerEmail.text,
     }),
 
-    mailTransporter.sendMail({
+    mailTransporter!.sendMail({
       from: MAIL_FROM,
       to: adminTo,
       subject: adminEmail.subject,
@@ -149,6 +154,11 @@ export async function sendStatusUpdateEmailsToMany(args: {
 
   if (!emails.length) return;
 
+  if (!mailTransporter) {
+    console.warn("⚠️ Status update email skipped (SMTP not configured)");
+    return;
+  }
+
 const primaryApplicant = args.applicants?.[0];
 
 const tplBase = (toEmail: string): StatusUpdateEmailPayload => ({
@@ -172,7 +182,7 @@ const tplBase = (toEmail: string): StatusUpdateEmailPayload => ({
   await Promise.all(
     emails.map(async (to) => {
       const email = buildCustomerStatusUpdatedEmail(tplBase(to));
-      return mailTransporter.sendMail({
+      return mailTransporter!.sendMail({
         from: MAIL_FROM,
         to,
         subject: email.subject,
@@ -209,6 +219,11 @@ export async function sendApplicationEmailsToMany(args: {
   const applicants = normalizeApplicants(args.applicants);
 
   const trackingUrl = buildUrl(`/track/${args.trackingId || args.applicationId}`);
+
+  if (!mailTransporter) {
+    console.warn("⚠️ Application email skipped (SMTP not configured)");
+    return;
+  }
 
   const paidAmount = typeof args.totalPaid === "number" ? args.totalPaid : 0;
   const currency = args.currency || "USD";

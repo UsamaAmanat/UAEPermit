@@ -23,7 +23,7 @@ export const metadata = {
   description:
     "Learn the rules for short-stay Dubai & UAE visas, overstay fines, absconding penalties, extension advice, and how to stay compliant. Read more.",
   alternates: {
-    canonical: "/stay-overstay-rules",
+    canonical: "/stay",
   },
 };
 

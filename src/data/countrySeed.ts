@@ -252,11 +252,6 @@ export const COUNTRY_SEED: CountrySeed[] = [
   { name: "Ukraine", code: "UA", region: "Europe" },
   { name: "United Kingdom", code: "GB", region: "Europe" },
   {
-  name: "United States of America",
-  code: "US",
-  region: "North America",
-},
-  {
     name: "United States of America",
     code: "US",
     region: "North America",

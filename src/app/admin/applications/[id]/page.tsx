@@ -91,7 +91,7 @@ export default function AdminApplicationDetailPage() {
   const [savingStatus, setSavingStatus] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [uploadingVisa, setUploadingVisa] = useState<number | null>(null);
-
+        console.log("data", data);
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (currentUser) => {
       if (!currentUser) {
@@ -108,6 +108,7 @@ export default function AdminApplicationDetailPage() {
       }
       setUser(currentUser);
       setChecking(false);
+
     });
     return () => unsub();
   }, [router]);
@@ -309,7 +310,7 @@ export default function AdminApplicationDetailPage() {
                   <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-800 capitalize">
                     {data.status || "—"}
                   </span>
-                  <span className="text-sm text-slate-600">Payment: {(data.paymentStatus || "pending").toString()}</span>
+                  {/* <span className="text-sm text-slate-600">Payment: {(data.paymentStatus || "pending").toString()}</span> */}
                   {data.extraFastSelected && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-1 text-[11px] font-semibold text-amber-700">
                       ⚡ Extra Fast Processing
@@ -319,6 +320,75 @@ export default function AdminApplicationDetailPage() {
                 <p className="mt-1 text-sm text-slate-600">
                   {data.plan?.country || "—"} · {data.plan?.visa || "—"} · {data.plan?.entry || "—"}
                 </p>
+              </div>
+            </div>
+
+            {/* Plan & Pricing Summary */}
+            <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+              <div className="border-b border-slate-100 bg-slate-50 px-5 py-3">
+                <h2 className="text-sm font-semibold text-slate-900">Plan & Pricing Details</h2>
+              </div>
+              <div className="px-5 py-4">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 text-sm">
+                  <div>
+                    <p className="text-xs text-slate-500">Country</p>
+                    <p className="font-medium text-slate-900">{data.plan?.country || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Visa Type</p>
+                    <p className="font-medium text-slate-900">{data.plan?.visa || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Entry Type</p>
+                    <p className="font-medium text-slate-900">{data.plan?.entry || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Price per Applicant</p>
+                    <p className="font-medium text-slate-900">{data.plan?.price || "—"} $</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Number of Applicants</p>
+                    <p className="font-medium text-slate-900">{applicants.length}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Grand Total</p>
+                    <p className="font-semibold text-emerald-700">{data.grandTotal ?? "—"} $</p>
+                  </div>
+                  {data.extraFastSelected && (
+                    <div>
+                      <p className="text-xs text-slate-500">Extra Fast Fee / Applicant</p>
+                      <p className="font-medium text-slate-900">{data.extraFastFeePerApplicant || "—"} $</p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-xs text-slate-500">Tracking ID (nanoid)</p>
+                    <p className="font-mono font-medium text-slate-900">{data.trackingId || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Firestore Doc ID</p>
+                    <p className="font-mono font-medium text-slate-900">{data.id || id}</p>
+                  </div>
+                  {data.orderId && (
+                    <div>
+                      <p className="text-xs text-slate-500">Order / Payment ID</p>
+                      <p className="font-mono font-medium text-slate-900">{data.orderId}</p>
+                    </div>
+                  )}
+                  {data.createdAt && (
+                    <div>
+                      <p className="text-xs text-slate-500">Created At</p>
+                      <p className="font-medium text-slate-900">
+                        {data.createdAt?.toDate ? data.createdAt.toDate().toLocaleString() : new Date(data.createdAt?.seconds ? data.createdAt.seconds * 1000 : data.createdAt).toLocaleString()}
+                      </p>
+                    </div>
+                  )}
+                  {data.userId && (
+                    <div>
+                      <p className="text-xs text-slate-500">User ID</p>
+                      <p className="font-mono text-xs font-medium text-slate-900">{data.userId}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -343,20 +413,24 @@ export default function AdminApplicationDetailPage() {
               </button>
             </div>
 
-            {/* Applicants: status, visa upload, trigger email */}
+            {/* Applicants: full details + status + visa upload + trigger email */}
             <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
               <h2 className="text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
                 <Users className="h-4 w-4" />
-                Applicants
+                Applicants ({applicants.length})
               </h2>
               <ul className="space-y-4">
                 {applicants.map((app: any, idx: number) => (
-                  <li key={idx} className="rounded-xl border border-slate-200 bg-slate-50/50 p-4">
+                  <li key={idx} className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 space-y-3">
+                    {/* Row 1: Name + actions */}
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       <div>
-                        <p className="font-semibold text-slate-900">{app.name}</p>
-                        <p className="text-xs text-slate-600">{app.email || "—"}</p>
-                        <p className="text-xs text-slate-600">Passport: {app.passportNumber || "—"}</p>
+                        <p className="font-semibold text-slate-900 text-base">{app.name}</p>
+                        {app.relation && (
+                          <span className="inline-block mt-0.5 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                            {app.relation}
+                          </span>
+                        )}
                       </div>
                       <div className="flex flex-wrap items-center gap-2">
                         <select
@@ -395,6 +469,52 @@ export default function AdminApplicationDetailPage() {
                           Send email
                         </button>
                       </div>
+                    </div>
+
+                    {/* Row 2: All applicant details grid */}
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 text-sm border-t border-slate-200 pt-3">
+                      <div>
+                        <p className="text-[11px] text-slate-500">Email</p>
+                        <p className="font-medium text-slate-900">{app.email || "—"}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-slate-500">Phone</p>
+                        <p className="font-medium text-slate-900">{app.countryCode || ""}{app.phone || "—"}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-slate-500">Nationality</p>
+                        <p className="font-medium text-slate-900">{app.nationality || "—"}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-slate-500">Applying From</p>
+                        <p className="font-medium text-slate-900">{app.applyingFrom || "—"}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-slate-500">Passport #</p>
+                        <p className="font-mono font-medium text-slate-900">{app.passportNumber || "—"}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-slate-500">Profession</p>
+                        <p className="font-medium text-slate-900">{app.profession || "—"}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-slate-500">Purpose of Travel</p>
+                        <p className="font-medium text-slate-900">{app.purposeOfTravel || "—"}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-slate-500">Tentative Travel Date</p>
+                        <p className="font-medium text-slate-900">{app.tentativeTravelDate || "—"}</p>
+                      </div>
+                      <div>
+                        <p className="text-[11px] text-slate-500">Date of Birth</p>
+                        <p className="font-medium text-slate-900">{app.dob || "—"}</p>
+                      </div>
+                      {app.passportExpiry && (
+                        <div>
+                          <p className="text-[11px] text-slate-500">Passport Expiry</p>
+                          <p className="font-medium text-slate-900">{app.passportExpiry}</p>
+                        </div>
+                      )}
                     </div>
                   </li>
                 ))}

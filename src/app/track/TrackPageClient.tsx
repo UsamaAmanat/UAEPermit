@@ -17,7 +17,7 @@ import {
   Download,
 } from "lucide-react";
 
-import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, onSnapshot, collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 
 type ApplicationStatus = "submitted" | "paid" | "issued" | "rejected";
@@ -278,10 +278,30 @@ export default function TrackPageClient() {
     setIsSearching(true);
 
     try {
-      const ref = doc(db, "applications", id);
-      const snap = await getDoc(ref);
+      // 1) First, try looking up by Firestore document ID
+      let docId = id;
+      let snapData: any = null;
 
-      if (!snap.exists()) {
+      const directRef = doc(db, "applications", id);
+      const directSnap = await getDoc(directRef);
+
+      if (directSnap.exists()) {
+        snapData = directSnap.data();
+      } else {
+        // 2) If not found as doc ID, query by trackingId field
+        const q = query(
+          collection(db, "applications"),
+          where("trackingId", "==", id)
+        );
+        const querySnap = await getDocs(q);
+        if (!querySnap.empty) {
+          const firstDoc = querySnap.docs[0];
+          docId = firstDoc.id;
+          snapData = firstDoc.data();
+        }
+      }
+
+      if (!snapData) {
         setNotFound(true);
         if (!opts?.silent) {
           toast.dismiss();
@@ -294,7 +314,7 @@ export default function TrackPageClient() {
       }
 
       // INITIAL RESULT
-      const data = transform(id, snap.data());
+      const data = transform(docId, snapData);
       setResult(data);
 
       if (!opts?.silent) {
@@ -304,10 +324,11 @@ export default function TrackPageClient() {
         });
       }
 
-      // REAL-TIME UPDATES
-      unsubRef.current = onSnapshot(ref, (liveSnap) => {
+      // REAL-TIME UPDATES using the resolved Firestore doc ID
+      const resolvedRef = doc(db, "applications", docId);
+      unsubRef.current = onSnapshot(resolvedRef, (liveSnap) => {
         if (!liveSnap.exists()) return;
-        setResult(transform(id, liveSnap.data()));
+        setResult(transform(docId, liveSnap.data()));
       });
     } catch (e: any) {
       console.error("Track error", e);

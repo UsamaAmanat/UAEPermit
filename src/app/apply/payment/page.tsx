@@ -123,7 +123,7 @@ function EmbeddedPaymentForm({
           By paying, you agree to our{" "}
           <a
             className="font-semibold text-[#62E9C9] hover:underline"
-            href="/terms"
+            href="/terms-conditions"
           >
             Terms
           </a>{" "}

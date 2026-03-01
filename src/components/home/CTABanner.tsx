@@ -16,8 +16,8 @@ const CTABanner = () => {
           </div>
 
           <Link
-            href="/contact"
-            className="px-6 md:px-8 py-2 md:py-3 bg-white text-black rounded-full text-[14px] md:text-[16px] font-semibold hover:shadow-lg transition-all whitespace-nowrap"
+            href="/contact-us"
+            className="rounded-full bg-white px-8 py-4 text-sm font-semibold text-emerald-900 transition hover:bg-emerald-50"
           >
             Contact us
           </Link>

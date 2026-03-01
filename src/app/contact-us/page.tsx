@@ -8,7 +8,7 @@ export const metadata = {
   description:
     "Need help or have questions? Contact UAE Permit — our support team is ready to assist you with your Dubai & UAE visa application. Fast, reliable, friendly service.",
   alternates: {
-    canonical: "/contact",
+    canonical: "/contact-us",
   },
 };
 

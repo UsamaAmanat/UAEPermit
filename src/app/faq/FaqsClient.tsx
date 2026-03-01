@@ -11,51 +11,257 @@ type FaqItem = {
 };
 
 const faqs: FaqItem[] = [
+  // 1️⃣ About UAEPermit.com
   {
     id: 1,
-    category: "Application timing",
-    question:
-      "What is the optimal timing for submitting a permit application for the UAE?",
-    answer:
-      "The ideal moment is right now. If you have plans to visit the UAE and your itinerary is set, why delay? Your permit application will be processed within the next 12 hours.",
+    category: "About UAEPermit.com",
+    question: "What is UAEPermit.com?",
+    answer: "UAEPermit.com is a professional UAE visa assistance platform that helps international travellers apply for a Dubai tourist visa online through a fully digital and secure application process."
   },
   {
     id: 2,
-    category: "Permit Through Airline",
-    question:
-      "Is it possible to obtain a UAE permit by applying through an airline?",
-    answer:
-      "Certain airlines do provide permit processing services, but it’s not their primary focus, and they may not have expertise in this area. Instead, their primary goal is to maximize ticket sales, and this remains true whether or not your permit application is successfully processed.",
+    category: "About UAEPermit.com",
+    question: "Is UAEPermit.com part of any company?",
+    answer: "Yes. UAEPermit.com is a part of Budget Travel & Tourism LLC, a Dubai-based destination management company specializing in tours, excursions, travel services, and UAE visa assistance. Being part of Budget Travel & Tourism LLC ensures structured processing, professional support, and reliable customer service for all UAE visa applications."
   },
   {
     id: 3,
-    category: "Authenticity of Permits",
-    question: "Is the authenticity of permits from uaepermit.com guaranteed?",
-    answer:
-      "While we do offer verification links and e-receipts for each application, you can also verify your permit by visiting our website at “Web Address” and entering your permit number.",
+    category: "About UAEPermit.com",
+    question: "Is UAEPermit.com an official government website?",
+    answer: "UAEPermit.com is not a government website. It operates as a professional visa facilitation service that processes applications through authorized UAE immigration channels."
   },
   {
     id: 4,
-    category: "Processing Time",
-    question: "What is the expected processing time for my application?",
-    answer:
-      "As stated on our website, your permit will be issued within 48 to 72 hours upon the completion of the application process, except during weekends and public holidays when it may take longer due to the unavailability of authorities to approve your permit. Nevertheless, we process the application on the following business day, adhering to the same timeline.",
+    category: "About UAEPermit.com",
+    question: "Why apply through UAEPermit.com?",
+    answer: "• Simple online visa application form\n• Fast UAE visa processing\n• Express Dubai visa options available\n• Secure online payment gateway\n• Approved UAE e-visa delivered by email (PDF format)\n• Dedicated customer support\n• Backed by Budget Travel & Tourism LLC (Dubai-based company)"
   },
+
+  // 2️⃣ Dubai Visa & UAE Visa Information
   {
     id: 5,
-    category: "Types of Permits",
-    question: "What types of permits are available through this service?",
-    answer:
-      "We offer two types of permits: “Single Entry,” allowing you to enter once and exit once, and “Multiple Entry,” permitting you to enter and exit as many times as specified on the permit.",
+    category: "Dubai Visa Information",
+    question: "What is a Dubai visa?",
+    answer: "A Dubai visa is an official travel authorization issued by UAE immigration authorities that allows foreign nationals to enter Dubai and other emirates for tourism, transit, or short-term visits."
   },
   {
     id: 6,
-    category: "Same Timing of Ticket Book and Application Process",
-    question:
-      "Is it advisable to book my ticket at the same time as the application process?",
-    answer:
-      "Certainly! Unless there are any legal issues associated with your profile, your permit will be delivered to you within the designated timeframe.",
+    category: "Dubai Visa Information",
+    question: "Is a Dubai visa the same as a UAE visa?",
+    answer: "Yes. A Dubai visa is a UAE visa. Once approved, it allows travel to all seven emirates: Dubai, Abu Dhabi, Sharjah, Ajman, Ras Al Khaimah, Fujairah, and Umm Al Quwain."
   },
+  {
+    id: 7,
+    category: "Dubai Visa Information",
+    question: "What is a Dubai visa online (UAE e-visa)?",
+    answer: "A Dubai visa online, also known as a UAE e-visa, is an electronically issued visa that can be applied for digitally and received via email in PDF format. No physical stamping is required before travel."
+  },
+
+  // 3️⃣ Types of Dubai Tourist Visas Available
+  {
+    id: 8,
+    category: "Visa Types",
+    question: "What visa types can I apply for at UAEPermit.com?",
+    answer: "We assist with: 48 Hours Transit Visa, 96 hours Transit Visa, 14 Days Dubai Tourist Visa, 30 Days Dubai Tourist Visa, 60 Days Dubai Tourist Visa, Single Entry Visa, Multiple Entry Visa, and Express Dubai Visa."
+  },
+  {
+    id: 9,
+    category: "Visa Types",
+    question: "What is a single-entry visa?",
+    answer: "A single-entry visa allows one entry into the UAE during its validity period. Once you exit, the visa cannot be reused."
+  },
+  {
+    id: 10,
+    category: "Visa Types",
+    question: "What is a multiple-entry visa?",
+    answer: "A multiple-entry visa allows travellers to enter and exit the UAE multiple times within the approved validity period."
+  },
+
+  // 4️⃣ Dubai Visa Requirements
+  {
+    id: 11,
+    category: "Visa Requirements",
+    question: "What documents are required to apply for a UAE visa online?",
+    answer: "Standard requirements include: Passport copy (minimum 6 months validity), Passport-size photograph, Return Air Ticket (both ways), and Passport Cover (outside). Additional documents may be required depending on nationality."
+  },
+  {
+    id: 12,
+    category: "Visa Requirements",
+    question: "Does every traveller need a separate visa?",
+    answer: "Yes. Each traveller — including minors and infants — must have an individual UAE visa."
+  },
+  {
+    id: 13,
+    category: "Visa Requirements",
+    question: "How long must my passport be valid?",
+    answer: "Your passport must be valid for at least six months from your intended date of travel to the UAE."
+  },
+
+  // 5️⃣ How to Apply for a Dubai Visa Online
+  {
+    id: 14,
+    category: "Application Process",
+    question: "What is the step-by-step process to apply?",
+    answer: "1. Select your visa type (14, 30, or 60 days)\n2. Complete the online visa application form\n3. Upload required documents\n4. Make secure online payment\n5. Receive your approved UAE e-visa by email"
+  },
+  {
+    id: 15,
+    category: "Application Process",
+    question: "Can I apply from any country?",
+    answer: "Yes. You can apply for a UAE visa online from anywhere in the world."
+  },
+  {
+    id: 16,
+    category: "Application Process",
+    question: "How will I receive my approved visa?",
+    answer: "Your approved UAE tourist visa will be delivered to your registered email address in PDF format."
+  },
+
+  // 6️⃣ Dubai Visa Processing Time & Express Service
+  {
+    id: 17,
+    category: "Processing Time",
+    question: "How long does UAE visa processing take?",
+    answer: "Standard processing time: 24 to 72 working hours. Processing may vary depending on nationality and immigration review."
+  },
+  {
+    id: 18,
+    category: "Processing Time",
+    question: "Is express Dubai visa available?",
+    answer: "Yes. UAEPermit.com offers express visa processing for urgent travel cases with 8 to 12 hours turnaround time."
+  },
+  {
+    id: 19,
+    category: "Processing Time",
+    question: "Are weekends and public holidays included?",
+    answer: "Processing depends on UAE immigration working days. UAE public holidays may impact timelines."
+  },
+
+  // 7️⃣ Dubai Visa Fees
+  {
+    id: 20,
+    category: "Visa Fees",
+    question: "How much does a Dubai visa cost?",
+    answer: "Visa fees vary based on visa duration (14, 30, 60 days), single or multiple entry, applicant nationality, and standard or express processing. Live visa fees can be checked directly on UAEPermit.com."
+  },
+  {
+    id: 21,
+    category: "Visa Fees",
+    question: "Is the UAE visa fee refundable?",
+    answer: "No. UAE visa fees are non-refundable once the application is submitted to immigration authorities."
+  },
+
+  // 8️⃣ Visa Validity, Stay Duration & Extensions
+  {
+    id: 22,
+    category: "Visa Validity",
+    question: "How long can I stay in Dubai?",
+    answer: "Stay duration depends on visa type: 48 Hours, 96 Hours, 14 days, 30 days, or 60 days."
+  },
+  {
+    id: 23,
+    category: "Visa Validity",
+    question: "Can I extend my UAE tourist visa?",
+    answer: "Yes. Many UAE tourist visas are extendable subject to immigration approval and additional charges."
+  },
+  {
+    id: 24,
+    category: "Visa Validity",
+    question: "What happens if I overstay?",
+    answer: "Overstaying may result in daily fines and penalties. All fines must be cleared before exiting the UAE."
+  },
+
+  // 9️⃣ Dubai Visa Status Check
+  {
+    id: 25,
+    category: "Visa Status",
+    question: "How can I check my visa application status?",
+    answer: "You can track your UAE visa status using your application reference number through UAEPermit.com support or tracking page."
+  },
+  {
+    id: 26,
+    category: "Visa Status",
+    question: "What does 'Under Process' mean?",
+    answer: "Your application is currently being reviewed by UAE immigration authorities."
+  },
+  {
+    id: 27,
+    category: "Visa Status",
+    question: "What does 'Approved or Issued' mean?",
+    answer: "Your visa has been granted and you are eligible to travel to the UAE."
+  },
+
+  // 🔟 Travel & Entry Requirements
+  {
+    id: 28,
+    category: "Travel Requirements",
+    question: "What should I carry when traveling to the UAE?",
+    answer: "Travelers should carry printed or digital copy of UAE e-visa, valid passport, return flight ticket, and hotel booking or accommodation details."
+  },
+  {
+    id: 29,
+    category: "Travel Requirements",
+    question: "Is travel insurance required?",
+    answer: "Travel insurance is strongly recommended for all travellers visiting the UAE."
+  },
+  {
+    id: 30,
+    category: "Travel Requirements",
+    question: "Can entry be denied even with an approved visa?",
+    answer: "Yes. Final entry approval is determined by immigration officers at the UAE port of entry."
+  },
+
+  // 1️⃣1️⃣ Dubai Visa Rejection & Reapplication
+  {
+    id: 31,
+    category: "Visa Rejection",
+    question: "Why is a UAE visa rejected?",
+    answer: "Common reasons include incorrect or incomplete documents, blurry passport copy, passport validity less than 6 months, previous UAE overstay history, and incorrect personal details."
+  },
+  {
+    id: 32,
+    category: "Visa Rejection",
+    question: "Can I reapply after rejection?",
+    answer: "Yes. Applicants may reapply after correcting the issue that led to rejection."
+  },
+
+  // 1️⃣2️⃣ Security, Payments & Trust
+  {
+    id: 33,
+    category: "Security & Trust",
+    question: "Is it safe to apply for a UAE visa on UAEPermit.com?",
+    answer: "Yes. UAEPermit.com follows strict data protection standards and secure payment protocols. Key security measures include encrypted HTTPS website protection, secure online payment gateway, professional document verification process, application submission through authorized UAE immigration channels, and dedicated customer assistance. UAEPermit.com operates under Budget Travel & Tourism LLC, a Dubai-based destination management company."
+  },
+  {
+    id: 34,
+    category: "Security & Trust",
+    question: "How can I verify if UAEPermit.com is trustworthy?",
+    answer: "Before applying, complete these 3 important trust checks: 1. Check Company Background - UAEPermit.com is part of Budget Travel & Tourism LLC (Dubai-based company). 2. Check Trustpilot Reviews - Review overall rating and read 1-star, 2-star, and 3-star reviews carefully. 3. Verify Website Security & Contact Details - Confirm HTTPS encryption, verify official contact numbers, and avoid dealing with random social media agents."
+  },
+  {
+    id: 35,
+    category: "Security & Trust",
+    question: "Why is checking 1-star, 2-star, and 3-star reviews important?",
+    answer: "Reading lower and mid-tier reviews helps you identify recurring issues, understand real customer experiences, evaluate how the company handles complaints, and assess response time and professionalism. A trustworthy visa service provider responds transparently and professionally to all levels of feedback."
+  },
+  {
+    id: 36,
+    category: "Security & Trust",
+    question: "How can I avoid UAE visa scams?",
+    answer: "To protect yourself: Apply only through verified platforms like UAEPermit.com, cross-check reviews on Trustpilot, avoid unofficial WhatsApp-only agents, never share passport details on unsecured websites, and confirm payment gateway security."
+  },
+  {
+    id: 37,
+    category: "Security & Trust",
+    question: "Does an approved visa guarantee entry into the UAE?",
+    answer: "No. Final entry approval remains at the discretion of immigration officers at the UAE port of entry in the United Arab Emirates."
+  },
+  {
+    id: 38,
+    category: "Security & Trust",
+    question: "What is UAEPermit.com's transparency commitment?",
+    answer: "UAEPermit.com believes in clear visa fee structure, honest processing timelines, professional customer communication, transparent review visibility, and secure digital processing. Being part of Budget Travel & Tourism LLC ensures structured operations and accountability within Dubai's regulated travel sector."
+  }
 ];
 
 const categories = ["All", ...Array.from(new Set(faqs.map((f) => f.category)))];
@@ -102,13 +308,13 @@ export default function FaqsClient() {
 
           <p className="mt-2 text-sm md:text-base text-[#4B5563] max-w-2xl mx-auto leading-relaxed">
             Everything you need to know about your Dubai visa – from when to
-            apply to how you’ll receive it. Start with the most common questions
+            apply to how you'll receive it. Start with the most common questions
             below.
           </p>
         </div>
       </section>
 
-      {/* FAQ CONTENT – added top padding so it doesn’t stick to hero */}
+      {/* FAQ CONTENT – added top padding so it doesn't stick to hero */}
       <section className="pt-6 md:pt-8 pb-16 md:pb-20">
         <div className="max-w-6xl mx-auto px-4 md:px-6 lg:px-0">
           <div className="grid grid-cols-1 lg:grid-cols-[230px_minmax(0,1fr)] gap-8 md:gap-10">
@@ -266,11 +472,11 @@ export default function FaqsClient() {
                       {/* answer */}
                       <div
                         className={`overflow-hidden transition-all duration-300 ease-out ${
-                          isOpen ? "max-h-[260px] md:max-h-[220px]" : "max-h-0"
+                          isOpen ? "max-h-[400px] md:max-h-[350px]" : "max-h-0"
                         }`}
                       >
                         <div className="px-5 md:px-7 pb-5 md:pb-6">
-                          <div className="mt-1 rounded-2xl border border-slate-100 bg-slate-50/80 px-4 md:px-5 py-4 text-sm md:text-[15px] text-[#4B5563] leading-relaxed">
+                          <div className="mt-1 rounded-2xl border border-slate-100 bg-slate-50/80 px-4 md:px-5 py-4 text-sm md:text-[15px] text-[#4B5563] leading-relaxed whitespace-pre-line">
                             {item.answer}
                           </div>
                         </div>
@@ -296,7 +502,7 @@ export default function FaqsClient() {
                   </div>
                   <div className="flex gap-3 text-nowrap items-center flex-wrap md:flex-nowrap lg:flex-nowrap">
                     <a
-                      href="/contact"
+                      href="/contact-us"
                       className="inline-flex items-center justify-center rounded-full bg-[#62E9C9] px-5 py-2.5 text-sm font-semibold text-[#0c4d3d] shadow-sm hover:shadow-md hover:opacity-90 transition"
                     >
                       Contact Support

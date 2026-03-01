@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import "../blog-content.css";
+import "./blog-content.css";
 import { getPublishedBlogBySlugServer } from "@/lib/blogsServer";
 
 export const dynamic = "force-dynamic";
@@ -114,6 +114,13 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
   return (
     <main className="min-h-screen bg-[#f5f7ff] pt-[5rem] pb-20">
+      {/* JSON-LD Structured Data */}
+      {(post as any).schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify((post as any).schema) }}
+        />
+      )}
       {/* Hero band */}
       <section className="relative w-full bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-700">
         <div className="absolute inset-0 bg-[url('/images/home/circle-left.png')] bg-no-repeat bg-left-top opacity-10" />

@@ -42,8 +42,8 @@ export default function Navbar() {
   const links = [
     { name: "Apply", href: "/apply" },
     { name: "Track", href: "/track" },
-    { name: "FAQ’s", href: "/faqs" },
-    { name: "Blogs", href: "/blogs" },
+    { name: "FAQ’s", href: "/faq" },
+    { name: "Blogs", href: "/blog" },
   ];
 
   const linkBase = `relative inline-block text-[16px] font-semibold transition-colors duration-300 ${

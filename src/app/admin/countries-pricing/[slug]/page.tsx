@@ -7,6 +7,7 @@ import { onAuthStateChanged, signOut, User } from "firebase/auth";
 import { auth } from "@/lib/firebaseClient";
 import AdminLayout from "@/components/admin/AdminLayout";
 import type { CountryDocument, VisaCard, VisaEntryType } from "@/types/country";
+import { toast } from "sonner";
 import { getCountry, upsertCountry } from "@/lib/countriesRepo";
 import { v4 as uuid } from "uuid";
 import { serverTimestamp } from "firebase/firestore";
@@ -15,6 +16,13 @@ import BlogEditor from "@/components/admin/BlogEditor";
 import { Eye, Sparkles, Save, ExternalLink } from "lucide-react";
 
 import { isAdminEmail } from "@/lib/authConstants";
+import { COUNTRY_SEED } from "@/data/countrySeed";
+
+// Build a case-insensitive name → { code, region } lookup from the seed data
+const COUNTRY_LOOKUP = new Map<string, { code: string; region: string }>();
+for (const c of COUNTRY_SEED) {
+  COUNTRY_LOOKUP.set(c.name.toLowerCase(), { code: c.code, region: c.region });
+}
 
 const slugify = (name: string) =>
   name
@@ -81,9 +89,12 @@ export default function EditCountryPricingPage() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showCountrySuggestions, setShowCountrySuggestions] = useState(false);
   const [useGlobalAddon, setUseGlobalAddon] = useState(true);
   const [countryExtraFast, setCountryExtraFast] =
     useState<ExtraFastAddon>(defaultExtraFast);
+
+  const [schemaInput, setSchemaInput] = useState("");
 
   // --- Auth guard ---------------------------------------------------------
   useEffect(() => {
@@ -117,7 +128,7 @@ export default function EditCountryPricingPage() {
       const safeDoc = (doc ?? {
         slug,
         name: isNew ? "" : slug[0].toUpperCase() + slug.slice(1),
-        code: slug.slice(0, 2).toUpperCase(),
+        code: isNew ? "" : slug.slice(0, 2).toUpperCase(),
         region: "",
         status: "active",
         single: [],
@@ -192,6 +203,10 @@ export default function EditCountryPricingPage() {
       } else {
         setUseGlobalAddon(true);
         setCountryExtraFast(defaultExtraFast);
+      }
+
+      if ((safeDoc as any).schema) {
+        setSchemaInput(JSON.stringify((safeDoc as any).schema, null, 2));
       }
 
       setLoading(false);
@@ -336,6 +351,16 @@ export default function EditCountryPricingPage() {
       return;
     }
 
+    let parsedSchema: any = null;
+    if (schemaInput.trim()) {
+      try {
+        parsedSchema = JSON.parse(schemaInput.trim());
+      } catch (err) {
+        toast.error("Invalid JSON in Schema field");
+        return;
+      }
+    }
+
     setError(null);
     setSaving(true);
 
@@ -362,7 +387,10 @@ export default function EditCountryPricingPage() {
       const payload: CountryDocument = {
         ...country,
         slug: finalSlug,
-        code: country.code || finalSlug.slice(0, 2).toUpperCase(),
+        code: country.code || (() => {
+          const match = COUNTRY_LOOKUP.get((country.name || "").trim().toLowerCase());
+          return match ? match.code : finalSlug.slice(0, 2).toUpperCase();
+        })(),
         single: cleanSingle,
         multiple: cleanMultiple,
         defaultVisaLabel,
@@ -377,6 +405,7 @@ export default function EditCountryPricingPage() {
           summary: (country.content?.summary || "").trim(),
           html: country.content?.html || "",
         },
+        ...(parsedSchema ? { schema: parsedSchema } : {}),
 
         // ✅ ADD THIS HERE (before upsert)
         ...(useGlobalAddon
@@ -423,14 +452,69 @@ export default function EditCountryPricingPage() {
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-2">
               <div className="inline-flex items-center gap-2 flex-wrap">
-                <input
-                  className="bg-transparent border-b border-slate-300 focus:border-emerald-500 focus:outline-none text-2xl font-semibold tracking-tight text-slate-900 placeholder:text-slate-500"
-                  placeholder="Enter country name"
-                  value={country.name}
-                  onChange={(e) =>
-                    setCountry({ ...country, name: e.target.value })
-                  }
-                />
+                <div className="relative">
+                  <input
+                    className="bg-transparent border-b border-slate-300 focus:border-emerald-500 focus:outline-none text-2xl font-semibold tracking-tight text-slate-900 placeholder:text-slate-500"
+                    placeholder="Type country name…"
+                    value={country.name}
+                    onFocus={() => isNew && setShowCountrySuggestions(true)}
+                    onChange={(e) => {
+                      const newName = e.target.value;
+                      const patch: Partial<CountryDocument> = { name: newName };
+                      // Look up the correct ISO code from COUNTRY_SEED
+                      const match = COUNTRY_LOOKUP.get(newName.trim().toLowerCase());
+                      if (match) {
+                        patch.code = match.code;
+                        patch.region = match.region;
+                      } else if (isNew || !country.code) {
+                        patch.code = newName.trim().slice(0, 2).toUpperCase();
+                      }
+                      setCountry({ ...country, ...patch } as CountryDocument);
+                      setShowCountrySuggestions(true);
+                    }}
+                    autoComplete="off"
+                  />
+                  {/* Autocomplete dropdown */}
+                  {showCountrySuggestions && country.name.trim().length > 0 && (() => {
+                    const query = country.name.trim().toLowerCase();
+                    const suggestions = COUNTRY_SEED.filter(
+                      (c) => c.name.toLowerCase().includes(query)
+                    ).slice(0, 8);
+                    if (suggestions.length === 0 || (suggestions.length === 1 && suggestions[0].name.toLowerCase() === query)) return null;
+                    return (
+                      <>
+                        <div className="fixed inset-0 z-40" onClick={() => setShowCountrySuggestions(false)} />
+                        <div className="absolute left-0 top-full z-50 mt-1 w-72 max-h-64 overflow-y-auto rounded-xl border border-slate-200 bg-white shadow-lg">
+                          {suggestions.map((s) => (
+                            <button
+                              key={s.code + s.name}
+                              type="button"
+                              className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-sm hover:bg-slate-50 transition"
+                              onClick={() => {
+                                setCountry({
+                                  ...country,
+                                  name: s.name,
+                                  code: s.code,
+                                  region: s.region,
+                                } as CountryDocument);
+                                setShowCountrySuggestions(false);
+                              }}
+                            >
+                              <img
+                                src={`https://flagcdn.com/w40/${s.code.toLowerCase()}.png`}
+                                alt={s.name}
+                                className="h-5 w-7 rounded-sm object-cover border border-slate-200"
+                                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                              />
+                              <span className="text-slate-900 font-medium">{s.name}</span>
+                              <span className="ml-auto text-[10px] text-slate-400 font-mono">{s.code}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
                 <span className="inline-flex items-center rounded-full bg-slate-100 border border-slate-200 px-3 py-0.5 text-[11px] font-medium text-slate-700">
                   {isNew ? "New (not saved yet)" : country.status || "active"}
                 </span>
@@ -859,6 +943,19 @@ export default function EditCountryPricingPage() {
               <p className="text-[11px] text-slate-600">
                 Used for WhatsApp/Facebook previews. Leave blank if not needed.
               </p>
+            </div>
+
+            <div>
+              <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                Schema (JSON LD)
+              </label>
+              <textarea
+                value={schemaInput}
+                onChange={(e) => setSchemaInput(e.target.value)}
+                placeholder='{ "@context": "https://schema.org", "@type": "Country", ... }'
+                className="mt-1 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-900 placeholder:text-slate-400 focus:border-emerald-500 outline-none"
+                rows={4}
+              />
             </div>
           </div>
         </div>

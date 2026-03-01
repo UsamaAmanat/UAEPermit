@@ -20,13 +20,22 @@ function esc(s: string) {
     .replace(/'/g, "&#039;");
 }
 
+function guardTransporter() {
+  if (!mailTransporter) {
+    console.warn("⚠️ Email skipped (SMTP not configured)");
+    return false;
+  }
+  return true;
+}
+
 export async function sendAccountCreationEmail(args: {
   to: string;
   displayName: string;
   setPasswordUrl: string;
 }) {
+  if (!guardTransporter()) return;
   const { to, displayName, setPasswordUrl } = args;
-  await mailTransporter.sendMail({
+  await mailTransporter!.sendMail({
     from: MAIL_FROM,
     to,
     subject: "Your visa application account has been created",
@@ -42,10 +51,11 @@ export async function sendUnpaidReminderEmail(args: {
   amount?: number;
   currency?: string;
 }) {
+  if (!guardTransporter()) return;
   const { to, customerName, trackingId, amount, currency = "USD" } = args;
   const trackUrl = `${SITE_URL}/track?appId=${encodeURIComponent(trackingId)}`;
   const amountStr = amount != null ? `${currency} ${Number(amount).toFixed(2)}` : "";
-  await mailTransporter.sendMail({
+  await mailTransporter!.sendMail({
     from: MAIL_FROM,
     to,
     subject: "Reminder: Complete your visa application payment",
@@ -59,8 +69,9 @@ export async function sendPassportExpiryReminderEmail(args: {
   name: string;
   passportExpiry: string;
 }) {
+  if (!guardTransporter()) return;
   const { to, name, passportExpiry } = args;
-  await mailTransporter.sendMail({
+  await mailTransporter!.sendMail({
     from: MAIL_FROM,
     to,
     subject: "Passport expiry reminder",
@@ -70,8 +81,9 @@ export async function sendPassportExpiryReminderEmail(args: {
 }
 
 export async function sendBirthdayEmail(args: { to: string; name: string }) {
+  if (!guardTransporter()) return;
   const { to, name } = args;
-  await mailTransporter.sendMail({
+  await mailTransporter!.sendMail({
     from: MAIL_FROM,
     to,
     subject: "Happy Birthday!",
@@ -86,9 +98,10 @@ export async function sendVisaExpiryReminderEmail(args: {
   visaExpiry: string;
   trackingId?: string;
 }) {
+  if (!guardTransporter()) return;
   const { to, name, visaExpiry, trackingId } = args;
   const trackUrl = trackingId ? `${SITE_URL}/track?appId=${encodeURIComponent(trackingId)}` : SITE_URL;
-  await mailTransporter.sendMail({
+  await mailTransporter!.sendMail({
     from: MAIL_FROM,
     to,
     subject: "Visa expiry reminder",
@@ -102,8 +115,9 @@ export async function sendOverstayEmail(args: {
   name: string;
   details?: string;
 }) {
+  if (!guardTransporter()) return;
   const { to, name, details } = args;
-  await mailTransporter.sendMail({
+  await mailTransporter!.sendMail({
     from: MAIL_FROM,
     to,
     subject: "Important: Overstay notice",
@@ -117,8 +131,9 @@ export async function sendAbscondingEmail(args: {
   name: string;
   details?: string;
 }) {
+  if (!guardTransporter()) return;
   const { to, name, details } = args;
-  await mailTransporter.sendMail({
+  await mailTransporter!.sendMail({
     from: MAIL_FROM,
     to,
     subject: "Important: Absconding status notice",
@@ -133,8 +148,9 @@ export async function sendExitOnTimeEmail(args: {
   exitBy?: string;
   details?: string;
 }) {
+  if (!guardTransporter()) return;
   const { to, name, exitBy, details } = args;
-  await mailTransporter.sendMail({
+  await mailTransporter!.sendMail({
     from: MAIL_FROM,
     to,
     subject: "Reminder: Exit on time",

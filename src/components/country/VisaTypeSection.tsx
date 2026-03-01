@@ -177,8 +177,8 @@ export default function VisaTypeSection({
           </div>
 
           {extraFastEnabled && extraFastAmount > 0 && (
-            <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#FFFEE5] px-3 py-1.5 text-[11px] font-semibold text-[#111827] shadow-sm ring-1 ring-[#F0E960]/70">
-              <Sparkles className="h-3.5 w-3.5 text-[#62E9C9]" />
+            <div className="mt-2 inline-flex items-center gap-2 rounded-full bg-[#c5f7e6]/30 px-3 py-1.5 text-[11px] font-semibold text-[#111827] shadow-sm ring-1 ring-[#62E9C9]/50">
+              <Sparkles className="h-3.5 w-3.5 text-[#0c4d3d]" />
               Extra fast processing available (+${extraFastAmount}{" "}
               {extraFastCurrency} per applicant)
             </div>
@@ -293,7 +293,7 @@ export default function VisaTypeSection({
                       shadow-[0_18px_50px_rgba(15,23,42,0.08)]
                       ${
                         isHighlight
-                          ? "border-[#F0E960]/80 bg-gradient-to-b from-white via-white to-[#FFFEE5] shadow-[0_26px_80px_rgba(15,23,42,0.16)]"
+                          ? "border-[#62E9C9]/80 bg-gradient-to-b from-white via-white to-[#c5f7e6]/30 shadow-[0_26px_80px_rgba(15,23,42,0.16)]"
                           : "border-slate-100"
                       }
                       hover:-translate-y-1.5 hover:shadow-[0_30px_90px_rgba(98,233,201,0.15)] hover:border-[#62E9C9]/30`}
@@ -315,7 +315,7 @@ export default function VisaTypeSection({
                       </div>
 
                       {isHighlight && (
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F0E960] px-2.5 py-1 text-[11px] font-semibold text-[#111827] shadow-sm">
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#62E9C9] px-2.5 py-1 text-[11px] font-semibold text-[#0c4d3d] shadow-sm">
                           <BadgeCheck className="h-3.5 w-3.5" />
                           Most popular
                         </span>
@@ -405,7 +405,7 @@ export default function VisaTypeSection({
                     </a>
 
                     <a
-                      href="/contact"
+                      href="/contact-us"
                       className="inline-flex text-nowrap items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-[#111827] hover:bg-slate-50 transition"
                       title="Get help"
                     >
@@ -474,7 +474,7 @@ export default function VisaTypeSection({
                     </p>
                     <div className="mt-3 space-y-2">
                       <a
-                        href="/faqs"
+                        href="/faq"
                         className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px] font-semibold text-[#111827] hover:bg-slate-50 transition"
                       >
                         FAQs
@@ -488,7 +488,7 @@ export default function VisaTypeSection({
                         <ExternalLink className="h-4 w-4 text-[#62E9C9] opacity-70 group-hover:opacity-100" />
                       </a>
                       <a
-                        href="/contact"
+                        href="/contact-us"
                         className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2 text-[12px] font-semibold text-[#111827] hover:bg-slate-50 transition"
                       >
                         Contact support

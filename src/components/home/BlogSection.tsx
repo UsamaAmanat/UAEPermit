@@ -97,7 +97,7 @@ export default function BlogSection() {
                     </p>
                     <div className="mt-auto flex justify-end">
                       <Link
-                        href={`/blog/${post.slug}`}
+                        href={`/${post.slug}`}
                         className="inline-flex items-center gap-2 text-[#62E9C9] font-medium text-sm hover:opacity-80 transition"
                       >
                         Read More

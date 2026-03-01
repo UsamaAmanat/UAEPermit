@@ -137,7 +137,7 @@ export default function ApplySuccessPageClient() {
         {/* Badge */}
         <div className="relative mb-6">
           <div className="absolute inset-0 rounded-full bg-[#62E9C9]/40 blur-2xl" />
-          <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-slate-900 text-[#62E9C9] shadow-[0_18px_45px_rgba(98,233,201,0.55)]">
+          <div className="relative flex h-20 w-20 items-center justify-center rounded-full bg-[#3C4161] text-[#62E9C9] shadow-[0_18px_45px_rgba(98,233,201,0.55)]">
             <BadgeCheck className="h-11 w-11" />
           </div>
         </div>

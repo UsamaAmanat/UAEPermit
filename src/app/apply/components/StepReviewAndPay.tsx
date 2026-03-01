@@ -248,20 +248,20 @@ export function StepReviewAndPay({
       </div>
 
       {/* Payment summary */}
-      <div className="rounded-2xl border border-slate-900/80 bg-slate-900 px-5 py-5 text-xs text-slate-100 shadow-[0_18px_40px_rgba(15,23,42,0.6)]">
+      <div className="rounded-2xl bg-[#62E9C9] px-5 py-5 text-xs text-[#0c4d3d] shadow-[0_18px_40px_rgba(98,233,201,0.35)]">
         <div className="flex items-end justify-between gap-4">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0c4d3d]/70">
               Payment summary
             </p>
-            <p className="mt-1 max-w-xs text-[11px] text-slate-300">
+            <p className="mt-1 max-w-xs text-[11px] text-[#0c4d3d]/90 font-medium">
               You'll be charged on the next step for the selected visa and
               options.
             </p>
             {applicationId && (
-              <p className="mt-1 text-[10px] text-slate-400">
+              <p className="mt-1 text-[10px] text-[#0c4d3d]/70">
                 Application ID:{" "}
-                <span className="font-medium text-slate-200">
+                <span className="font-bold text-[#0c4d3d]">
                   {applicationId}
                 </span>
               </p>
@@ -269,48 +269,48 @@ export function StepReviewAndPay({
           </div>
 
           <div className="text-right">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-slate-400">
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#0c4d3d]/70">
               Total payable
             </p>
-            <p className="mt-1 text-2xl font-semibold leading-none text-white">
+            <p className="mt-1 text-3xl font-bold leading-none text-[#0c4d3d]">
               {total.toFixed(2)} <span className="text-sm align-middle">$</span>
             </p>
           </div>
         </div>
 
-        <div className="mt-5 space-y-1.5">
+        <div className="mt-5 space-y-1.5 font-medium border-t border-[#0c4d3d]/10 pt-4">
           <div className="flex items-center justify-between gap-4">
-            <span className="text-[11px] text-slate-200">
+            <span className="text-[11px] text-[#0c4d3d]">
               Visa fee ({applicantsCount} traveller
               {applicantsCount === 1 ? "" : "s"})
             </span>
-            <span className="text-sm font-medium text-slate-50">
+            <span className="text-sm font-bold text-[#0c4d3d]">
               {subtotal.toFixed(2)} $
             </span>
           </div>
 
           <div className="flex items-center justify-between gap-4">
-            <span className="inline-flex items-center gap-2 text-[11px] text-slate-300">
+            <span className="inline-flex items-center gap-2 text-[11px] text-[#0c4d3d]/80">
               Extra fast processing
               <span
                 className={[
-                  "rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.14em]",
+                  "rounded-full border px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] font-bold",
                   extraFastSelected
-                    ? "border-lime-400 bg-lime-500/10 text-lime-100"
-                    : "border-slate-500 text-slate-300",
+                    ? "border-[#0c4d3d] bg-[#0c4d3d]/10 text-[#0c4d3d]"
+                    : "border-[#0c4d3d]/30 text-[#0c4d3d]/60",
                 ].join(" ")}
               >
                 {extraFastSelected ? "Added" : "Optional"}
               </span>
             </span>
 
-            <span className="text-sm text-slate-100">
+            <span className="text-sm text-[#0c4d3d] font-bold">
               {extraFastSelected ? `+ ${extraFastFee.toFixed(2)} $` : "—"}
             </span>
           </div>
 
           {extraFastSelected && (
-            <p className="text-[10px] text-slate-400">
+            <p className="text-[10px] text-[#0c4d3d]/60">
               Extra fast fee: {extraFastFeePerApplicant} $ ×{" "}
               {applicantsCount} applicant
               {applicantsCount === 1 ? "" : "s"}
@@ -318,7 +318,7 @@ export function StepReviewAndPay({
           )}
         </div>
 
-        <div className="mt-5 space-y-3 border-t border-slate-700/70 pt-4">
+        <div className="flex flex-col gap-3 mt-5 space-y-3 border-t border-slate-700/70 pt-4">
           {!allComplete && hasApplicants && (
             <p className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-[11px] text-amber-200">
               Some traveller details are missing. Please go back and complete
@@ -326,11 +326,11 @@ export function StepReviewAndPay({
             </p>
           )}
 
-          <label className="flex items-start gap-2 text-[11px] text-slate-200">
+          <label className="flex items-start gap-4 text-[11px] text-black-200">
             <input
               type="checkbox"
               disabled={!canConfirm}
-              className="mt-0.5 h-4 w-4 rounded border-slate-400 text-[#62E9C9] focus:ring-[#62E9C9] disabled:opacity-50"
+              className="mt-0.5 h-4 w-4 rounded border-black-400 text-[#62E9C9] focus:ring-[#62E9C9] disabled:opacity-50"
               checked={reviewConfirmed}
               onChange={(e) => onChangeReviewConfirmed(e.target.checked)}
             />
@@ -342,10 +342,10 @@ export function StepReviewAndPay({
           </label>
 
           {!isLoggedIn && (
-            <label className="flex items-start gap-2 text-[11px] text-slate-200">
+            <label className="flex items-start gap-4 text-[11px] text-black-200">
               <input
                 type="checkbox"
-                className="mt-0.5 h-4 w-4 rounded border-slate-400 text-[#62E9C9] focus:ring-[#62E9C9]"
+                className="mt-0.5 h-4 w-4 rounded border-black-400 text-[#62E9C9] focus:ring-[#62E9C9]"
                 checked={createAccount}
                 onChange={(e) => onChangeCreateAccount(e.target.checked)}
               />
@@ -357,10 +357,10 @@ export function StepReviewAndPay({
           )}
 
           {!isLoggedIn && createAccount && (
-            <div className="space-y-2 rounded-xl border border-slate-600/50 bg-slate-800/30 p-3">
-              <p className="text-[11px] font-medium text-slate-200">Set your account password</p>
+            <div className="space-y-2 rounded-xl border border-slate-100/50 bg-slate-100/30 p-3">
+              <p className="text-[11px] font-medium text-black-400">Set your account password</p>
               <div>
-                <label className="block text-[10px] text-slate-400 mb-1">Password</label>
+                <label className="block text-[10px] text-black-400 mb-1">Password</label>
                 <div className="relative">
                   <input
                     type={showPassword ? "text" : "password"}
@@ -368,7 +368,7 @@ export function StepReviewAndPay({
                     onChange={(e) => onChangeCreateAccountPassword(e.target.value)}
                     placeholder="At least 6 characters"
                     minLength={6}
-                    className="w-full rounded-lg border border-slate-500 bg-slate-900/50 px-3 py-2 pr-10 text-xs text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-[#62E9C9]/30"
+                    className="w-full rounded-lg border px-3 py-2 pr-10 text-xs text-black-500 placeholder:text-black-500 focus:ring-2 focus:ring-[#62E9C9]/30 bg-[white]/50"
                   />
                   <button
                     type="button"
@@ -379,13 +379,13 @@ export function StepReviewAndPay({
                   </button>
                 </div>
                 {passwordTooShort && (
-                  <p className="mt-1 text-[10px] text-amber-400">
+                  <p className="mt-1 text-[10px] text-rose-400">
                     Password must be at least 6 characters.
                   </p>
                 )}
               </div>
               <div>
-                <label className="block text-[10px] text-slate-400 mb-1">Confirm password</label>
+                <label className="block text-[10px] text-black-400 mb-1">Confirm password</label>
                 <div className="relative">
                   <input
                     type={showConfirmPassword ? "text" : "password"}
@@ -393,7 +393,7 @@ export function StepReviewAndPay({
                     onChange={(e) => onChangeCreateAccountConfirmPassword(e.target.value)}
                     placeholder="Re-enter password"
                     minLength={6}
-                    className={`w-full rounded-lg border px-3 py-2 pr-10 text-xs text-slate-100 placeholder:text-slate-500 focus:ring-2 focus:ring-[#62E9C9]/30 bg-slate-900/50 ${
+                    className={`w-full rounded-lg border px-3 py-2 pr-10 text-xs text-black-500 placeholder:text-black-500 focus:ring-2 focus:ring-[#62E9C9]/30 bg-[white]/50 ${
                       showMismatchWarning ? "border-rose-400" : "border-slate-500"
                     }`}
                   />
@@ -411,7 +411,7 @@ export function StepReviewAndPay({
                   </p>
                 )}
                 {passwordsMatch && createAccountPassword.length >= 6 && (
-                  <p className="mt-1 text-[10px] text-emerald-400">
+                  <p className="mt-1 text-[10px] text-black-400">
                     ✓ Passwords match
                   </p>
                 )}
@@ -419,7 +419,7 @@ export function StepReviewAndPay({
             </div>
           )}
 
-          <p className="max-w-xl text-[10px] text-slate-400">
+          <p className="max-w-xl text-[10px] text-black-400">
             On the next step you will complete the payment using our secure
             payment provider. Once the payment is successful, your application
             will move to processing.

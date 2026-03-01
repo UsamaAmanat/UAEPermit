@@ -302,7 +302,7 @@ export default function AboutClient() {
               <div className="flex flex-wrap gap-3 md:justify-end">
                 {/* Primary – yellow, like Contact Support */}
                 <Link
-                  href="/contact"
+                  href="/contact-us"
                   className="inline-flex items-center justify-center rounded-full bg-[#62E9C9] px-5 py-2.5 text-sm font-semibold text-[#0c4d3d] hover:opacity-90 transition"
                 >
                   Contact support

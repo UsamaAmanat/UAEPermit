@@ -69,9 +69,8 @@ export default function BlogsClient() {
             <h1 className="mt-3 text-3xl sm:text-4xl lg:text-[2.6rem] font-extrabold tracking-tight text-slate-900">
               Blogs
             </h1>
-            <p className="mt-2 max-w-2xl text-sm sm:text-base text-slate-600">
-              Scam safety, Trustpilot insights, and step-by-step guides to help
-              you apply for your Dubai visa with full confidence.
+            <p className="mt-4 max-w-3xl text-[13px] leading-relaxed text-slate-500 text-justify md:text-left">
+              The UAEPermit.com Blog is the ultimate guide for UAE and Dubai travelers, offering complete, reliable, and up-to-date information about the Dubai visa online and UAE visa application process. Designed to assist travelers of every nationality, it provides structured guidance on how to apply for a UAE visa online, understand eligibility requirements, prepare correct documents, and avoid common rejection mistakes. Backed by the expertise of Budget Travel & Tourism LLC, the blog reflects over a decade of real-world visa processing and travel industry experience in the United Arab Emirates. It regularly publishes visa news, immigration regulation updates, and official policy changes issued by UAE authorities, ensuring readers stay informed before submitting their Dubai visa online application. Beyond visa guidance, the blog also helps travelers discover the best tours, excursions, attractions, seasonal events, and travel experiences in cities like Dubai and Abu Dhabi. From visa types (14, 30, and 60 days) and processing times to extension rules, overstay fines, travel tips, and tourism insights, this all-in-one knowledge hub empowers visitors to plan smarter, travel confidently, and experience the UAE with clarity and preparation.
             </p>
           </div>
 
@@ -198,7 +197,7 @@ function formatDate(date: Date | null | undefined) {
 }
 
 function BlogCard({ post }: { post: BlogPost }) {
-  const href = `/blog/${post.slug}`;
+  const href = `/${post.slug}`;
   const dateLabel = formatDate(post.createdAt);
   const minutes = post.readTime ?? 3;
 

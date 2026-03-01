@@ -36,6 +36,7 @@ export interface CountryDocument {
   seo?: CountrySEO;
 
   content?: CountryContent;
+  schema?: any;
 
   createdAt?: any;
   updatedAt?: any;

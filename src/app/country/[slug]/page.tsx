@@ -174,11 +174,20 @@ export default async function CountryPage({ params }: CountryPageProps) {
   }
 
   return (
-    <CountryVisaPageClient
-      slug={slug}
-      country={toPlain(country)}
-      globalAddons={pricing?.addons ? toPlain(pricing.addons) : null}
-    />
+    <>
+      {/* JSON-LD Structured Data */}
+      {country?.schema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(country.schema) }}
+        />
+      )}
+      <CountryVisaPageClient
+        slug={slug}
+        country={toPlain(country)}
+        globalAddons={pricing?.addons ? toPlain(pricing.addons) : null}
+      />
+    </>
   );
 }
 

@@ -9,23 +9,11 @@ import {
   deleteFamilyMember,
   type FamilyMember,
 } from "@/lib/familyMembers";
-import { Loader2, Plus, Pencil, Trash2, X, User, Mail, Phone, Globe, Calendar, FileText, ShieldCheck } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, X, User, Mail, Phone, Globe, Calendar, FileText, ShieldCheck, UploadCloud, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
-
-const POPULAR_COUNTRIES = [
-  "Afghanistan", "Albania", "Algeria", "Argentina", "Australia", "Austria",
-  "Bahrain", "Bangladesh", "Belgium", "Brazil", "Canada", "China", "Colombia",
-  "Denmark", "Egypt", "Ethiopia", "Finland", "France", "Germany", "Ghana",
-  "Greece", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Italy", "Japan",
-  "Jordan", "Kazakhstan", "Kenya", "Kuwait", "Lebanon", "Libya", "Malaysia",
-  "Mexico", "Morocco", "Nepal", "Netherlands", "New Zealand", "Nigeria",
-  "Norway", "Oman", "Pakistan", "Palestine", "Philippines", "Poland",
-  "Portugal", "Qatar", "Romania", "Russia", "Saudi Arabia", "Singapore",
-  "Somalia", "South Africa", "South Korea", "Spain", "Sri Lanka", "Sudan",
-  "Sweden", "Switzerland", "Syria", "Thailand", "Tunisia", "Turkey",
-  "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom",
-  "United States", "Uzbekistan", "Vietnam", "Yemen", "Zimbabwe",
-];
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "@/lib/firebaseClient";
+import { COUNTRIES } from "@/lib/countries";
 
 const emptyForm: Partial<FamilyMember> = {
   firstName: "",
@@ -39,6 +27,9 @@ const emptyForm: Partial<FamilyMember> = {
   profession: "",
   dob: "",
   passportExpiry: "",
+  relation: "",
+  passportUrl: "",
+  photoUrl: "",
 };
 
 export default function AccountFamilyPage() {
@@ -49,6 +40,7 @@ export default function AccountFamilyPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<Partial<FamilyMember>>({ ...emptyForm });
   const [saving, setSaving] = useState(false);
+  const [uploadingDoc, setUploadingDoc] = useState<"passport" | "photo" | null>(null);
 
   const load = useCallback(async () => {
     if (!user) return;
@@ -87,6 +79,7 @@ export default function AccountFamilyPage() {
       profession: m.profession,
       dob: m.dob,
       passportExpiry: m.passportExpiry,
+      relation: m.relation || "",
     });
     setEditingId(m.id);
     setModalOpen(true);
@@ -130,8 +123,28 @@ export default function AccountFamilyPage() {
       toast.success("Member removed.");
       load();
     } catch (e) {
-      console.error(e);
       toast.error("Failed to delete.");
+    }
+  };
+
+  const handleUpload = async (kind: "passport" | "photo", e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    
+    setUploadingDoc(kind);
+    try {
+      const path = `users/${user.uid}/familyMembers/${kind}/${Date.now()}_${file.name}`;
+      const storageRef = ref(storage, path);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      setForm((prev) => ({ ...prev, [kind === "passport" ? "passportUrl" : "photoUrl"]: url }));
+      toast.success(`${kind === "passport" ? "Passport" : "Picture"} uploaded`);
+    } catch (err) {
+      console.error(err);
+      toast.error(`Failed to upload ${kind}`);
+    } finally {
+      setUploadingDoc(null);
+      e.target.value = "";
     }
   };
 
@@ -205,10 +218,22 @@ export default function AccountFamilyPage() {
                 </div>
 
                 <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+                  {m.relation && (
+                    <div className="flex items-center gap-1.5 text-slate-600">
+                      <User className="h-3 w-3 text-slate-400" />
+                      {m.relation}
+                    </div>
+                  )}
                   {m.nationality && (
                     <div className="flex items-center gap-1.5 text-slate-600">
                       <Globe className="h-3 w-3 text-slate-400" />
                       {m.nationality}
+                    </div>
+                  )}
+                  {m.applyingFrom && (
+                    <div className="flex items-center gap-1.5 text-slate-600">
+                      <Globe className="h-3 w-3 text-slate-400" />
+                      From: {m.applyingFrom}
                     </div>
                   )}
                   {m.passportNumber && (
@@ -229,7 +254,35 @@ export default function AccountFamilyPage() {
                       {m.dob}
                     </div>
                   )}
+                  {m.passportExpiry && (
+                    <div className="flex items-center gap-1.5 text-slate-600">
+                      <Calendar className="h-3 w-3 text-slate-400" />
+                      Exp: {m.passportExpiry}
+                    </div>
+                  )}
                 </div>
+
+                {/* Uploaded documents */}
+                {(m.passportUrl || m.photoUrl) && (
+                  <div className="mt-3 flex gap-3 border-t border-slate-100 pt-3">
+                    {m.passportUrl && (
+                      <a href={m.passportUrl} target="_blank" rel="noreferrer" className="group">
+                        <div className="h-10 w-16 rounded-md border border-slate-200 bg-slate-50 overflow-hidden hover:ring-2 hover:ring-emerald-300 transition">
+                          <img src={m.passportUrl} alt="Passport" className="h-full w-full object-cover" />
+                        </div>
+                        <p className="mt-0.5 text-[9px] text-emerald-600 group-hover:underline">Passport</p>
+                      </a>
+                    )}
+                    {m.photoUrl && (
+                      <a href={m.photoUrl} target="_blank" rel="noreferrer" className="group">
+                        <div className="h-10 w-10 rounded-md border border-slate-200 bg-slate-50 overflow-hidden hover:ring-2 hover:ring-emerald-300 transition">
+                          <img src={m.photoUrl} alt="Photo" className="h-full w-full object-cover" />
+                        </div>
+                        <p className="mt-0.5 text-[9px] text-emerald-600 group-hover:underline">Photo</p>
+                      </a>
+                    )}
+                  </div>
+                )}
 
                 <div className="mt-4 flex items-center gap-2 pt-3 border-t border-slate-100">
                   <button
@@ -330,7 +383,7 @@ export default function AccountFamilyPage() {
                     className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
                   >
                     <option value="">Select country</option>
-                    {POPULAR_COUNTRIES.map((c) => (
+                    {COUNTRIES.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
                   </select>
@@ -343,7 +396,7 @@ export default function AccountFamilyPage() {
                     className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
                   >
                     <option value="">Select country</option>
-                    {POPULAR_COUNTRIES.map((c) => (
+                    {COUNTRIES.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
                   </select>
@@ -389,6 +442,63 @@ export default function AccountFamilyPage() {
                     onChange={(e) => setForm((f) => ({ ...f, passportExpiry: e.target.value }))}
                     className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
                   />
+                </div>
+              </div>
+
+              {/* Relation */}
+              <div>
+                <label className="block text-xs font-medium text-slate-700 mb-1">Relation with Main Customer</label>
+                <select
+                  value={form.relation || ""}
+                  onChange={(e) => setForm((f) => ({ ...f, relation: e.target.value }))}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 bg-white focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
+                >
+                  <option value="">Select relation</option>
+                  {["Wife", "Husband", "Son", "Daughter", "Mother", "Father", "Brother", "Sister", "Parents", "Siblings", "Grandparents", "Aunt/Uncle", "Niece/Nephew", "Cousin", "Friend", "Colleague", "Staff"].map((r) => (
+                    <option key={r} value={r}>{r}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Uploads */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Passport Upload</label>
+                  <label className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 transition cursor-pointer">
+                    {uploadingDoc === "passport" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : form.passportUrl ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    ) : (
+                      <UploadCloud className="h-4 w-4" />
+                    )}
+                    <span className="truncate max-w-[120px]">
+                      {uploadingDoc === "passport" ? "Uploading..." : form.passportUrl ? "Uploaded" : "Upload Passport"}
+                    </span>
+                    <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => handleUpload("passport", e)} disabled={!!uploadingDoc} />
+                  </label>
+                  {form.passportUrl && (
+                    <a href={form.passportUrl} target="_blank" rel="noreferrer" className="mt-1 block text-[10px] text-emerald-600 hover:underline">View File</a>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-slate-700 mb-1">Picture Upload</label>
+                  <label className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 transition cursor-pointer">
+                    {uploadingDoc === "photo" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : form.photoUrl ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    ) : (
+                      <UploadCloud className="h-4 w-4" />
+                    )}
+                    <span className="truncate max-w-[120px]">
+                      {uploadingDoc === "photo" ? "Uploading..." : form.photoUrl ? "Uploaded" : "Upload Picture"}
+                    </span>
+                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload("photo", e)} disabled={!!uploadingDoc} />
+                  </label>
+                  {form.photoUrl && (
+                    <a href={form.photoUrl} target="_blank" rel="noreferrer" className="mt-1 block text-[10px] text-emerald-600 hover:underline">View File</a>
+                  )}
                 </div>
               </div>
             </div>

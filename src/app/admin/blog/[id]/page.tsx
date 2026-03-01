@@ -59,6 +59,7 @@ export default function EditBlogPage() {
   const [readTime, setReadTime] = useState("3");
   const [published, setPublished] = useState(true);
   const [category, setCategory] = useState("");
+  const [schemaInput, setSchemaInput] = useState("");
 
   // 👉 new: for cover upload
   const coverFileInputRef = useRef<HTMLInputElement | null>(null);
@@ -103,6 +104,9 @@ export default function EditBlogPage() {
       setReadTime(String(data.readTime || 3));
       setPublished(data.published);
       setCategory(data.category || "");
+      if ((data as any).schema) {
+        setSchemaInput(JSON.stringify((data as any).schema, null, 2));
+      }
       setLoading(false);
     })();
   }, [id, router]);
@@ -114,6 +118,16 @@ export default function EditBlogPage() {
     setSaving(true);
     try {
       const finalSlug = (slug || makeSlug(title)).trim();
+      let parsedSchema: any = null;
+      if (schemaInput.trim()) {
+        try {
+          parsedSchema = JSON.parse(schemaInput.trim());
+        } catch (err) {
+          toast.error("Invalid JSON in Schema field");
+          setSaving(false);
+          return;
+        }
+      }
 
       await updateBlog(post.id, {
         title: title.trim(),
@@ -124,7 +138,8 @@ export default function EditBlogPage() {
         readTime: Number(readTime || "3"),
         published,
         category: category.trim() || undefined,
-      });
+        ...(parsedSchema ? { schema: parsedSchema } : {}),
+      } as Partial<BlogPost>);
 
       toast.success("Post updated");
       router.push("/admin/blog");
@@ -212,6 +227,12 @@ export default function EditBlogPage() {
                 <img src={coverImageUrl} alt="Cover preview" className="h-40 w-full rounded-md object-cover" />
               </div>
             )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700">Schema (JSON LD)</label>
+            <p className="text-[11px] text-slate-500 mb-1">Optional structured data for SEO</p>
+            <textarea value={schemaInput} onChange={(e) => setSchemaInput(e.target.value)} placeholder='{ "@context": "https://schema.org", "@type": "BlogPosting", ... }' className="w-full font-mono rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-emerald-500/30" rows={6} />
           </div>
         </div>
 

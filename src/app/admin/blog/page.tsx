@@ -152,7 +152,7 @@ export default function BlogListPage() {
 
                             {post.published && (
                               <Link
-                                href={`/blog/${post.slug}`}
+                                href={`/${post.slug}`}
                                 target="_blank"
                                 className="px-3 py-1 rounded-full border border-emerald-200 text-emerald-700 hover:bg-emerald-50 text-xs inline-flex items-center"
                               >

@@ -47,7 +47,9 @@ const createEmptyApplicant = (): Applicant => ({
   lastName: "",
   nationality: "",
   applyingFrom: "",
+  dob: "",
   passportNumber: "",
+  passportExpiry: "",
   profession: "",
   purposeOfTravel: "",
   tentativeTravelDate: tomorrowISO(),
@@ -80,10 +82,7 @@ export default function ApplyPageClient() {
 
   // ✅ Client request: Extra Fast Fee = $100 per applicant
 
-  // If user lands on /apply without selecting a plan → show country picker
-  if (!hasPreselectedPlan) {
-    return <ApplyCountryPicker />;
-  }
+ 
 
   const plan: Plan = useMemo(() => {
     const countryName =
@@ -133,6 +132,13 @@ export default function ApplyPageClient() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [extraFastFeePerApplicant, setExtraFastFeePerApplicant] =
     useState<number>(0);
+  const [attemptedStep2Next, setAttemptedStep2Next] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
+
+     // If user lands on /apply without selecting a plan → show country picker
+  if (!hasPreselectedPlan) {
+    return <ApplyCountryPicker />;
+  }
 
   // ---------- PRICING TOTALS ----------
   const applicantsCount = applicants.length;
@@ -203,8 +209,10 @@ export default function ApplyPageClient() {
       a.nationality?.trim() &&
       a.applyingFrom?.trim() &&
       a.passportNumber?.trim() &&
+      a.passportExpiry?.trim() &&
       a.profession?.trim() &&
       a.purposeOfTravel?.trim() &&
+      a.dob?.trim() &&
       a.tentativeTravelDate?.trim();
 
     if (!basic) return false;
@@ -320,19 +328,81 @@ export default function ApplyPageClient() {
       lastName: member.lastName || "",
       nationality: member.nationality || "",
       applyingFrom: member.applyingFrom || "",
+      dob: member.dob || "",
       passportNumber: member.passportNumber || "",
+      passportExpiry: member.passportExpiry || "",
       profession: member.profession || "",
       purposeOfTravel: member.purposeOfTravel || "",
       tentativeTravelDate: member.tentativeTravelDate || tomorrowISO(),
+      relation: member.relation || "",
     };
     setApplicants((prev) => [...prev, applicant]);
-    setDocs((prev) => [...prev, emptyDocs()]);
+
+    // Push their URLs straight into the new docs array index
+    const pass = member.passportUrl ? [member.passportUrl] : [];
+    const pho = member.photoUrl ? [member.photoUrl] : [];
+    setDocs((prev) => [
+      ...prev,
+      { passport: pass, photo: pho, ticket: [] }
+    ]);
   };
 
   useEffect(() => {
     if (!user?.uid) return;
     getFamilyMembers(user.uid).then(setFamilyMembers).catch(() => setFamilyMembers([]));
+    // Fetch user's own profile for "Add My Info" feature
+    getDoc(doc(db, "users", user.uid))
+      .then((snap) => {
+        if (snap.exists()) setUserProfile(snap.data());
+      })
+      .catch(() => {});
   }, [user?.uid]);
+
+  const handleAddSelf = () => {
+    if (!user || !userProfile) {
+      toast.error("Please update your profile first.");
+      return;
+    }
+    const applicant: Applicant = {
+      id: applicants[0]?.id || Date.now().toString(), // KEEP the same form ID
+      countryCode: userProfile.countryCode || "+971",
+      phone: userProfile.phone || "",
+      email: user.email || "",
+      firstName: (userProfile.displayName || "").split(" ")[0] || "",
+      lastName: (userProfile.displayName || "").split(" ").slice(1).join(" ") || "",
+      nationality: userProfile.nationality || "",
+      applyingFrom: userProfile.applyingFrom || "",
+      dob: userProfile.dob || "",
+      passportNumber: userProfile.passportNumber || "",
+      passportExpiry: userProfile.passportExpiry || "",
+      profession: userProfile.profession || "",
+      purposeOfTravel: "",
+      tentativeTravelDate: applicants[0]?.tentativeTravelDate || tomorrowISO(), // Keep their chosen date if any
+      relation: applicants[0]?.relation || "",
+    };
+
+    // OVERWRITE Applicant 1 instead of appending
+    setApplicants((prev) => {
+      const clone = [...prev];
+      clone[0] = applicant;
+      return clone;
+    });
+
+    // Populate URLs directly instead of downloading blobs
+    setDocs((prev) => {
+      const clone = [...prev];
+      if (!clone[0]) clone[0] = emptyDocs();
+
+      const existingDocs = clone[0];
+      const newDocs = { ...existingDocs };
+
+      if (userProfile.passportUrl) newDocs.passport = [userProfile.passportUrl];
+      if (userProfile.photoUrl) newDocs.photo = [userProfile.photoUrl];
+
+      clone[0] = newDocs;
+      return clone;
+    });
+  };
 
   const handleRemoveApplicant = (index: number) => {
     setApplicants((prev) => {
@@ -471,6 +541,12 @@ export default function ApplyPageClient() {
 
   // ---------- NAVIGATION ----------
   const handleNext = async () => {
+    // On step 2, if invalid, set attemptedNext to trigger red highlights
+    if (activeStep === 2 && !isStep2Valid) {
+      setAttemptedStep2Next(true);
+      toast.error("Please complete all required fields before continuing.");
+      return;
+    }
     if (!canGoNext) return;
 
     if (activeStep === 1) {
@@ -479,6 +555,7 @@ export default function ApplyPageClient() {
     }
 
     if (activeStep === 2) {
+      setAttemptedStep2Next(false);
       setActiveStep(3);
       return;
     }
@@ -641,6 +718,8 @@ export default function ApplyPageClient() {
                   familyMembers={familyMembers}
                   onAddFromFamily={handleAddApplicantFromFamily}
                   extraFastFeePerApplicant={extraFastFeePerApplicant}
+                  attemptedNext={attemptedStep2Next}
+                  onAddSelf={user ? handleAddSelf : undefined}
                 />
               )}
 
@@ -683,7 +762,7 @@ export default function ApplyPageClient() {
                   <button
                     type="button"
                     onClick={handleNext}
-                    disabled={!canGoNext}
+                    // disabled={!canGoNext}
                     className="inline-flex items-center gap-2 rounded-full bg-[#62E9C9] px-5 py-2 text-xs font-semibold text-[#0c4d3d] shadow-md transition-transform hover:-translate-y-0.5 hover:opacity-90 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {isBusy ? (
@@ -784,18 +863,18 @@ export default function ApplyPageClient() {
                       </span>
                     </div>
 
-                    <div className="mt-3 flex items-center justify-between rounded-xl bg-gradient-to-r from-slate-800 to-slate-700 px-3 py-2">
+                    <div className="mt-3 flex items-center justify-between rounded-xl bg-[#62E9C9] px-4 py-3 shadow-[0_4px_14px_rgba(98,233,201,0.39)]">
                       <div className="flex flex-col">
-                        <span className="text-[11px] uppercase tracking-[0.18em] text-slate-200">
+                        <span className="text-[11px] uppercase tracking-[0.18em] font-semibold text-[#0c4d3d]">
                           Total to pay
                         </span>
-                        <span className="text-[10px] text-slate-300">
+                        <span className="text-[10px] font-medium text-[#0c4d3d]/80">
                           {applicantsCount} applicant
                           {applicantsCount > 1 ? "s" : ""}{" "}
                           {extraFastSelected ? "+ extra fast" : ""}
                         </span>
                       </div>
-                      <span className="text-base font-semibold text-white">
+                      <span className="text-xl font-bold text-[#0c4d3d]">
                         {grandTotal} $
                       </span>
                     </div>
@@ -819,7 +898,7 @@ export default function ApplyPageClient() {
 
       {/* Busy overlay */}
       {isBusy && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/40 backdrop-blur-[2px]">
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-[#3C4161]/40 backdrop-blur-[2px]">
           <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl">
             <div className="flex items-start gap-3">
               <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-full bg-[#62E9C9]/10">

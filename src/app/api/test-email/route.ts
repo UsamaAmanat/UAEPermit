@@ -85,6 +85,10 @@ export async function GET(req: Request) {
         ? buildAdminNewApplicationEmail(adminPayload as any)
         : buildCustomerApplicationReceivedEmail(customerPayload as any);
 
+    if (!mailTransporter) {
+      return NextResponse.json({ ok: false, error: "SMTP not configured. Set SMTP_HOST, SMTP_USER, SMTP_PASS env vars." }, { status: 500 });
+    }
+
     const info = await mailTransporter.sendMail({
       from: MAIL_FROM,
       to: type === "admin" ? (MAIL_ADMIN_TO || to) : to,

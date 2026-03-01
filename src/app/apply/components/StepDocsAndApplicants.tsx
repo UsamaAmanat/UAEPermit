@@ -32,6 +32,7 @@ type DateFieldProps = {
   value: string;
   required?: boolean;
   onChange: (value: string) => void;
+  error?: boolean;
 };
 
 function parseDate(value: string): Date | null {
@@ -60,7 +61,7 @@ function formatDateForDisplay(d: Date | null): string {
   });
 }
 
-function DateField({ label, value, required, onChange }: DateFieldProps) {
+function DateField({ label, value, required, onChange, error }: DateFieldProps) {
   const [open, setOpen] = useState(false);
   const [current, setCurrent] = useState<Date | null>(() => {
     const d = parseDate(value);
@@ -166,15 +167,14 @@ function DateField({ label, value, required, onChange }: DateFieldProps) {
 
   return (
     <div className="relative w-full space-y-1" ref={containerRef}>
-      <label className="text-xs font-medium text-slate-600">
+      <label className={`text-xs font-medium ${error ? "text-rose-600" : "text-slate-600"}`}>
         {label} {required && <span className="text-rose-500">*</span>}
       </label>
 
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-700 shadow-[0_1px_0_rgba(15,23,42,0.03)] outline-none transition hover:bg-slate-50 focus:border-[#3C4161] focus:ring-0 focus:outline-none focus-visible:outline-none"
-      >
+        className={`flex w-full items-center justify-between rounded-xl border bg-white px-3 py-2.5 text-xs text-slate-700 shadow-[0_1px_0_rgba(15,23,42,0.03)] outline-none transition hover:bg-slate-50 focus:ring-0 focus:outline-none focus-visible:outline-none ${error ? "border-rose-400 focus:border-rose-500" : "border-slate-200 focus:border-[#3C4161]"}`}>
         <span className={displayValue ? "" : "text-slate-400"}>
           {displayValue || "Select date"}
         </span>
@@ -302,6 +302,8 @@ type StepDocsAndApplicantsProps = {
 
   // ✅ only addition (new)
   applicantErrors?: ApplicantContactErrors[]; // optional so nothing breaks if not passed yet
+  attemptedNext?: boolean; // When true, show red error highlights on empty required fields
+  onAddSelf?: () => void; // Add the logged-in user's own profile as an applicant
 };
 
 /* ------------------------------------------------------------------ */
@@ -786,6 +788,8 @@ export function StepDocsAndApplicants({
   familyMembers = [],
   onAddFromFamily,
   extraFastFeePerApplicant = 0,
+  attemptedNext = false,
+  onAddSelf,
 }: StepDocsAndApplicantsProps) {
   const handleFilesChange = (
     applicantIndex: number,
@@ -850,14 +854,26 @@ export function StepDocsAndApplicants({
     },
   ];
 
-  const isImageFile = (file: File) => file.type.startsWith("image/");
-  const formatSize = (file: File) => {
+  const isImageFile = (file: File | string) => {
+    if (typeof file === "string") {
+      const lower = file.toLowerCase();
+      return lower.includes(".jpg") || lower.includes(".jpeg") || lower.includes(".png") || lower.includes("alt=media");
+    }
+    return file.type.startsWith("image/");
+  };
+
+  const formatSize = (file: File | string) => {
+    if (typeof file === "string") return "Uploaded";
     const kb = file.size / 1024;
     if (kb < 1024) return `${kb.toFixed(0)} KB`;
     return `${(kb / 1024).toFixed(1)} MB`;
   };
 
-  const handlePreviewFile = (file: File) => {
+  const handlePreviewFile = (file: File | string) => {
+    if (typeof file === "string") {
+      window.open(file, "_blank", "noopener,noreferrer");
+      return;
+    }
     const url = URL.createObjectURL(file);
     window.open(url, "_blank", "noopener,noreferrer");
     setTimeout(() => URL.revokeObjectURL(url), 60_000);
@@ -934,9 +950,9 @@ export function StepDocsAndApplicants({
                             )
                           }
                         />
-                        <div className="flex h-24 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-gradient-to-b from-slate-50 to-slate-100 text-center text-xs text-slate-500 shadow-[0_1px_0_rgba(15,23,42,0.03)] transition hover:border-[#3C4161] hover:bg-white hover:shadow-md">
-                          <Upload className="mb-1 h-5 w-5" />
-                          <span className="font-medium">
+                        <div className={`flex h-24 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed bg-gradient-to-b from-slate-50 to-slate-100 text-center text-xs text-slate-500 shadow-[0_1px_0_rgba(15,23,42,0.03)] transition hover:bg-white hover:shadow-md ${attemptedNext && required && selectedFiles.length === 0 ? "border-rose-400" : "border-slate-300 hover:border-[#3C4161]"}`}>
+                          <Upload className={`mb-1 h-5 w-5 ${attemptedNext && required && selectedFiles.length === 0 ? "text-rose-500" : ""}`} />
+                          <span className={`font-medium ${attemptedNext && required && selectedFiles.length === 0 ? "text-rose-600" : ""}`}>
                             Drag or click to add file(s)
                           </span>
                           <span className="mt-1 text-[10px] text-slate-400">
@@ -946,6 +962,9 @@ export function StepDocsAndApplicants({
                             {helper}
                           </span>
                         </div>
+                        {attemptedNext && required && selectedFiles.length === 0 && (
+                          <p className="mt-1 text-[11px] text-rose-600">This document is required</p>
+                        )}
                       </label>
 
                       {/* Selected files preview */}
@@ -953,7 +972,7 @@ export function StepDocsAndApplicants({
                         <div className="mt-2 flex flex-wrap gap-1.5">
                           {selectedFiles.map((file, fileIndex) => (
                             <div
-                              key={`${file.name}-${fileIndex}`}
+                              key={typeof file === "string" ? `url-${fileIndex}` : `${file.name}-${fileIndex}`}
                               className="group flex shrink-0 items-center gap-1.5 rounded-full bg-slate-50 px-2.5 py-1 text-[10px] text-slate-600 ring-1 ring-slate-200"
                             >
                               {isImageFile(file) ? (
@@ -964,7 +983,7 @@ export function StepDocsAndApplicants({
 
                               <div className="flex min-w-0 flex-col">
                                 <span className="max-w-[110px] truncate font-medium">
-                                  {file.name}
+                                  {typeof file === "string" ? "Profile File" : file.name}
                                 </span>
                                 <span className="text-[9px] text-slate-400">
                                   {formatSize(file)}
@@ -1004,8 +1023,8 @@ export function StepDocsAndApplicants({
                 label="Phone (WhatsApp preferred)"
                 countryCode={applicant.countryCode || "+971"}
                 phone={applicant.phone}
-                error={!!err.phone}
-                helperText={err.phone}
+                error={!!err.phone || (attemptedNext && !applicant.phone?.trim())}
+                helperText={err.phone || (attemptedNext && !applicant.phone?.trim() ? "This field is required" : undefined)}
                 onChangeCountryCode={(code) =>
                   onChangeApplicant(index, "countryCode", code)
                 }
@@ -1019,20 +1038,49 @@ export function StepDocsAndApplicants({
                 placeholder="Email Address"
                 required
                 value={applicant.email}
-                error={!!err.email}
-                helperText={err.email}
+                error={!!err.email || (attemptedNext && !applicant.email?.trim())}
+                helperText={err.email || (attemptedNext && !applicant.email?.trim() ? "This field is required" : undefined)}
                 onChange={(v) => onChangeApplicant(index, "email", v)}
               />
             </div>
 
             {/* Name row */}
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className={`grid gap-4 ${index > 0 ? "md:grid-cols-3" : "md:grid-cols-2"}`}>
+              {index > 0 && (
+                <SelectField
+                  label="Relation to Main Applicant"
+                  required
+                  error={attemptedNext && !applicant.relation?.trim()}
+                  value={applicant.relation || ""}
+                  onChange={(v) => onChangeApplicant(index, "relation", v)}
+                  options={[
+                    "Wife",
+                    "Husband",
+                    "Son",
+                    "Daughter",
+                    "Mother",
+                    "Father",
+                    "Brother",
+                    "Sister",
+                    "Parents",
+                    "Siblings",
+                    "Grandparents",
+                    "Aunt/Uncle",
+                    "Niece/Nephew",
+                    "Cousin",
+                    "Friend",
+                    "Colleague",
+                    "Staff"
+                  ]}
+                />
+              )}
               <TextField
                 label="First Name"
                 placeholder="First Name"
                 required
                 value={applicant.firstName}
                 onChange={(v) => onChangeApplicant(index, "firstName", v)}
+                error={attemptedNext && !applicant.firstName?.trim()}
               />
               <TextField
                 label="Last Name"
@@ -1040,6 +1088,7 @@ export function StepDocsAndApplicants({
                 required
                 value={applicant.lastName}
                 onChange={(v) => onChangeApplicant(index, "lastName", v)}
+                error={attemptedNext && !applicant.lastName?.trim()}
               />
             </div>
 
@@ -1049,22 +1098,32 @@ export function StepDocsAndApplicants({
                 label="Nationality"
                 value={applicant.nationality}
                 onChange={(v) => onChangeApplicant(index, "nationality", v)}
+                error={attemptedNext && !applicant.nationality?.trim()}
               />
               <CountrySelectField
                 label="Applying From"
                 value={applicant.applyingFrom}
                 onChange={(v) => onChangeApplicant(index, "applyingFrom", v)}
+                error={attemptedNext && !applicant.applyingFrom?.trim()}
               />
             </div>
 
-            {/* Passport / Profession */}
-            <div className="grid gap-4 md:grid-cols-2">
+            {/* Passport / Profession / Passport Expiry */}
+            <div className="grid gap-4 md:grid-cols-3">
               <TextField
                 label="Passport No"
                 placeholder="Format ***-**-****"
                 required
                 value={applicant.passportNumber}
                 onChange={(v) => onChangeApplicant(index, "passportNumber", v)}
+                error={attemptedNext && !applicant.passportNumber?.trim()}
+              />
+              <DateField
+                label="Passport Expiry"
+                required
+                value={applicant.passportExpiry}
+                onChange={(v) => onChangeApplicant(index, "passportExpiry", v)}
+                error={attemptedNext && !applicant.passportExpiry?.trim()}
               />
               <TextField
                 label="Profession"
@@ -1072,17 +1131,19 @@ export function StepDocsAndApplicants({
                 required
                 value={applicant.profession}
                 onChange={(v) => onChangeApplicant(index, "profession", v)}
+                error={attemptedNext && !applicant.profession?.trim()}
               />
             </div>
 
-            {/* Purpose of travel / tentative date */}
-            <div className="grid gap-4 md:grid-cols-2">
+            {/* Purpose of travel / tentative date & dob */}
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               <TextField
                 label="Purpose Of Travel"
                 placeholder="Tourism, business, family visit, etc."
                 required
                 value={applicant.purposeOfTravel}
                 onChange={(v) => onChangeApplicant(index, "purposeOfTravel", v)}
+                error={attemptedNext && !applicant.purposeOfTravel?.trim()}
               />
               <DateField
                 label="Tentative Travel Date"
@@ -1091,6 +1152,14 @@ export function StepDocsAndApplicants({
                 onChange={(v) =>
                   onChangeApplicant(index, "tentativeTravelDate", v)
                 }
+                error={attemptedNext && !applicant.tentativeTravelDate?.trim()}
+              />
+              <DateField
+                label="Date of Birth"
+                required
+                value={applicant.dob}
+                onChange={(v) => onChangeApplicant(index, "dob", v)}
+                error={attemptedNext && !applicant.dob?.trim()}
               />
             </div>
 
@@ -1105,19 +1174,29 @@ export function StepDocsAndApplicants({
         );
       })}
 
-      {/* Add applicant button + Add from family */}
+      {/* Add applicant button + Add from family + Add My Info */}
       <div className="flex flex-wrap items-center gap-3">
         <button
           type="button"
           onClick={onAddApplicant}
-          className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-slate-800 focus:outline-none focus-visible:outline-none"
+          className="inline-flex items-center gap-2 rounded-full bg-[#62E9C9] px-4 py-2 text-xs font-semibold text-[#0c4d3d] shadow-sm hover:opacity-90 focus:outline-none focus-visible:outline-none"
         >
           <Plus className="h-3.5 w-3.5" />
           <span>Add Applicant</span>
         </button>
+        {onAddSelf && (
+          <button
+            type="button"
+            onClick={onAddSelf}
+            className="inline-flex items-center gap-2 rounded-full border border-emerald-300 bg-emerald-50 px-4 py-2 text-xs font-semibold text-emerald-700 shadow-sm hover:bg-emerald-100 focus:outline-none focus-visible:outline-none"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span>Add My Info</span>
+          </button>
+        )}
         {familyMembers.length > 0 && onAddFromFamily && (
           <div className="flex items-center gap-2">
-            <ChevronDown className="h-4 w-4 text-slate-500" />
+            {/* <ChevronDown className="h-4 w-4 text-slate-500" /> */}
             <select
               className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/30"
               value=""
@@ -1231,16 +1310,19 @@ export function StepDocsAndApplicants({
             type="checkbox"
             checked={policy1}
             onChange={(e) => onChangePolicy1(e.target.checked)}
-            className="mt-0.5 h-3.5 w-3.5 rounded border-slate-300 text-[#62E9C9] focus:ring-[#62E9C9] focus:outline-none focus-visible:outline-none"
+            className={`mt-0.5 h-3.5 w-3.5 rounded focus:ring-[#62E9C9] focus:outline-none focus-visible:outline-none ${attemptedNext && !policy1 ? "border-rose-500 text-rose-500" : "border-slate-300 text-[#62E9C9]"}`}
           />
           <span className="space-y-0.5">
-            <span className="block font-semibold text-[11px]">
+            <span className={`block font-semibold text-[11px] ${attemptedNext && !policy1 ? "text-rose-600" : ""}`}>
               I agree to the policy.
             </span>
             <span className="block text-[11px]">
               The decision to grant or refuse the visa(s) is the sole
               prerogative and at the sole discretion of Government of UAE.
             </span>
+            {attemptedNext && !policy1 && (
+              <span className="block text-[11px] text-rose-600">You must agree to this policy to proceed.</span>
+            )}
           </span>
         </label>
 
@@ -1249,10 +1331,10 @@ export function StepDocsAndApplicants({
             type="checkbox"
             checked={policy2}
             onChange={(e) => onChangePolicy2(e.target.checked)}
-            className="mt-0.5 h-3.5 w-3.5 rounded border-slate-300 text-[#62E9C9] focus:ring-[#62E9C9] focus:outline-none focus-visible:outline-none"
+            className={`mt-0.5 h-3.5 w-3.5 rounded focus:ring-[#62E9C9] focus:outline-none focus-visible:outline-none ${attemptedNext && !policy2 ? "border-rose-500 text-rose-500" : "border-slate-300 text-[#62E9C9]"}`}
           />
           <span className="space-y-0.5">
-            <span className="block font-semibold text-[11px]">
+            <span className={`block font-semibold text-[11px] ${attemptedNext && !policy2 ? "text-rose-600" : ""}`}>
               I agree to the policy.
             </span>
             <span className="block text-[11px]">
@@ -1260,6 +1342,9 @@ export function StepDocsAndApplicants({
               under processing by another agent. This could lead to a
               non-refundable rejection of my visa application.
             </span>
+            {attemptedNext && !policy2 && (
+              <span className="block text-[11px] text-rose-600">You must agree to this policy to proceed.</span>
+            )}
           </span>
         </label>
       </div>
@@ -1284,6 +1369,48 @@ type TextFieldProps = {
   helperText?: string;
 };
 
+function SelectField({
+  label,
+  required,
+  value,
+  onChange,
+  options,
+  error,
+}: {
+  label: string;
+  required?: boolean;
+  value?: string;
+  onChange: (v: string) => void;
+  options: string[];
+  error?: boolean;
+}) {
+  return (
+    <div className="space-y-1">
+      <label className={`text-xs font-medium ${error ? "text-rose-600" : "text-slate-600"}`}>
+        {label} {required && <span className="text-rose-500">*</span>}
+      </label>
+      <div className="relative">
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={`w-full appearance-none rounded-xl border bg-white px-3 py-2.5 text-xs text-slate-700 shadow-[0_1px_0_rgba(15,23,42,0.03)] outline-none transition focus:ring-0 focus:outline-none focus-visible:outline-none ${error ? "border-rose-400 focus:border-rose-500" : "border-slate-200 focus:border-[#3C4161]"}`}
+        >
+          <option value="" disabled hidden>
+            Select...
+          </option>
+          {options.map((opt) => (
+            <option key={opt} value={opt}>
+              {opt}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="pointer-events-none absolute right-3 top-[50%] -translate-y-[50%] h-4 w-4 text-slate-400" />
+      </div>
+      {error && <p className="mt-1 text-[11px] text-rose-600">This field is required</p>}
+    </div>
+  );
+}
+
 function TextField({
   label,
   placeholder,
@@ -1296,7 +1423,7 @@ function TextField({
 }: TextFieldProps) {
   return (
     <div className="space-y-1">
-      <label className="text-xs font-medium text-slate-600">
+      <label className={`text-xs font-medium ${error ? "text-rose-600" : "text-slate-600"}`}>
         {label} {required && <span className="text-rose-500">*</span>}
       </label>
 
@@ -1308,13 +1435,14 @@ function TextField({
         className={[
           "w-full rounded-xl border bg-white px-3 py-2.5 text-xs text-slate-700 placeholder:text-slate-400 shadow-[0_1px_0_rgba(15,23,42,0.03)] outline-none transition focus:ring-0 focus:outline-none focus-visible:outline-none",
           error
-            ? "border-rose-300 focus:border-rose-400"
+            ? "border-rose-400 focus:border-rose-500"
             : "border-slate-200 focus:border-[#3C4161]",
         ].join(" ")}
       />
 
+      {error && !helperText && <p className="mt-1 text-[11px] text-rose-600">This field is required</p>}
       {helperText ? (
-        <p className="text-[11px] text-rose-600">{helperText}</p>
+        <p className="mt-1 text-[11px] text-rose-600">{helperText}</p>
       ) : null}
     </div>
   );
@@ -1459,6 +1587,9 @@ function PhoneField({
             </ul>
           </div>
         )}
+        {error && !helperText && (
+          <p className="mt-1 text-[11px] text-rose-600">This field is required</p>
+        )}
         {helperText ? (
           <p className="mt-1 text-[11px] text-rose-600">{helperText}</p>
         ) : null}
@@ -1473,12 +1604,14 @@ type CountrySelectFieldProps = {
   label: string;
   value: string;
   onChange: (value: string) => void;
+  error?: boolean;
 };
 
 function CountrySelectField({
   label,
   value,
   onChange,
+  error,
 }: CountrySelectFieldProps) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -1493,7 +1626,7 @@ function CountrySelectField({
 
   return (
     <div className="relative space-y-1">
-      <label className="text-xs font-medium text-slate-600">
+      <label className={`text-xs font-medium ${error ? "text-rose-600" : "text-slate-600"}`}>
         {label} <span className="text-rose-500">*</span>
       </label>
 
@@ -1501,8 +1634,7 @@ function CountrySelectField({
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs text-slate-700 shadow-[0_1px_0_rgba(15,23,42,0.03)] outline-none transition hover:bg-slate-50 focus:border-[#3C4161] focus:ring-0 focus:outline-none focus-visible:outline-none"
-      >
+        className={`flex w-full items-center justify-between rounded-xl border bg-white px-3 py-2.5 text-xs text-slate-700 shadow-[0_1px_0_rgba(15,23,42,0.03)] outline-none transition hover:bg-slate-50 focus:ring-0 focus:outline-none focus-visible:outline-none ${error ? "border-rose-400 focus:border-rose-500" : "border-slate-200 focus:border-[#3C4161]"}`}>
         <span className="flex min-w-0 items-center gap-2">
           {selectedCountry ? (
             <>
@@ -1528,6 +1660,7 @@ function CountrySelectField({
 
         <ChevronDown className="h-3.5 w-3.5 flex-none text-slate-400" />
       </button>
+      {error && <p className="mt-1 text-[11px] text-rose-600">This field is required</p>}
 
       {/* dropdown */}
       {open && (

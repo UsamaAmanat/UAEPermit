@@ -57,25 +57,23 @@ export default function AccountLayout({
 
   const SidebarContent = () => (
     <>
-      <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 px-4">
-        <div className="flex items-center gap-3">
+      <div className="shrink-0 border-b border-slate-200 px-4 py-4">
+        <div className="flex items-center justify-between">
           <Image
             src="/images/icons/logo-evisa.png"
             alt="UAEPermit"
-            width={36}
+            width={140}
             height={36}
-            className="rounded-lg"
+            className="h-8 w-auto object-contain"
           />
-          <div>
-            <p className="text-sm font-semibold text-slate-900">My Account</p>
-            <p className="text-xs text-slate-500 truncate max-w-[130px]" title={userEmail || ""}>
-              {userEmail || "User"}
-            </p>
-          </div>
+          <button className="md:hidden p-1 text-slate-500 hover:bg-slate-100 rounded" onClick={() => setMobileMenuOpen(false)}>
+            <X className="h-5 w-5" />
+          </button>
         </div>
-        <button className="md:hidden p-1 text-slate-500 hover:bg-slate-100 rounded" onClick={() => setMobileMenuOpen(false)}>
-          <X className="h-5 w-5" />
-        </button>
+        {/* <div className="mt-3">
+          <p className="text-sm font-semibold text-slate-900">My Account</p>
+          <p className="text-xs text-slate-500 truncate" title={userEmail || ""}>{userEmail || "User"}</p>
+        </div> */}
       </div>
       <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
         {navItems.map((item) => {
@@ -119,9 +117,9 @@ export default function AccountLayout({
           <Image
             src="/images/icons/logo-evisa.png"
             alt="UAEPermit"
-            width={32}
-            height={32}
-            className="rounded-lg"
+            width={120}
+            height={30}
+            className="h-6 w-auto object-contain"
           />
           <span className="font-semibold text-slate-900">My Account</span>
         </div>
@@ -146,8 +144,11 @@ export default function AccountLayout({
       </aside>
 
       {/* MAIN */}
-      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
-        {children}
+      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-x-hidden flex flex-col">
+        <div className="flex-1">{children}</div>
+        <div className="text-center text-[10px] text-slate-400 mt-8 py-4 border-t border-slate-100">
+          &copy; {new Date().getFullYear()} UAE Permit. All rights reserved.
+        </div>
       </main>
 
       <style jsx global>{`

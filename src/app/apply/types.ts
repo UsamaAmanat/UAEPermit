@@ -17,14 +17,19 @@ export type Applicant = {
   lastName: string;
   nationality: string; // country name
   applyingFrom: string; // country name
+  dob: string; // "YYYY-MM-DD"
 
   // passport & job
   passportNumber: string;
+  passportExpiry: string; // "YYYY-MM-DD"
   profession: string;
 
   // trip
   purposeOfTravel: string;
   tentativeTravelDate: string; // "YYYY-MM-DD"
+
+  // family
+  relation?: string; // e.g. "Wife", "Son", "Friend"
 };
 
 export type Plan = {
@@ -44,11 +49,11 @@ export type Plan = {
 
 export type DocKind = "passport" | "photo" | "ticket";
 
-/** Raw browser-selected files (Step upload) */
+/** Raw browser-selected files or programmatic existing URLs (Step upload) */
 export type ApplicantDocs = {
-  passport: File[];
-  photo: File[];
-  ticket: File[];
+  passport: (File | string)[];
+  photo: (File | string)[];
+  ticket: (File | string)[];
 };
 
 export const emptyDocs = (): ApplicantDocs => ({

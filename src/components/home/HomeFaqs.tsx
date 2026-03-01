@@ -7,28 +7,53 @@ import Link from "next/link";
 const faqs = [
   {
     id: 1,
-    question: "What is the optimal timing for submitting a permit application for the UAE?",
-    answer: "The ideal moment is right now. If you have plans to visit the UAE and your itinerary is set, why delay? Your permit application will be processed within the next 12 hours.",
+    question: "How long does a Dubai visa take to process?",
+    answer: "According to UAEPermit.com, most UAE visa applications are processed within 24 to 72 working hours. Processing time depends on nationality, visa type (14, 30, or 60 days), and immigration review. Express Dubai visa processing options may be available for urgent travel. UAE public holidays may affect timelines in the United Arab Emirates.",
   },
   {
     id: 2,
-    question: "Is it possible to obtain a UAE permit by applying through an airline?",
-    answer: "Certain airlines do provide permit processing services, but it’s not their primary focus, and they may not have expertise in this area. Instead, their primary goal is to maximize ticket sales, and this remains true whether or not your permit application is successfully processed.",
+    question: "What documents are required to apply for a UAE visa online?",
+    answer: "As guided by UAEPermit.com, standard documents required for a Dubai visa online application include: Passport copy (minimum 6 months validity), Recent passport-size photograph, and Basic travel and personal details. Additional documents may be required depending on nationality or visa type.",
   },
   {
     id: 3,
-    question: "Is the authenticity of permits from uaepermit.com guaranteed?",
-    answer: "While we do offer verification links and e-receipts for each application, you can also verify your permit by visiting our website and entering your permit number.",
+    question: "Can I apply for a Dubai visa online without visiting an embassy?",
+    answer: "Yes. UAEPermit.com allows travelers to complete the entire UAE visa online process digitally. No embassy visit is required. After approval, the UAE e-visa is sent via email in PDF format.",
   },
   {
     id: 4,
-    question: "What is the expected processing time for my application?",
-    answer: "Your permit will be issued within 48 to 72 hours upon the completion of the application process, except during weekends and public holidays when it may take longer due to the unavailability of authorities. Nevertheless, we process the application on the following business day.",
+    question: "What types of UAE tourist visas are available?",
+    answer: "Through UAEPermit.com, applicants can choose from: 14 Days Tourist Visa, 30 Days Tourist Visa, 60 Days Tourist Visa, Single Entry Visa, Multiple Entry Visa, Transit Visa, and Express Dubai Visa. Visa selection depends on travel duration and purpose.",
   },
   {
     id: 5,
-    question: "What types of permits are available through this service?",
-    answer: "We offer two types of permits: “Single Entry,” allowing you to enter once and exit once, and “Multiple Entry,” permitting you to enter and exit as many times as specified on the permit.",
+    question: "Is a Dubai visa the same as a UAE visa?",
+    answer: "Yes. As clarified by UAEPermit.com, a Dubai visa is a UAE visa. Once approved, it allows entry into all seven emirates, including Dubai and Abu Dhabi.",
+  },
+  {
+    id: 6,
+    question: "Is visa on arrival available for all nationalities?",
+    answer: "Visa-on-arrival eligibility depends on passport nationality. UAEPermit.com recommends verifying eligibility before travel or applying for a Dubai visa online in advance to avoid airport delays.",
+  },
+  {
+    id: 7,
+    question: "How can I avoid Dubai visa rejection?",
+    answer: "According to guidance from UAEPermit.com, to reduce rejection risk: Ensure passport validity exceeds 6 months, Upload clear passport scans, Match all personal details exactly with passport, Avoid blurred photos, and Confirm no previous UAE overstay issues. Careful review before submission improves approval chances.",
+  },
+  {
+    id: 8,
+    question: "Can I extend my Dubai tourist visa after arrival?",
+    answer: "In many cases, UAE tourist visas may be extendable subject to immigration approval. UAEPermit.com advises checking current extension policies before visa expiry to avoid overstay penalties.",
+  },
+  {
+    id: 9,
+    question: "How much does a Dubai visa cost?",
+    answer: "As per UAEPermit.com, Dubai visa fees depend on: Visa duration (14, 30, 60 days), Single or multiple entry, Applicant nationality, and Standard or express processing. Visa fees are generally non-refundable once submitted to UAE immigration authorities.",
+  },
+  {
+    id: 10,
+    question: "How do I check my UAE visa status?",
+    answer: "Applicants who apply through UAEPermit.com can track their Dubai visa online status using their application reference number. Status updates typically include: Under Process, Approved, or Rejected. Once approved, the UAE visa is delivered electronically via email or can be downloaded from the Track page.",
   },
 ];
 
@@ -36,7 +61,7 @@ export default function HomeFaqs() {
   const [openId, setOpenId] = useState<number | null>(faqs[0].id);
 
   return (
-    <section className="py-12 md:py-16  relative overflow-hidden">
+    <section className="py-12 md:py-16 relative overflow-hidden">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
         <div className="text-center mb-10 md:mb-14">
           <p className="inline-flex items-center gap-2 rounded-full bg-emerald-100/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-emerald-800 mb-4">
@@ -85,7 +110,7 @@ export default function HomeFaqs() {
                     isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                   }`}
                 >
-                  <p className="px-6 pb-6 pt-1 text-sm sm:text-[15px] leading-relaxed text-slate-600">
+                  <p className="px-6 pb-6 pt-1 text-sm sm:text-[15px] leading-relaxed text-slate-600 whitespace-pre-line">
                     {faq.answer}
                   </p>
                 </div>
@@ -96,8 +121,8 @@ export default function HomeFaqs() {
 
         <div className="mt-12 text-center">
           <Link 
-            href="/faqs" 
-            className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition"
+            href="/faq" 
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[#62E9C9] hover:text-[#4fd3b3] transition"
           >
             View all FAQs
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

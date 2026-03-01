@@ -491,7 +491,7 @@ const Footer = () => {
               </Link>
               <p className="text-[14px] font-normal text-white/80 mt-4 leading-relaxed">
                 UAEPermit.com is operated by Budget Travel & Tourism LLC (DTCM
-                License No. 1202281). Verify License
+                License No. 1202281). <a href='https://eservices.dubaided.gov.ae/Pages/Anon/CompLookup.aspx' target='_blank'>Verify License</a>
               </p>
             </div>
           </div>
@@ -507,25 +507,25 @@ const Footer = () => {
                 About Us
               </Link>
               <Link
-                href="/stay-overstay-rules"
+                href="/stay"
                 className="block text-[14px] font-normal text-white hover:text-[#62E9C9] transition"
               >
                 Stay & Overstay Rules
               </Link>
               <Link
-                href="/terms"
+                href="/terms-conditions"
                 className="block text-[14px] font-normal text-white hover:text-[#62E9C9] transition"
               >
                 Term of use
               </Link>
               <Link
-                href="/privacy"
+                href="/privacy-policy"
                 className="block text-[14px] font-normal text-white hover:text-[#62E9C9] transition"
               >
                 Privacy Policy
               </Link>
               <Link
-                href="/blogs"
+                href="/blog"
                 className="block text-[14px] font-normal text-white hover:text-[#62E9C9] transition"
               >
                 Blogs

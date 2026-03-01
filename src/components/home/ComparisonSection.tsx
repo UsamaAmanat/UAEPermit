@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import Image from "next/image";
 import {
@@ -6,6 +7,7 @@ import {
   CheckCheckIcon,
   LucideCheckCheck,
 } from "lucide-react";
+import Link from "next/link";
 
 const ComparisonSection = () => {
   const diyItems = [
@@ -100,9 +102,15 @@ const ComparisonSection = () => {
 
               {/* Get Started Button */}
               <div className="flex justify-center">
-                <button className="px-6 md:px-8 py-2 md:py-3 bg-transparent border-2 border-black rounded-full text-black font-semibold text-[14px] md:text-[16px] hover:bg-black hover:text-white transition-all duration-300">
-                  Get Started
-                </button>
+                <button
+  className="px-6 md:px-8 py-2 md:py-3 bg-transparent border-2 border-black rounded-full text-black font-semibold text-[14px] md:text-[16px] hover:bg-black hover:text-white transition-all duration-300"
+  onClick={() => {
+    // Scroll to top (first fold) smoothly
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }}
+>
+  Get Started
+</button>
               </div>
             </div>
           </div>

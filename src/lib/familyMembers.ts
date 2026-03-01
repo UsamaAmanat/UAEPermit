@@ -24,6 +24,9 @@ export type FamilyMember = {
   tentativeTravelDate?: string;
   dob?: string; // YYYY-MM-DD for birthday
   passportExpiry?: string; // for reminders
+  relation?: string; // Relation to main customer
+  passportUrl?: string;
+  photoUrl?: string;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -42,6 +45,9 @@ const emptyMember = (): Omit<FamilyMember, "id" | "createdAt" | "updatedAt"> => 
   tentativeTravelDate: "",
   dob: "",
   passportExpiry: "",
+  relation: "",
+  passportUrl: "",
+  photoUrl: "",
 });
 
 export function familyMembersRef(userId: string) {

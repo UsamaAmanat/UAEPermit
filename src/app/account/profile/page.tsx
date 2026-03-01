@@ -7,10 +7,25 @@ import { db } from "@/lib/firebaseClient";
 import { updateProfile } from "firebase/auth";
 import { auth } from "@/lib/firebaseClient";
 import { toast } from "sonner";
-import { User, Loader2, Mail, Phone, Globe, Calendar, FileText, ArrowRight, PlusCircle, Users } from "lucide-react";
+import { User, Loader2, Mail, Phone, Globe, Calendar, FileText, ArrowRight, PlusCircle, Users, UploadCloud, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { storage } from "@/lib/firebaseClient";
+import { COUNTRIES } from "@/lib/countries";
 
-type ProfileData = { displayName?: string; phone?: string; nationality?: string; createdAt?: any };
+type ProfileData = {
+  displayName?: string;
+  phone?: string;
+  nationality?: string;
+  applyingFrom?: string;
+  passportNumber?: string;
+  passportExpiry?: string;
+  profession?: string;
+  dob?: string;
+  passportUrl?: string;
+  photoUrl?: string;
+  createdAt?: any;
+};
 
 type QuickApp = {
   id: string;
@@ -28,6 +43,7 @@ export default function AccountProfilePage() {
   const [editForm, setEditForm] = useState<ProfileData>({});
   const [recentApps, setRecentApps] = useState<QuickApp[]>([]);
   const [appCount, setAppCount] = useState(0);
+  const [uploadingDoc, setUploadingDoc] = useState<"passport" | "photo" | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -35,7 +51,18 @@ export default function AccountProfilePage() {
       .then((snap) => {
         const data = snap.exists() ? (snap.data() as ProfileData) : {};
         setProfile(data);
-        setEditForm({ displayName: data?.displayName ?? "", phone: data?.phone ?? "", nationality: data?.nationality ?? "" });
+        setEditForm({
+          displayName: data?.displayName ?? "",
+          phone: data?.phone ?? "",
+          nationality: data?.nationality ?? "",
+          applyingFrom: data?.applyingFrom ?? "",
+          passportNumber: data?.passportNumber ?? "",
+          passportExpiry: data?.passportExpiry ?? "",
+          profession: data?.profession ?? "",
+          dob: data?.dob ?? "",
+          passportUrl: data?.passportUrl ?? "",
+          photoUrl: data?.photoUrl ?? ""
+        });
       })
       .catch(() => setProfile({}))
       .finally(() => setLoading(false));
@@ -59,6 +86,26 @@ export default function AccountProfilePage() {
       .catch(() => {});
   }, [user]);
 
+  const handleUpload = async (kind: "passport" | "photo", e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    setUploadingDoc(kind);
+    try {
+      const path = `users/${user.uid}/profile/${kind}/${Date.now()}_${file.name}`;
+      const storageRef = ref(storage, path);
+      await uploadBytes(storageRef, file);
+      const url = await getDownloadURL(storageRef);
+      setEditForm((prev) => ({ ...prev, [kind === "passport" ? "passportUrl" : "photoUrl"]: url }));
+      toast.success(`${kind === "passport" ? "Passport" : "Picture"} uploaded`);
+    } catch (err) {
+      console.error(err);
+      toast.error(`Failed to upload ${kind}`);
+    } finally {
+      setUploadingDoc(null);
+      e.target.value = "";
+    }
+  };
+
   const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -68,6 +115,13 @@ export default function AccountProfilePage() {
         displayName: (editForm.displayName ?? "").trim(),
         phone: (editForm.phone ?? "").trim(),
         nationality: (editForm.nationality ?? "").trim(),
+        applyingFrom: (editForm.applyingFrom ?? "").trim(),
+        passportNumber: (editForm.passportNumber ?? "").trim(),
+        passportExpiry: (editForm.passportExpiry ?? "").trim(),
+        profession: (editForm.profession ?? "").trim(),
+        dob: (editForm.dob ?? "").trim(),
+        passportUrl: editForm.passportUrl ?? "",
+        photoUrl: editForm.photoUrl ?? "",
         updatedAt: serverTimestamp(),
       };
       await updateDoc(doc(db, "users", user.uid), payload);
@@ -122,7 +176,18 @@ export default function AccountProfilePage() {
               type="button"
               onClick={() => {
                 setEditing(false);
-                setEditForm({ displayName: profile?.displayName ?? "", phone: profile?.phone ?? "", nationality: profile?.nationality ?? "" });
+                setEditForm({
+                  displayName: profile?.displayName ?? "",
+                  phone: profile?.phone ?? "",
+                  nationality: profile?.nationality ?? "",
+                  applyingFrom: profile?.applyingFrom ?? "",
+                  passportNumber: profile?.passportNumber ?? "",
+                  passportExpiry: profile?.passportExpiry ?? "",
+                  profession: profile?.profession ?? "",
+                  dob: profile?.dob ?? "",
+                  passportUrl: profile?.passportUrl ?? "",
+                  photoUrl: profile?.photoUrl ?? ""
+                });
               }}
               className="text-xs font-medium text-slate-500 hover:text-slate-700"
             >
@@ -132,16 +197,25 @@ export default function AccountProfilePage() {
         </div>
         <div className="p-5">
           {!editing ? (
-            <div className="flex items-start gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-700 ring-2 ring-emerald-200">
-                <User className="h-6 w-6" />
-              </div>
-              <div className="min-w-0 space-y-2">
-                <p className="text-lg font-semibold text-slate-900">{profile?.displayName || "User"}</p>
-                <div className="flex items-center gap-2 text-sm text-slate-600">
-                  <Mail className="h-3.5 w-3.5 text-slate-400" />
-                  {user?.email}
+            <div className="space-y-4">
+              <div className="flex items-start gap-4">
+                {profile?.photoUrl ? (
+                  <img src={profile.photoUrl} alt="Profile" className="h-14 w-14 shrink-0 rounded-full object-cover ring-2 ring-emerald-200" />
+                ) : (
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-100 to-emerald-50 text-emerald-700 ring-2 ring-emerald-200">
+                    <User className="h-6 w-6" />
+                  </div>
+                )}
+                <div className="min-w-0 space-y-1">
+                  <p className="text-lg font-semibold text-slate-900">{profile?.displayName || "User"}</p>
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <Mail className="h-3.5 w-3.5 text-slate-400" />
+                    {user?.email}
+                  </div>
                 </div>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-2 mt-2">
                 {profile?.phone && (
                   <div className="flex items-center gap-2 text-sm text-slate-600">
                     <Phone className="h-3.5 w-3.5 text-slate-400" />
@@ -151,7 +225,37 @@ export default function AccountProfilePage() {
                 {profile?.nationality && (
                   <div className="flex items-center gap-2 text-sm text-slate-600">
                     <Globe className="h-3.5 w-3.5 text-slate-400" />
-                    {profile.nationality}
+                    Nationality: {profile.nationality}
+                  </div>
+                )}
+                {profile?.applyingFrom && (
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <Globe className="h-3.5 w-3.5 text-slate-400" />
+                    Applying From: {profile.applyingFrom}
+                  </div>
+                )}
+                {profile?.passportNumber && (
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <FileText className="h-3.5 w-3.5 text-slate-400" />
+                    Passport: {profile.passportNumber}
+                  </div>
+                )}
+                {profile?.passportExpiry && (
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                    Passport Expiry: {profile.passportExpiry}
+                  </div>
+                )}
+                {profile?.profession && (
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <User className="h-3.5 w-3.5 text-slate-400" />
+                    Profession: {profile.profession}
+                  </div>
+                )}
+                {profile?.dob && (
+                  <div className="flex items-center gap-2 text-sm text-slate-600">
+                    <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                    Date of Birth: {profile.dob}
                   </div>
                 )}
                 {memberSince && (
@@ -161,11 +265,36 @@ export default function AccountProfilePage() {
                   </div>
                 )}
               </div>
+
+              {/* Uploaded documents */}
+              {(profile?.passportUrl || profile?.photoUrl) && (
+                <div className="mt-3 border-t border-slate-100 pt-3">
+                  <p className="text-xs font-semibold text-slate-700 mb-2">Uploaded Documents</p>
+                  <div className="flex gap-4">
+                    {profile.passportUrl && (
+                      <a href={profile.passportUrl} target="_blank" rel="noreferrer" className="group">
+                        <div className="h-16 w-24 rounded-lg border border-slate-200 bg-slate-50 overflow-hidden hover:ring-2 hover:ring-emerald-300 transition">
+                          <img src={profile.passportUrl} alt="Passport" className="h-full w-full object-cover" />
+                        </div>
+                        <p className="mt-1 text-[10px] text-emerald-600 group-hover:underline">Passport</p>
+                      </a>
+                    )}
+                    {profile.photoUrl && (
+                      <a href={profile.photoUrl} target="_blank" rel="noreferrer" className="group">
+                        <div className="h-16 w-16 rounded-lg border border-slate-200 bg-slate-50 overflow-hidden hover:ring-2 hover:ring-emerald-300 transition">
+                          <img src={profile.photoUrl} alt="Photo" className="h-full w-full object-cover" />
+                        </div>
+                        <p className="mt-1 text-[10px] text-emerald-600 group-hover:underline">Photo</p>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <form onSubmit={handleSaveProfile} className="space-y-4 max-w-md">
               <div>
-                <label htmlFor="displayName" className="block text-sm font-medium text-slate-700 mb-1">Display name</label>
+                <label htmlFor="displayName" className="block text-sm font-medium text-slate-700 mb-1">First & Last Name</label>
                 <input
                   id="displayName"
                   type="text"
@@ -184,15 +313,123 @@ export default function AccountProfilePage() {
                   className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
                 />
               </div>
-              <div>
-                <label htmlFor="nationality" className="block text-sm font-medium text-slate-700 mb-1">Nationality</label>
-                <input
-                  id="nationality"
-                  type="text"
-                  value={editForm.nationality ?? ""}
-                  onChange={(e) => setEditForm((f) => ({ ...f, nationality: e.target.value }))}
-                  className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
-                />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="nationality" className="block text-sm font-medium text-slate-700 mb-1">Nationality</label>
+                  <select
+                    id="nationality"
+                    value={editForm.nationality ?? ""}
+                    onChange={(e) => setEditForm((f) => ({ ...f, nationality: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
+                  >
+                    <option value="">Select country</option>
+                    {COUNTRIES.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="applyingFrom" className="block text-sm font-medium text-slate-700 mb-1">Applying From</label>
+                  <select
+                    id="applyingFrom"
+                    value={editForm.applyingFrom ?? ""}
+                    onChange={(e) => setEditForm((f) => ({ ...f, applyingFrom: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
+                  >
+                    <option value="">Select country</option>
+                    {COUNTRIES.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="passportNumber" className="block text-sm font-medium text-slate-700 mb-1">Passport Number</label>
+                  <input
+                    id="passportNumber"
+                    type="text"
+                    value={editForm.passportNumber ?? ""}
+                    onChange={(e) => setEditForm((f) => ({ ...f, passportNumber: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="passportExpiry" className="block text-sm font-medium text-slate-700 mb-1">Passport Expiry</label>
+                  <input
+                    id="passportExpiry"
+                    type="date"
+                    value={editForm.passportExpiry ?? ""}
+                    onChange={(e) => setEditForm((f) => ({ ...f, passportExpiry: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
+                  />
+                </div>
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="profession" className="block text-sm font-medium text-slate-700 mb-1">Profession</label>
+                  <input
+                    id="profession"
+                    type="text"
+                    value={editForm.profession ?? ""}
+                    onChange={(e) => setEditForm((f) => ({ ...f, profession: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="dob" className="block text-sm font-medium text-slate-700 mb-1">Date of Birth</label>
+                  <input
+                    id="dob"
+                    type="date"
+                    value={editForm.dob ?? ""}
+                    onChange={(e) => setEditForm((f) => ({ ...f, dob: e.target.value }))}
+                    className="w-full px-3 py-2.5 rounded-lg border border-slate-200 bg-white text-slate-900 text-sm focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
+                  />
+                </div>
+              </div>
+
+              {/* Uploads */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Passport Upload</label>
+                  <label className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 transition cursor-pointer">
+                    {uploadingDoc === "passport" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : editForm.passportUrl ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    ) : (
+                      <UploadCloud className="h-4 w-4" />
+                    )}
+                    <span className="truncate max-w-[120px]">
+                      {uploadingDoc === "passport" ? "Uploading..." : editForm.passportUrl ? "Uploaded" : "Upload Passport"}
+                    </span>
+                    <input type="file" className="hidden" accept="image/*,.pdf" onChange={(e) => handleUpload("passport", e)} disabled={!!uploadingDoc} />
+                  </label>
+                  {editForm.passportUrl && (
+                    <a href={editForm.passportUrl} target="_blank" rel="noreferrer" className="mt-1 block text-[10px] text-emerald-600 hover:underline">View File</a>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Picture Upload</label>
+                  <label className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 transition cursor-pointer">
+                    {uploadingDoc === "photo" ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : editForm.photoUrl ? (
+                      <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                    ) : (
+                      <UploadCloud className="h-4 w-4" />
+                    )}
+                    <span className="truncate max-w-[120px]">
+                      {uploadingDoc === "photo" ? "Uploading..." : editForm.photoUrl ? "Uploaded" : "Upload Picture"}
+                    </span>
+                    <input type="file" className="hidden" accept="image/*" onChange={(e) => handleUpload("photo", e)} disabled={!!uploadingDoc} />
+                  </label>
+                  {editForm.photoUrl && (
+                    <a href={editForm.photoUrl} target="_blank" rel="noreferrer" className="mt-1 block text-[10px] text-emerald-600 hover:underline">View File</a>
+                  )}
+                </div>
               </div>
               <button
                 type="submit"

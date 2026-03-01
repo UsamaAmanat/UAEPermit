@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   description:
     "Have visa questions? Read our FAQs for everything about Dubai & UAE visas: application timing, permit types, processing times, and how to apply with confidence.",
   alternates: {
-    canonical: "/faqs",
+    canonical: "/faq",
   },
 };
 

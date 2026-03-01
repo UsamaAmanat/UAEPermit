@@ -8,6 +8,7 @@ import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { Eye, EyeOff, Lock, Mail, User, Phone, Globe, AlertCircle } from "lucide-react";
+import { COUNTRIES } from "@/lib/countries";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -42,8 +43,8 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    if (!name?.trim() || !email?.trim() || !password) {
-      setError("Please fill in name, email and password.");
+    if (!name?.trim() || !email?.trim() || !phone?.trim() || !nationality?.trim() || !password) {
+      setError("Please fill in all required fields.");
       return;
     }
     if (password.length < 6) {
@@ -118,7 +119,7 @@ export default function SignupPage() {
               </div>
             </div>
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1">Phone (optional)</label>
+              <label htmlFor="phone" className="block text-sm font-medium text-slate-700 mb-1">Phone</label>
               <div className="relative">
                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
@@ -127,22 +128,27 @@ export default function SignupPage() {
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="+971 50 123 4567"
+                  required
                   className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:ring-2 focus:ring-[#62E9C9]/30 focus:border-[#62E9C9]"
                 />
               </div>
             </div>
             <div>
-              <label htmlFor="nationality" className="block text-sm font-medium text-slate-700 mb-1">Nationality (optional)</label>
+              <label htmlFor="nationality" className="block text-sm font-medium text-slate-700 mb-1">Nationality</label>
               <div className="relative">
                 <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
+                <select
                   id="nationality"
-                  type="text"
                   value={nationality}
                   onChange={(e) => setNationality(e.target.value)}
-                  placeholder="e.g. Pakistan"
-                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:ring-2 focus:ring-[#62E9C9]/30 focus:border-[#62E9C9]"
-                />
+                  required
+                  className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:ring-2 focus:ring-[#62E9C9]/30 focus:border-[#62E9C9] appearance-none"
+                >
+                  <option value="" disabled>Select your country</option>
+                  {COUNTRIES.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
               </div>
             </div>
             <div>
