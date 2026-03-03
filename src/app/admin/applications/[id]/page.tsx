@@ -344,7 +344,7 @@ export default function AdminApplicationDetailPage() {
                   </div>
                   <div>
                     <p className="text-xs text-slate-500">Price per Applicant</p>
-                    <p className="font-medium text-slate-900">{data.plan?.price || "—"} $</p>
+                    <p className="font-medium text-slate-900">$ {data.plan?.price || "—"}</p>
                   </div>
                   <div>
                     <p className="text-xs text-slate-500">Number of Applicants</p>
@@ -352,12 +352,12 @@ export default function AdminApplicationDetailPage() {
                   </div>
                   <div>
                     <p className="text-xs text-slate-500">Grand Total</p>
-                    <p className="font-semibold text-emerald-700">{data.grandTotal ?? "—"} $</p>
+                    <p className="font-semibold text-emerald-700">$ {data.grandTotal ?? "—"}</p>
                   </div>
                   {data.extraFastSelected && (
                     <div>
                       <p className="text-xs text-slate-500">Extra Fast Fee / Applicant</p>
-                      <p className="font-medium text-slate-900">{data.extraFastFeePerApplicant || "—"} $</p>
+                      <p className="font-medium text-slate-900">$ {data.extraFastFeePerApplicant || "—"}</p>
                     </div>
                   )}
                   <div>

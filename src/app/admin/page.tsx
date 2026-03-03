@@ -381,7 +381,7 @@ export default function AdminDashboardPage() {
             </button>
 
             {/* MIGRATION BUTTON */}
-            <div className="mt-4 border-t border-slate-100 pt-4">
+            {/* <div className="mt-4 border-t border-slate-100 pt-4">
               <button
                 onClick={async () => {
                   if (!confirm("Are you sure you want to run the migration? This will import records from oldRecords.ts into the database.")) return;
@@ -411,7 +411,7 @@ export default function AdminDashboardPage() {
               >
                 Trigger Old Records Migration
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
 
