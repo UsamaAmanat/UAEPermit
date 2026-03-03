@@ -63,6 +63,23 @@ export default function SignupPage() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
+
+      // Fire and forget welcome email
+      fetch("/api/email/welcome", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Use a default fallback or dynamic env variable on the client if you have one.
+          // For simplicity in the client component, if the API requires a secret, you could pass it 
+          // via a NEXT_PUBLIC_ env variable, though standard practice is to use server actions.
+          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_INTERNAL_API_SECRET || "fallback_secret_for_local_dev"}`
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          name: name.trim(),
+        }),
+      }).catch(console.error);
+
       router.push("/account");
     } catch (err: any) {
       setError(mapError(err?.code));

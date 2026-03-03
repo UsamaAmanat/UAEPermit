@@ -379,6 +379,39 @@ export default function AdminDashboardPage() {
               </div>
               <ArrowRight className="h-4 w-4 text-slate-400" />
             </button>
+
+            {/* MIGRATION BUTTON */}
+            <div className="mt-4 border-t border-slate-100 pt-4">
+              <button
+                onClick={async () => {
+                  if (!confirm("Are you sure you want to run the migration? This will import records from oldRecords.ts into the database.")) return;
+                  let offset = 0;
+                  while (true) {
+                    try {
+                      const res = await fetch("/api/admin/migrate-records", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ offset, limit: 100 })
+                      });
+                      const data = await res.json();
+                      if (data.error) throw new Error(data.error);
+                      if (data.finished || data.message === "No more records") {
+                        alert("Migration finished successfully!");
+                        break;
+                      }
+                      offset = data.nextOffset;
+                      console.log(`Migrated ${offset} / ${data.totalRecords}`);
+                    } catch (err: any) {
+                      alert("Migration failed: " + err.message);
+                      break;
+                    }
+                  }
+                }}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              >
+                Trigger Old Records Migration
+              </button>
+            </div>
           </div>
         </div>
 

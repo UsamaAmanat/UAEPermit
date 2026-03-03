@@ -71,46 +71,68 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Montserrat Google Fonts */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-          rel="stylesheet"
+        {/* ================== Google Analytics (gtag.js) ================== */}
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-DTMMVY0WQV"
+        ></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-DTMMVY0WQV');
+            `,
+          }}
         />
         {/* Google Tag Manager */}
-        {/* <Script
-          id="gtm-head"
-          strategy="afterInteractive"
+        <script
           dangerouslySetInnerHTML={{
             __html: `
               (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
               new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
               j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-              })(window,document,'script','dataLayer','GTM-PR4J2L5Q');
+              'https://www.googletagmanager.com/gtm.js?id=GTM-T6CP4XLF'+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','GTM-T6CP4XLF');
             `,
           }}
-        /> */}
-        {/* End Google Tag Manager */}
+        />
 
-        {/* Trustpilot Widget Script */}
-        <Script
-          type="text/javascript"
-          strategy="afterInteractive"
-          src="https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js"
+        {/* Google Search Console */}
+        <meta
+          name="google-site-verification"
+          content="wGEwV2Po3PfyVDKSghaF7BOQVMO3nLq-9pA7DSTmBOA"
+        />
+
+        {/* Bing Webmaster */}
+        <meta
+          name="msvalidate.01"
+          content="94ECDD201744C0F0D4B93F23C0CD71E2"
+        />
+
+        {/* Yandex Webmaster */}
+        <meta
+          name="yandex-verification"
+          content="5832d4f481a9eac9"
+        />
+        {/* Montserrat Google Fonts */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet"
         />
       </head>
 
       <body>
         {/* Google Tag Manager (noscript) */}
-        {/* <noscript>
+        <noscript>
           <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-PR4J2L5Q"
+            src="https://www.googletagmanager.com/ns.html?id=GTM-T6CP4XLF"
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}
           />
-        </noscript> */}
-        {/* End Google Tag Manager (noscript) */}
+        </noscript>
 
         <AuthProvider>
           <NextTopLoader color="#62E9C9" height={3} showSpinner={false} />

@@ -82,6 +82,7 @@ export default function ApplySuccessPageClient() {
         // 1️⃣ Mark paid
         await updateDoc(ref, {
           status: "processing", // maps to PAID UI
+          paymentStatus: "paid",
           applicants: (data.applicants || []).map((a: any) => ({
             ...a,
             status: "processing",

@@ -18,6 +18,11 @@ export type CustomerEmailPayload = {
   orderId?: string;
 };
 
+export type WelcomeEmailPayload = {
+  customerName: string;
+  customerEmail: string;
+};
+
 export type AdminEmailPayload = {
   applicationId: string;
   paidAmount: number;
@@ -492,6 +497,137 @@ function buildTrackingUrl(inputUrl?: string, trackingId?: string) {
   return `https://uaepermit.com/track/${encodeURIComponent(tid)}`;
 }
 
+// export type WelcomeEmailPayload = {
+//   customerName: string;
+// };
+
+/**
+ * Welcome Email (triggered on signup)
+ */
+export function buildWelcomeEmail(data: WelcomeEmailPayload) {
+  const b = brand();
+
+  const preheader = `Welcome to ${b.brandName}! Let's get your visa application started.`;
+  const subject = `Welcome to ${b.brandName}!`;
+
+  const html = `
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>Welcome to ${esc(b.brandName)}</title>
+</head>
+
+<body style="margin:0;padding:0;background:#f8f9fb;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">
+    ${esc(preheader)}
+  </div>
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f8f9fb;padding:18px 10px;">
+    <tr>
+      <td align="center">
+
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
+          style="max-width:740px;border-radius:22px;overflow:hidden;background:#ffffff;border:1px solid #e2e8f0;
+          box-shadow:0 26px 80px rgba(0,0,0,.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="padding:16px 18px 10px 18px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="left" style="vertical-align:middle;">
+                    ${logoBlockHtml(b.brandName, b.logoUrl)}
+                  </td>
+                  <td align="right" style="vertical-align:middle;">
+                    ${pill("Welcome")}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          ${heroHtml(b.heroImageUrl)}
+
+          <!-- CONTENT -->
+          <tr>
+            <td style="padding:0 18px 18px 18px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <!-- LEFT column -->
+                  <td style="width:58%;vertical-align:top;padding-right:12px;">
+                    <div style="${FONT}color:#1e293b;">
+                      <div style="${FONT}${S.title}${S.h1}">
+                        Welcome, ${esc(data.customerName)}!
+                      </div>
+                      <div style="${FONT}${S.body}margin-top:7px;color:#334155;">
+                        We're thrilled to have you here. Your account has been successfully created.
+                      </div>
+
+                      <div style="margin-top:14px;${FONT}${S.body}color:#334155;">
+                        With your new account, you can quickly apply for visas, track application statuses, and manage your family's travel documents all in one place.
+                      </div>
+
+                      <div style="margin-top:14px;">
+                        ${buttonHtml("Go to Dashboard", "https://uaepermit.com/account")}
+                      </div>
+                    </div>
+                  </td>
+
+                  <!-- RIGHT column -->
+                  <td style="width:42%;vertical-align:top;padding-left:12px;">
+                    ${trustRowCompactHtml({
+                      trustDubaiTourism: b.trustDubaiTourism,
+                      trustGovtDubai: b.trustGovtDubai,
+                      trustEmirates: b.trustEmirates,
+                    })}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:12px 18px;background:#f8fafc;border:1px solid #e2e8f0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="left" style="${FONT}${S.small}color:#64748b;line-height:1.6;">
+                    <div style="font-weight:950;color:#1e293b;margin-bottom:4px;">${esc(
+                      b.brandName,
+                    )}</div>
+                    <div>This is an automated message. Please do not reply.</div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+
+        <div style="max-width:740px;color:#94a3b8;${FONT}${S.micro}margin-top:10px;">
+          © ${new Date().getFullYear()} ${esc(b.brandName)}. All rights reserved.
+        </div>
+
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+`;
+
+  const text = `Welcome to ${b.brandName}!
+
+Hi ${data.customerName},
+Your account has been successfully created.
+
+Go to Dashboard: https://uaepermit.com/account
+`;
+
+  return { subject, html, text };
+}
 /**
  * Customer email (received) — PREMIUM, ABOVE THE FOLD, LESS CONGESTED
  */

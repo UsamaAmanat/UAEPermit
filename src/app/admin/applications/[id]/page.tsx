@@ -310,7 +310,7 @@ export default function AdminApplicationDetailPage() {
                   <span className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-800 capitalize">
                     {data.status || "—"}
                   </span>
-                  {/* <span className="text-sm text-slate-600">Payment: {(data.paymentStatus || "pending").toString()}</span> */}
+                  <span className="text-sm text-slate-600">Payment: {(data.paymentStatus || "-").toString()}</span>
                   {data.extraFastSelected && (
                     <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-1 text-[11px] font-semibold text-amber-700">
                       ⚡ Extra Fast Processing

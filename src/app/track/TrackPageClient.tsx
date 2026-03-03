@@ -361,7 +361,7 @@ export default function TrackPageClient() {
       case "issued":
         return "Visa issued";
       case "rejected":
-        return "Application decision";
+        return "Visa Rejected";
       default:
         return status;
     }

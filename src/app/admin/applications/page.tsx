@@ -708,6 +708,7 @@ export default function ApplicationsPage() {
                   <th className="px-4 py-3">Applicants</th>
                   <th className="px-4 py-3">Amount</th>
                   <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Payment</th>
                   <th className="px-4 py-3">Created</th>
 
                   {/* ✅ Sticky Actions header */}
@@ -721,7 +722,7 @@ export default function ApplicationsPage() {
                 {loading ? (
                   <tr>
                     <td
-                      colSpan={11}
+                      colSpan={12}
                       className="py-10 text-center text-slate-600 text-xs"
                     >
                       Loading applications…
@@ -730,7 +731,7 @@ export default function ApplicationsPage() {
                 ) : paginatedApps.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={11}
+                      colSpan={12}
                       className="py-10 text-center text-slate-600 text-xs"
                     >
                       No applications found.
@@ -794,6 +795,20 @@ export default function ApplicationsPage() {
                           />
                           {formatStatusLabel(app.appStatus)}
                         </span>
+                      </td>
+
+                      <td className="px-4 py-3 align-middle text-xs">
+                        {app.paymentStatus === "Paid" ? (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-1 font-semibold text-emerald-700 border border-emerald-200">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                            Paid
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 font-semibold text-amber-700 border border-amber-200">
+                            <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                            Pending
+                          </span>
+                        )}
                       </td>
 
                       <td className="px-4 py-3 text-slate-900 whitespace-nowrap">

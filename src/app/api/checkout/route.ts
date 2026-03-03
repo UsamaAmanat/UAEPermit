@@ -33,6 +33,9 @@ export async function POST(req: Request) {
       submit: { message: "Card details are encrypted and processed securely." },
     },
 
+    payment_intent_data: {
+      metadata: { applicationId },
+    },
     metadata: { applicationId },
   });
 

@@ -76,20 +76,21 @@ export async function createApplication({
   const applicantsWithDefaults = normalizeApplicantsWithDefaults(applicants);
   const trackingId = nanoid();
 
-  const appRef = await addDoc(collection(db, "applications"), {
-    plan,
-    applicants: applicantsWithDefaults,
-    extraFastSelected,
-    extraFastFeePerApplicant: extraFastFeePerApplicant || 0,
-    grandTotal: grandTotal || 0,
-    status: "submitted",
-    trackingId,
-    orderId: null,
-    leadSource: leadSource && Object.keys(leadSource).length > 0 ? leadSource : null,
-    createAccount: !!createAccount,
-    userId: userId || null,
-    createdAt: serverTimestamp(),
-  });
+    const appRef = await addDoc(collection(db, "applications"), {
+      plan,
+      applicants: applicantsWithDefaults,
+      extraFastSelected,
+      extraFastFeePerApplicant: extraFastFeePerApplicant || 0,
+      grandTotal: grandTotal || 0,
+      status: "pending",
+      paymentStatus: "pending",
+      trackingId,
+      orderId: null,
+      leadSource: leadSource && Object.keys(leadSource).length > 0 ? leadSource : null,
+      createAccount: !!createAccount,
+      userId: userId || null,
+      createdAt: serverTimestamp(),
+    });
 
   const appId = appRef.id;
 
