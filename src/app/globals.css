@@ -64,6 +64,20 @@ html {
   }
 }
 
+/* News ticker scroll animation */
+@keyframes ticker {
+  0% { transform: translate3d(100vw, 0, 0); }
+  100% { transform: translate3d(-100%, 0, 0); }
+}
+
+@utility animate-ticker {
+  animation: ticker 15s linear infinite;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+
+
 /* Container utility classes with centralized max-width */
 .container {
   margin-left: auto;

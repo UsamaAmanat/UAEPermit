@@ -297,8 +297,8 @@ export default function FaqsClient() {
         <div className="pointer-events-none absolute inset-x-0 -bottom-24 h-40" />
 
         <div className="relative max-w-4xl mx-auto px-4 md:px-6 lg:px-0 text-center ">
-          <p className="inline-flex items-center  gap-2 px-4 py-1.5 rounded-full bg-[#62E9C9]/30 text-[11px] md:text-xs font-semibold uppercase tracking-[0.16em] text-[#62E9C9] shadow-sm">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#62E9C9]" />
+          <p className="inline-flex items-center  gap-2 px-4 py-1.5 rounded-full bg-[#62E9C9]/30 text-[11px] md:text-xs font-semibold uppercase tracking-[0.16em] text-[#0c4d3d] shadow-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#0c4d3d]" />
             Support Center
           </p>
 

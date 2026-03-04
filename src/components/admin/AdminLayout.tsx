@@ -1,7 +1,7 @@
 "use client";
 
 import { ReactNode, useState, useEffect } from "react";
-import { FileText, Globe, Newspaper, LayoutDashboard, Menu, X } from "lucide-react";
+import { FileText, Globe, Newspaper, LayoutDashboard, Menu, X, Settings } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -10,6 +10,7 @@ const navItems = [
   { href: "/admin/applications", label: "Applications", icon: FileText },
   { href: "/admin/countries-pricing", label: "Countries & Pricing", icon: Globe },
   { href: "/admin/blog", label: "Blog", icon: Newspaper },
+  { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 type AdminLayoutProps = {

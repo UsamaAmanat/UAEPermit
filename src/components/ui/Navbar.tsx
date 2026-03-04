@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { isAdminEmail } from "@/lib/authConstants";
 
-export default function Navbar() {
+export default function Navbar({ tickerActive = false }: { tickerActive?: boolean }) {
   const [open, setOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
@@ -86,7 +86,7 @@ export default function Navbar() {
       "hover:shadow-md hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3C4161]/30";
 
   return (
-    <nav className="fixed inset-x-0 top-0 z-50 transition-all duration-300">
+    <nav className={`fixed inset-x-0 z-40 transition-all duration-300 ${tickerActive && !isScrolled ? "top-10 sm:top-11" : "top-0"}`}>
       <div
         className={`backdrop-blur-sm transition-colors duration-300 ${
           isScrolled ? "bg-[#0c4d3d]" : "bg-white/0"
@@ -175,9 +175,9 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile overlay & drawer (no CTA inside) */}
+      {/* Mobile overlay & drawer */}
       {open && (
-        <div className="md:hidden fixed inset-0 z-50">
+        <div className={`md:hidden fixed inset-0 z-50 transition-all duration-300 ${tickerActive && !isScrolled ? "top-10 sm:top-11" : "top-0"}`}>
           <div
             className="absolute inset-0 bg-black/30 backdrop-blur-sm"
             onClick={() => setOpen(false)}
