@@ -214,7 +214,7 @@ const transform = (id: string, data: any): TrackingResult => {
       : "—";
 
   return {
-    id,
+    id: data?.trackingId || id,
     status: overall,
     applicants: applicantRows,
 

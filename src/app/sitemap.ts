@@ -5,7 +5,7 @@ import { adminDB } from "@/lib/firebaseAdmin";
 
 const SITE =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
-  "https://uaepermit.com";
+  "https://www.uaepermit.com";
 
 async function getPublishedBlogSlugs(): Promise<string[]> {
   try {

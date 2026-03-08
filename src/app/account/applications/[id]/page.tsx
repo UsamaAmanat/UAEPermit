@@ -21,11 +21,11 @@ import {
   Zap,
 } from "lucide-react";
 
-type AppStatus = "submitted" | "paid" | "issued" | "rejected";
+type AppStatus = "submitted" | "pending_payment" | "paid" | "issued" | "rejected";
 
 function mapStatus(raw: any): AppStatus {
   const s = String(raw || "").trim().toLowerCase();
-  if (["draft", "pending", "submitted"].includes(s)) return "submitted";
+  if (["draft", "pending", "submitted", "incomplete"].includes(s)) return "pending_payment";
   if (["paid", "processing"].includes(s)) return "paid";
   if (s === "issued") return "issued";
   if (s === "rejected") return "rejected";
@@ -130,6 +130,7 @@ export default function AccountApplicationDetailPage() {
 
   const statusColor: Record<AppStatus, { bg: string; text: string; icon: string; border: string }> = {
     submitted: { bg: "bg-amber-50", text: "text-amber-700", icon: "text-amber-500", border: "border-amber-200" },
+    pending_payment: { bg: "bg-orange-50", text: "text-orange-700", icon: "text-orange-500", border: "border-orange-200" },
     paid: { bg: "bg-sky-50", text: "text-sky-700", icon: "text-sky-500", border: "border-sky-200" },
     issued: { bg: "bg-emerald-50", text: "text-emerald-700", icon: "text-emerald-500", border: "border-emerald-200" },
     rejected: { bg: "bg-rose-50", text: "text-rose-700", icon: "text-rose-500", border: "border-rose-200" },
@@ -137,6 +138,7 @@ export default function AccountApplicationDetailPage() {
 
   const statusLabels: Record<AppStatus, string> = {
     submitted: "Submitted",
+    pending_payment: "Pending Payment",
     paid: "Payment Completed",
     issued: "Visa Issued",
     rejected: "Rejected",
@@ -168,23 +170,37 @@ export default function AccountApplicationDetailPage() {
 
       {/* ─── Status header card ─── */}
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="bg-gradient-to-r from-slate-50 via-white to-emerald-50/30 px-6 py-5 border-b border-slate-100">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className={`inline-flex items-center gap-1.5 rounded-full border ${sc.border} ${sc.bg} px-3.5 py-1.5 text-xs font-semibold ${sc.text}`}>
-              {overallStatus === "rejected" ? <AlertCircle className="h-3.5 w-3.5" /> : overallStatus === "issued" ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />}
-              {statusLabels[overallStatus]}
-            </span>
-            {extraFastSelected && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-1 text-[11px] font-semibold text-amber-700">
-                <Zap className="h-3 w-3" /> Extra Fast
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-slate-50 via-white to-emerald-50/30 px-6 py-5 border-b border-slate-100 gap-4">
+          <div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className={`inline-flex items-center gap-1.5 rounded-full border ${sc.border} ${sc.bg} px-3.5 py-1.5 text-xs font-semibold ${sc.text}`}>
+                {overallStatus === "rejected" ? <AlertCircle className="h-3.5 w-3.5" /> : overallStatus === "issued" ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Clock className="h-3.5 w-3.5" />}
+                {statusLabels[overallStatus]}
               </span>
-            )}
+              {extraFastSelected && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 border border-amber-200 px-2.5 py-1 text-[11px] font-semibold text-amber-700">
+                  <Zap className="h-3 w-3" /> Extra Fast
+                </span>
+              )}
+            </div>
+            <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm text-slate-600">
+              <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-slate-400" />{plan.country || "—"}</span>
+              <span className="flex items-center gap-1.5"><FileText className="h-3.5 w-3.5 text-slate-400" />{plan.visa || "—"}</span>
+              <span className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5 text-slate-400" />{applicantsCount} applicant{applicantsCount > 1 ? "s" : ""}</span>
+            </div>
           </div>
-          <div className="mt-3 flex flex-wrap items-center gap-x-6 gap-y-1 text-sm text-slate-600">
-            <span className="flex items-center gap-1.5"><MapPin className="h-3.5 w-3.5 text-slate-400" />{plan.country || "—"}</span>
-            <span className="flex items-center gap-1.5"><FileText className="h-3.5 w-3.5 text-slate-400" />{plan.visa || "—"}</span>
-            <span className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5 text-slate-400" />{applicantsCount} applicant{applicantsCount > 1 ? "s" : ""}</span>
-          </div>
+
+          {overallStatus === "pending_payment" && (
+            <button
+              onClick={() => {
+                window.location.href = `/apply/payment?appId=${encodeURIComponent(id || "")}&amount=${encodeURIComponent(grandTotal)}`;
+              }}
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(5,150,105,0.25)] transition hover:-translate-y-0.5 hover:bg-emerald-700 hover:shadow-[0_16px_32px_rgba(5,150,105,0.3)] active:translate-y-0"
+            >
+              <CreditCard className="h-4 w-4" />
+              Pay Now
+            </button>
+          )}
         </div>
 
         <div className="grid gap-px bg-slate-100 sm:grid-cols-4">

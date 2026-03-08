@@ -43,7 +43,8 @@ export default function Hero() {
           const data = d.data() as any;
           const name = data?.name || d.id;
           const code = data?.countryCode || data?.code || "";
-          list.push({ name, code });
+          const slug = data?.slug || d.id;
+          list.push({ name, code, slug });
         });
         list.sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
         if (list.length > 0) setCountries(list);
@@ -55,7 +56,7 @@ export default function Hero() {
   }, []);
 
   const prefetchCountry = (country: Country) => {
-    const slug = toSlug(country.name);
+    const slug = country.slug || toSlug(country.name);
     router.prefetch(`/country/${slug}`);
   };
 
@@ -85,7 +86,7 @@ export default function Hero() {
   }, []);
 
   function navigateToCountry(country: Country) {
-    const slug = toSlug(country.name);
+    const slug = country.slug || toSlug(country.name);
     router.push(`/country/${slug}`);
   }
 

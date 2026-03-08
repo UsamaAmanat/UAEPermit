@@ -40,6 +40,8 @@ if (!isConfigured) {
   );
 }
 
-export const MAIL_FROM = process.env.MAIL_FROM || "noreply@uaepermit.com";
+export const MAIL_FROM = process.env.MAIL_FROM?.includes("<") 
+  ? process.env.MAIL_FROM 
+  : `"UAE Permit" <${process.env.MAIL_FROM || "noreply@uaepermit.com"}>`;
 export const MAIL_ADMIN_TO = process.env.MAIL_ADMIN_TO || "";
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://uaepermit.com";
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.uaepermit.com";

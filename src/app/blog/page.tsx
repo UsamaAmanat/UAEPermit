@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description:
     "Explore expert blog posts to help you Apply UAE Dubai Visa Online. Get step-by-step tips, travel insights, and visa news from UAE Permit.",
   alternates: {
-    canonical: "https://uaepermit.com/blogs",
+    canonical: "/blog",
   },
 };
 

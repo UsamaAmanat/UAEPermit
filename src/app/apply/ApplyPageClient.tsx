@@ -135,11 +135,6 @@ export default function ApplyPageClient() {
   const [attemptedStep2Next, setAttemptedStep2Next] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
 
-     // If user lands on /apply without selecting a plan → show country picker
-  if (!hasPreselectedPlan) {
-    return <ApplyCountryPicker />;
-  }
-
   // ---------- PRICING TOTALS ----------
   const applicantsCount = applicants.length;
   const pricePerApplicant = Number(plan.price || 0);
@@ -422,13 +417,14 @@ export default function ApplyPageClient() {
     const term = u.get("utm_term")?.trim();
     const content = u.get("utm_content")?.trim();
     if (!src && !med && !camp && !term && !content) return null;
-    return {
-      utm_source: src || undefined,
-      utm_medium: med || undefined,
-      utm_campaign: camp || undefined,
-      utm_term: term || undefined,
-      utm_content: content || undefined,
-    };
+    const sourceItem: Record<string, string> = {};
+    if (src) sourceItem.utm_source = src;
+    if (med) sourceItem.utm_medium = med;
+    if (camp) sourceItem.utm_campaign = camp;
+    if (term) sourceItem.utm_term = term;
+    if (content) sourceItem.utm_content = content;
+    
+    return sourceItem as LeadSource;
   }, [searchParams]);
 
   // ---------- FIRESTORE + STRIPE ----------
@@ -571,6 +567,11 @@ export default function ApplyPageClient() {
   };
 
   const currentStepLabel = activeStep === 3 ? "Proceed to Payment" : "Next";
+
+  // If user lands on /apply without selecting a plan → show country picker
+  if (!hasPreselectedPlan) {
+    return <ApplyCountryPicker />;
+  }
 
   // ---------- RENDER ----------
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useEffect, useMemo, useState } from "react";
+import React, { Suspense, useEffect, useMemo, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import { loadStripe } from "@stripe/stripe-js";
 import {
@@ -184,11 +184,16 @@ function ApplyPaymentPageInner() {
     [],
   );
 
+  const initRef = useRef(false);
+
   useEffect(() => {
     if (!appId || !amount) {
       setBootError("Missing payment details. Please go back and try again.");
       return;
     }
+
+    if (initRef.current) return;
+    initRef.current = true;
 
     (async () => {
       try {

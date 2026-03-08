@@ -33,6 +33,7 @@ function toBlogPost(id: string, data: any): BlogPost {
     tags: Array.isArray(data?.tags) ? data.tags : [],
     seoTitle: data?.seoTitle ?? data?.title ?? "",
     seoDescription: data?.seoDescription ?? data?.excerpt ?? "",
+    schema: data?.schema ?? null,
     createdAt: data?.createdAt?.toDate?.() ?? null, // not used much in server page
     updatedAt: data?.updatedAt?.toDate?.() ?? null,
   };

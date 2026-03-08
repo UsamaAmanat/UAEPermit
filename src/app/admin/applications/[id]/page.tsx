@@ -66,7 +66,12 @@ async function sendStatusEmail(payload: {
   applicationId: string;
   trackingId: string;
   status: StatusType;
-  applicants: Array<{ name: string; email: string }>;
+  applicants: Array<{ 
+    name: string; 
+    email: string;
+    passportNumber?: string;
+    nationality?: string;
+  }>;
   plan?: any;
   visaFileUrl?: string;
 }) {
@@ -189,7 +194,12 @@ export default function AdminApplicationDetailPage() {
             applicationId: id,
             trackingId,
             status: value,
-            applicants: [{ name: app.name, email: app.email }],
+            applicants: [{ 
+              name: app.name, 
+              email: app.email,
+              passportNumber: app.passportNumber,
+              nationality: app.nationality
+            }],
             plan: data?.plan,
             visaFileUrl: value === "issued" ? applicants[idx]?.visaFile?.url : undefined,
           });
@@ -236,7 +246,12 @@ export default function AdminApplicationDetailPage() {
             applicationId: id,
             trackingId,
             status: "issued",
-            applicants: [{ name: app.name, email: app.email }],
+            applicants: [{ 
+              name: app.name, 
+              email: app.email,
+              passportNumber: app.passportNumber,
+              nationality: app.nationality 
+            }],
             plan: data?.plan,
             visaFileUrl: url,
           });
@@ -260,7 +275,12 @@ export default function AdminApplicationDetailPage() {
         applicationId: id,
         trackingId,
         status: (app.status as StatusType) || "submitted",
-        applicants: [{ name: app.name, email: app.email }],
+        applicants: [{ 
+          name: app.name, 
+          email: app.email,
+          passportNumber: app.passportNumber,
+          nationality: app.nationality
+        }],
         plan: data?.plan,
         visaFileUrl: app?.visaFile?.url,
       });

@@ -7,61 +7,64 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import ConditionalShell from "@/components/layout/ConditionalShell";
 import NextTopLoader from "nextjs-toploader";
 
-// export const metadata: Metadata = {
-//   metadataBase: new URL("https://uaepermit.com"),
-//   title: {
-//     default: "UAE Permit",
-//     template: "%s | UAE Permit",
-//   },
+export const metadata: Metadata = {
+  metadataBase: new URL("https://www.uaepermit.com"),
+  title: {
+    default: "UAE Permit",
+    template: "%s | UAE Permit",
+  },
+  icons: {
+    icon: "/favicon.jpeg",
+  },
 
-//   // ✅ Google + Bing verification
-//   verification: {
-//     google: "Vfel3ODty6ZQGY3rb71v8UcZltwZzzPQ0QsjmTNlMeQ",
-//     other: {
-//       "msvalidate.01": "B6172316F305A01A8FDBA7C63FF29C89",
-//     },
-//   },
+  // ✅ Google + Bing verification
+  verification: {
+    google: "Vfel3ODty6ZQGY3rb71v8UcZltwZzzPQ0QsjmTNlMeQ",
+    other: {
+      "msvalidate.01": "B6172316F305A01A8FDBA7C63FF29C89",
+    },
+  },
 
-//   description:
-//     "Dubai & UAE Visa Assistance — fast processing, secure payments, and 24/7 support.",
+  description:
+    "Dubai & UAE Visa Assistance — fast processing, secure payments, and 24/7 support.",
 
-//   openGraph: {
-//     type: "website",
-//     siteName: "UAE Permit",
-//     url: "https://uaepermit.com",
-//     title: "UAE Permit",
-//     description:
-//       "Dubai & UAE Visa Assistance — fast processing, secure payments, and 24/7 support.",
-//     images: [
-//       {
-//         url: "/og.jpg",
-//         width: 1200,
-//         height: 630,
-//         alt: "UAE Permit – Dubai & UAE Visa Services",
-//       },
-//     ],
-//   },
-//   twitter: {
-//     card: "summary_large_image",
-//     title: "UAE Permit",
-//     description:
-//       "Dubai & UAE Visa Assistance — fast processing, secure payments, and 24/7 support.",
-//     images: ["/og.jpg"],
-//   },
+  openGraph: {
+    type: "website",
+    siteName: "UAE Permit",
+    url: "https://www.uaepermit.com",
+    title: "UAE Permit",
+    description:
+      "Dubai & UAE Visa Assistance — fast processing, secure payments, and 24/7 support.",
+    images: [
+      {
+        url: "/og.jpg",
+        width: 1200,
+        height: 630,
+        alt: "UAE Permit – Dubai & UAE Visa Services",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "UAE Permit",
+    description:
+      "Dubai & UAE Visa Assistance — fast processing, secure payments, and 24/7 support.",
+    images: ["/og.jpg"],
+  },
 
-//   // ✅ Global default: index + follow
-//   robots: {
-//     index: true,
-//     follow: true,
-//     googleBot: {
-//       index: true,
-//       follow: true,
-//       "max-image-preview": "large",
-//       "max-snippet": -1,
-//       "max-video-preview": -1,
-//     },
-//   },
-// };
+  // ✅ Global default: index + follow
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+};
 
 export default function RootLayout({
   children,

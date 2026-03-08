@@ -1,5 +1,5 @@
 // src/data/countries.ts
-export type Country = { name: string; code: string };
+export type Country = { name: string; code: string; slug?: string };
 
 export const COUNTRIES: Country[] = [
   // A

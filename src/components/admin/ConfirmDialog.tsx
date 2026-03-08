@@ -53,26 +53,26 @@ export default function ConfirmDialog({
               leaveFrom="opacity-100 scale-100 translate-y-0"
               leaveTo="opacity-0 scale-[0.98] translate-y-2"
             >
-              <Dialog.Panel className="w-full max-w-md overflow-hidden rounded-2xl border border-white/10 bg-[#050818] shadow-[0_25px_70px_rgba(0,0,0,0.7)]">
+              <Dialog.Panel className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl">
                 <div className="flex items-start justify-between gap-3 px-5 pt-5">
                   <div className="flex items-start gap-3">
                     <div
                       className={[
                         "mt-0.5 inline-flex h-9 w-9 items-center justify-center rounded-xl border",
                         danger
-                          ? "border-rose-400/30 bg-rose-500/10 text-rose-200"
-                          : "border-sky-400/30 bg-sky-500/10 text-sky-200",
+                          ? "border-rose-200 bg-rose-50 text-rose-600"
+                          : "border-sky-200 bg-sky-50 text-sky-600",
                       ].join(" ")}
                     >
                       <AlertTriangle className="h-4 w-4" />
                     </div>
 
                     <div>
-                      <Dialog.Title className="text-sm font-semibold text-white">
+                      <Dialog.Title className="text-sm font-semibold text-slate-900">
                         {title}
                       </Dialog.Title>
                       {description && (
-                        <p className="mt-1 text-xs text-slate-600">
+                        <p className="mt-1 text-xs text-slate-500">
                           {description}
                         </p>
                       )}
@@ -82,19 +82,19 @@ export default function ConfirmDialog({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-900/70 text-slate-300 hover:bg-slate-800"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
 
-                <div className="mt-4 border-t border-white/10 px-5 py-4">
+                <div className="mt-4 border-t border-slate-100 bg-slate-50/50 px-5 py-4">
                   <div className="flex items-center justify-end gap-2">
                     <button
                       type="button"
                       onClick={onClose}
                       disabled={loading}
-                      className="rounded-full bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-200 hover:bg-slate-800 disabled:opacity-50"
+                      className="rounded-full bg-white border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 shadow-sm"
                     >
                       {cancelText}
                     </button>

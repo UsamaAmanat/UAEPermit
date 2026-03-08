@@ -25,6 +25,7 @@ export type WelcomeEmailPayload = {
 
 export type AdminEmailPayload = {
   applicationId: string;
+  trackingId?: string;
   paidAmount: number;
   currency?: string; // default "USD"
   applicants: ApplicantRow[];
@@ -86,7 +87,7 @@ function fmtDate(d?: Date | string) {
 
 function trackRootUrl(input?: string) {
   // default fallback
-  const FALLBACK = "https://uaepermit.com/track";
+  const FALLBACK = "https://www.uaepermit.com/track";
 
   if (!input) return FALLBACK;
 
@@ -475,14 +476,14 @@ function heroHtml(heroImageUrl: string) {
   `;
 }
 function ensureAbsolute(urlOrPath: string) {
-  if (!urlOrPath) return "https://uaepermit.com/track";
+  if (!urlOrPath) return "https://www.uaepermit.com/track";
   return urlOrPath.startsWith("http")
     ? urlOrPath
-    : `https://uaepermit.com${urlOrPath.startsWith("/") ? "" : "/"}${urlOrPath}`;
+    : `https://www.uaepermit.com${urlOrPath.startsWith("/") ? "" : "/"}${urlOrPath}`;
 }
 
 function buildTrackingUrl(inputUrl?: string, trackingId?: string) {
-  const FALLBACK = "https://uaepermit.com/track";
+  const FALLBACK = "https://www.uaepermit.com/track";
 
   const tid = (trackingId || extractTrackingId(inputUrl) || "").trim();
   if (!tid) {
@@ -494,7 +495,7 @@ function buildTrackingUrl(inputUrl?: string, trackingId?: string) {
     return FALLBACK;
   }
 
-  return `https://uaepermit.com/track/${encodeURIComponent(tid)}`;
+  return `https://www.uaepermit.com/track/${encodeURIComponent(tid)}`;
 }
 
 // export type WelcomeEmailPayload = {
@@ -571,7 +572,7 @@ export function buildWelcomeEmail(data: WelcomeEmailPayload) {
                       </div>
 
                       <div style="margin-top:14px;">
-                        ${buttonHtml("Go to Dashboard", "https://uaepermit.com/account")}
+                        ${buttonHtml("Go to Dashboard", "https://www.uaepermit.com/account")}
                       </div>
                     </div>
                   </td>
@@ -623,7 +624,7 @@ export function buildWelcomeEmail(data: WelcomeEmailPayload) {
 Hi ${data.customerName},
 Your account has been successfully created.
 
-Go to Dashboard: https://uaepermit.com/account
+Go to Dashboard: https://www.uaepermit.com/account
 `;
 
   return { subject, html, text };
@@ -920,7 +921,11 @@ export function buildAdminNewApplicationEmail(data: AdminEmailPayload) {
             Application details
           </div>
           <div style="margin-top:10px;${FONT}${S.body}color:#334155;line-height:1.7;">
-            <b style="color:#1e293b;">Application ID:</b> ${esc(data.applicationId)}<br/>
+            ${
+              data.trackingId
+                ? `<b style="color:#1e293b;">Tracking Number:</b> ${esc(data.trackingId)}<br/>`
+                : `<b style="color:#1e293b;">Application ID:</b> ${esc(data.applicationId)}<br/>`
+            }
             ${data.orderId ? `<b style="color:#1e293b;">Order ID:</b> ${esc(data.orderId)}<br/>` : ""}
 
             ${

@@ -4,10 +4,10 @@ export default function HomeSchema() {
     "@graph": [
       {
         "@type": "Organization",
-        "@id": "https://uaepermit.com/#organization",
+        "@id": "https://www.uaepermit.com/#organization",
         name: "UAE Permit",
-        url: "https://uaepermit.com/",
-        logo: "https://uaepermit.com/assets/logo.png",
+        url: "https://www.uaepermit.com/",
+        logo: "https://www.uaepermit.com/assets/logo.png",
         description:
           "UAE Permit is a trusted online platform providing Dubai visa online and UAE visa services including tourist visas, business visas, and express visa processing worldwide.",
         contactPoint: {
@@ -26,13 +26,13 @@ export default function HomeSchema() {
 
       {
         "@type": "TravelAgency",
-        "@id": "https://uaepermit.com/#travelagency",
+        "@id": "https://www.uaepermit.com/#travelagency",
         name: "UAE Permit",
-        url: "https://uaepermit.com/",
+        url: "https://www.uaepermit.com/",
         description:
           "Professional UAE travel agency offering Dubai visa online services, express visa processing, and tourist visa assistance for international travelers.",
         parentOrganization: {
-          "@id": "https://uaepermit.com/#organization",
+          "@id": "https://www.uaepermit.com/#organization",
         },
         address: {
           "@type": "PostalAddress",
@@ -49,24 +49,24 @@ export default function HomeSchema() {
 
       {
         "@type": "WebSite",
-        "@id": "https://uaepermit.com/#website",
-        url: "https://uaepermit.com/",
+        "@id": "https://www.uaepermit.com/#website",
+        url: "https://www.uaepermit.com/",
         name: "Dubai Visa Online | UAE Permit",
         publisher: {
-          "@id": "https://uaepermit.com/#organization",
+          "@id": "https://www.uaepermit.com/#organization",
         },
       },
 
       {
         "@type": "WebPage",
-        "@id": "https://uaepermit.com/#homepage",
-        url: "https://uaepermit.com/",
+        "@id": "https://www.uaepermit.com/#homepage",
+        url: "https://www.uaepermit.com/",
         name: "Apply Dubai Visa Online | UAE Visa Services – UAE Permit",
         isPartOf: {
-          "@id": "https://uaepermit.com/#website",
+          "@id": "https://www.uaepermit.com/#website",
         },
         about: {
-          "@id": "https://uaepermit.com/#travelagency",
+          "@id": "https://www.uaepermit.com/#travelagency",
         },
         description:
           "Apply Dubai visa online with UAE Permit. Fast UAE tourist visa processing, express approval, transparent fees, and 24/7 expert support.",
@@ -74,7 +74,7 @@ export default function HomeSchema() {
 
       {
         "@type": "FAQPage",
-        "@id": "https://uaepermit.com/#faq",
+        "@id": "https://www.uaepermit.com/#faq",
         mainEntity: [
           {
             "@type": "Question",

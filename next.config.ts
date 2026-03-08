@@ -6,9 +6,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/country/not-every-website-is-legit-on-google-ads-for-dubai-visa",
-        destination: "/blog/not-every-website-is-legit-on-google-for-dubai-visa",
-        permanent: true, // ✅ 301
+        source: "/blog/:slug",
+        destination: "/:slug",
+        permanent: true,
       },
     ];
   },

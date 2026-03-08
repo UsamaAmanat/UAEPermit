@@ -10,17 +10,10 @@ import {
   Image as ImageIcon,
   ChevronDown,
   CalendarDays,
-} from "lucide-react";
-import ReactCountryFlag from "react-country-flag";
-import "react-day-picker/dist/style.css";
-
-import { DayPicker, type CaptionProps } from "react-day-picker";
-import { format } from "date-fns";
-import {
-  Calendar as CalendarIcon,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
 import { Switch } from "@headlessui/react";
 
 import type { Applicant, ApplicantDocs, DocKind } from "../types";
@@ -33,12 +26,14 @@ type DateFieldProps = {
   required?: boolean;
   onChange: (value: string) => void;
   error?: boolean;
+  disablePast?: boolean;
+  disableFuture?: boolean;
 };
 
 function parseDate(value: string): Date | null {
   if (!value) return null;
   const [y, m, d] = value.split("-").map((p) => Number(p));
-  if (!y || !m || !d) return null;
+  if (!y || m == null || isNaN(m) || !d) return null;
   const dt = new Date(y, m - 1, d);
   if (Number.isNaN(dt.getTime())) return null;
   return dt;
@@ -61,28 +56,25 @@ function formatDateForDisplay(d: Date | null): string {
   });
 }
 
-function DateField({ label, value, required, onChange, error }: DateFieldProps) {
+function DateField({ label, value, required, onChange, error, disablePast = false, disableFuture = false }: DateFieldProps) {
   const [open, setOpen] = useState(false);
+  
   const [current, setCurrent] = useState<Date | null>(() => {
     const d = parseDate(value);
     if (d) return d;
-
-    // ✅ default to today's date (at midnight)
-    const t = new Date();
-    return new Date(t.getFullYear(), t.getMonth(), t.getDate());
+    return null;
   });
 
   const [monthView, setMonthView] = useState<Date>(() => {
     const d = parseDate(value);
-    if (d) return d;
-
+    if (d) return new Date(d.getFullYear(), d.getMonth(), 1);
     const t = new Date();
-    return new Date(t.getFullYear(), t.getMonth(), 1); // month view at current month
+    return new Date(t.getFullYear(), t.getMonth(), 1);
   });
 
   const containerRef = useRef<HTMLDivElement | null>(null);
 
-  // ✅ if no value provided, set today's date into parent state once
+  // if no value provided, set today's date into parent state once
   useEffect(() => {
     const d = parseDate(value);
     if (d) return;
@@ -98,7 +90,9 @@ function DateField({ label, value, required, onChange, error }: DateFieldProps) 
   useEffect(() => {
     const d = parseDate(value);
     setCurrent(d);
-    if (d) setMonthView(d);
+    if (d) {
+      setMonthView(new Date(d.getFullYear(), d.getMonth(), 1));
+    }
   }, [value]);
 
   useEffect(() => {
@@ -119,28 +113,39 @@ function DateField({ label, value, required, onChange, error }: DateFieldProps) 
   const firstDay = firstOfMonth.getDay(); // 0-6
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-  // ✅ Disable past dates (today allowed)
   const now = new Date();
-  const startOfToday = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate(),
-  );
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-  const isPastDay = (day: number) => {
+  const isDisabledDay = (day: number) => {
     const picked = new Date(year, month, day);
-    return picked < startOfToday;
+    if (disablePast && picked < startOfToday) return true;
+    if (disableFuture && picked > startOfToday) return true;
+    return false;
   };
 
-  // ✅ Disable going to months before current month
+  const currentYear = new Date().getFullYear();
+  let minYear = currentYear - 100;
+  let maxYear = currentYear + 20;
+  
+  if (disablePast) minYear = currentYear;
+  if (disableFuture) maxYear = currentYear;
+
   const isPrevMonthDisabled = () => {
-    const curMonthStart = new Date(
-      startOfToday.getFullYear(),
-      startOfToday.getMonth(),
-      1,
-    );
-    const viewMonthStart = new Date(year, month, 1);
-    return viewMonthStart <= curMonthStart;
+    if (disablePast) {
+      const curMonthStart = new Date(startOfToday.getFullYear(), startOfToday.getMonth(), 1);
+      const viewMonthStart = new Date(year, month, 1);
+      return viewMonthStart <= curMonthStart;
+    }
+    return year <= minYear && month <= 0;
+  };
+
+  const isNextMonthDisabled = () => {
+    if (disableFuture) {
+      const curMonthStart = new Date(startOfToday.getFullYear(), startOfToday.getMonth(), 1);
+      const viewMonthStart = new Date(year, month, 1);
+      return viewMonthStart >= curMonthStart;
+    }
+    return year >= maxYear && month >= 11;
   };
 
   const days: (number | null)[] = [];
@@ -151,7 +156,7 @@ function DateField({ label, value, required, onChange, error }: DateFieldProps) 
   const displayValue = formatDateForDisplay(current);
 
   const handleSelectDay = (day: number) => {
-    if (isPastDay(day)) return;
+    if (isDisabledDay(day)) return;
     const picked = new Date(year, month, day);
     const iso = formatDateForInput(picked);
     onChange(iso);
@@ -160,10 +165,31 @@ function DateField({ label, value, required, onChange, error }: DateFieldProps) 
 
   const goMonth = (delta: number) => {
     if (delta < 0 && isPrevMonthDisabled()) return;
+    if (delta > 0 && isNextMonthDisabled()) return;
     const m = new Date(monthView);
     m.setMonth(m.getMonth() + delta);
     setMonthView(m);
   };
+
+  const handleMonthChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newMonth = parseInt(e.target.value, 10);
+    const m = new Date(monthView);
+    m.setMonth(newMonth);
+    setMonthView(m);
+  };
+
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newYear = parseInt(e.target.value, 10);
+    const m = new Date(monthView);
+    m.setFullYear(newYear);
+    setMonthView(m);
+  };
+
+  const years = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
+  const months = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+  ];
 
   return (
     <div className="relative w-full space-y-1" ref={containerRef}>
@@ -174,7 +200,8 @@ function DateField({ label, value, required, onChange, error }: DateFieldProps) 
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className={`flex w-full items-center justify-between rounded-xl border bg-white px-3 py-2.5 text-xs text-slate-700 shadow-[0_1px_0_rgba(15,23,42,0.03)] outline-none transition hover:bg-slate-50 focus:ring-0 focus:outline-none focus-visible:outline-none ${error ? "border-rose-400 focus:border-rose-500" : "border-slate-200 focus:border-[#3C4161]"}`}>
+        className={`flex w-full items-center justify-between rounded-xl border bg-white px-3 py-2.5 text-xs text-slate-700 shadow-[0_1px_0_rgba(15,23,42,0.03)] outline-none transition hover:bg-slate-50 focus:ring-0 focus:outline-none focus-visible:outline-none ${error ? "border-rose-400 focus:border-rose-500" : "border-slate-200 focus:border-[#3C4161]"}`}
+      >
         <span className={displayValue ? "" : "text-slate-400"}>
           {displayValue || "Select date"}
         </span>
@@ -182,41 +209,63 @@ function DateField({ label, value, required, onChange, error }: DateFieldProps) 
       </button>
 
       {open && (
-        <div className="absolute bottom-full left-0 mb-2 w-64 rounded-2xl border border-slate-200 bg-white p-3 text-[11px] text-slate-700 shadow-xl">
-          <div className="mb-2 flex items-center justify-between">
+        <div className="absolute bottom-full left-0 mb-2 w-64 rounded-2xl border border-slate-200 bg-white p-3 text-[11px] text-slate-700 shadow-xl z-50">
+          <div className="mb-2 flex items-center justify-between gap-1">
             <button
               type="button"
               onClick={() => goMonth(-1)}
               disabled={isPrevMonthDisabled()}
               className={[
-                "rounded-full p-1 focus:outline-none focus-visible:outline-none",
-                isPrevMonthDisabled()
-                  ? "cursor-not-allowed opacity-40"
-                  : "hover:bg-slate-100",
+                "rounded-full p-1 focus:outline-none focus-visible:outline-none shrink-0",
+                isPrevMonthDisabled() ? "cursor-not-allowed opacity-40" : "hover:bg-slate-100",
               ].join(" ")}
             >
-              <ChevronLeft className="h-3.5 w-3.5" />
+              <ChevronLeft className="h-4 w-4" />
             </button>
 
-            <span className="text-xs font-semibold">
-              {monthView.toLocaleDateString("en-US", {
-                month: "long",
-                year: "numeric",
-              })}
-            </span>
+            <div className="flex gap-1 flex-1">
+              <select
+                value={monthView.getMonth()}
+                onChange={handleMonthChange}
+                className="w-full text-xs p-1 rounded border-slate-200 bg-slate-50 focus:ring-1 focus:ring-[#3C4161] outline-none"
+              >
+                {months.map((m, i) => {
+                  if (disablePast && year === startOfToday.getFullYear() && i < startOfToday.getMonth()) {
+                     return null;
+                  }
+                  if (disableFuture && year === startOfToday.getFullYear() && i > startOfToday.getMonth()) {
+                     return null;
+                  }
+                  return <option key={i} value={i}>{m}</option>;
+                })}
+              </select>
+              <select
+                value={monthView.getFullYear()}
+                onChange={handleYearChange}
+                className="w-full text-xs p-1 rounded border-slate-200 bg-slate-50 focus:ring-1 focus:ring-[#3C4161] outline-none"
+              >
+                {years.map((y) => {
+                  return <option key={y} value={y}>{y}</option>;
+                })}
+              </select>
+            </div>
 
             <button
               type="button"
               onClick={() => goMonth(1)}
-              className="rounded-full p-1 hover:bg-slate-100 focus:outline-none focus-visible:outline-none"
+              disabled={isNextMonthDisabled()}
+              className={[
+                "rounded-full p-1 focus:outline-none focus-visible:outline-none shrink-0",
+                isNextMonthDisabled() ? "cursor-not-allowed opacity-40" : "hover:bg-slate-100",
+              ].join(" ")}
             >
-              <ChevronRight className="h-3.5 w-3.5" />
+              <ChevronRight className="h-4 w-4" />
             </button>
           </div>
 
           <div className="grid grid-cols-7 gap-1 text-[10px] text-slate-400">
             {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
-              <div key={d} className="flex h-6 items-center justify-center">
+              <div key={d} className="flex h-6 items-center justify-center font-medium">
                 {d}
               </div>
             ))}
@@ -225,21 +274,14 @@ function DateField({ label, value, required, onChange, error }: DateFieldProps) 
           <div className="mt-1 grid grid-cols-7 gap-1 text-[11px]">
             {days.map((d, idx) => {
               if (!d) {
-                return (
-                  <div
-                    key={idx}
-                    className="flex h-7 items-center justify-center text-slate-300"
-                  />
-                );
+                return <div key={idx} className="flex h-7 items-center justify-center" />;
               }
 
-              const isSelected =
-                current &&
+              const isSelected = current &&
                 current.getFullYear() === year &&
                 current.getMonth() === month &&
                 current.getDate() === d;
-
-              const disabled = isPastDay(d);
+              const disabled = isDisabledDay(d);
 
               return (
                 <button
@@ -249,11 +291,7 @@ function DateField({ label, value, required, onChange, error }: DateFieldProps) 
                   onClick={() => handleSelectDay(d)}
                   className={[
                     "flex h-7 items-center justify-center rounded-full text-xs focus:outline-none focus-visible:outline-none",
-                    disabled
-                      ? "cursor-not-allowed text-slate-300"
-                      : isSelected
-                        ? "bg-[#62E9C9] text-[#0c4d3d]"
-                        : "text-slate-700 hover:bg-slate-100",
+                    disabled ? "cursor-not-allowed text-slate-300" : isSelected ? "bg-[#62E9C9] text-[#0c4d3d] font-bold shadow-sm" : "text-slate-700 hover:bg-slate-100",
                   ].join(" ")}
                 >
                   {d}
@@ -1121,6 +1159,7 @@ export function StepDocsAndApplicants({
               <DateField
                 label="Passport Expiry"
                 required
+                disablePast={true}
                 value={applicant.passportExpiry}
                 onChange={(v) => onChangeApplicant(index, "passportExpiry", v)}
                 error={attemptedNext && !applicant.passportExpiry?.trim()}
@@ -1148,6 +1187,7 @@ export function StepDocsAndApplicants({
               <DateField
                 label="Tentative Travel Date"
                 required
+                disablePast={true}
                 value={applicant.tentativeTravelDate}
                 onChange={(v) =>
                   onChangeApplicant(index, "tentativeTravelDate", v)
@@ -1157,6 +1197,8 @@ export function StepDocsAndApplicants({
               <DateField
                 label="Date of Birth"
                 required
+                disablePast={false}
+                disableFuture={true}
                 value={applicant.dob}
                 onChange={(v) => onChangeApplicant(index, "dob", v)}
                 error={attemptedNext && !applicant.dob?.trim()}

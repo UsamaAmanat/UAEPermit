@@ -238,7 +238,7 @@ export default function ApplicationsPage() {
 
   // pagination
   const [page, setPage] = useState(1);
-  const pageSize = 7;
+  const [pageSize, setPageSize] = useState<number | "all">(10);
 
   // drawer
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -503,12 +503,13 @@ export default function ApplicationsPage() {
     dateTo,
   ]);
 
-  const totalPages = Math.max(1, Math.ceil(filteredApps.length / pageSize));
+  const currentSize = pageSize === "all" ? Math.max(1, filteredApps.length) : pageSize;
+  const totalPages = Math.max(1, Math.ceil(filteredApps.length / currentSize));
   const currentPage = Math.min(page, totalPages);
 
   const paginatedApps = filteredApps.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize,
+    (currentPage - 1) * currentSize,
+    currentPage * currentSize,
   );
 
   useEffect(() => {
@@ -761,7 +762,7 @@ export default function ApplicationsPage() {
                       <td className="px-4 py-3 text-slate-900">{app.visaType}</td>
                       <td className="px-4 py-3 text-slate-900">{app.product}</td>
                       <td className="px-4 py-3 text-slate-900">{app.country}</td>
-                      <td className="px-4 py-3 text-slate-600 text-xs max-w-[120px] truncate" title={app.leadSource || ""}>
+                      <td className="px-4 py-3 text-slate-600 text-xs " title={app.leadSource || ""}>
                         {app.leadSource || "—"}
                       </td>
                       <td className="px-4 py-3">
@@ -842,11 +843,11 @@ export default function ApplicationsPage() {
               <p>
                 Showing{" "}
                 <span className="font-semibold">
-                  {(currentPage - 1) * pageSize + 1}
+                  {(currentPage - 1) * currentSize + 1}
                 </span>{" "}
                 –{" "}
                 <span className="font-semibold">
-                  {Math.min(currentPage * pageSize, filteredApps.length || 0)}
+                  {Math.min(currentPage * currentSize, filteredApps.length || 0)}
                 </span>{" "}
                 of{" "}
                 <span className="font-semibold">
@@ -854,6 +855,24 @@ export default function ApplicationsPage() {
                 </span>
               </p>
               <div className="flex items-center gap-2">
+                <div className="mr-2 flex items-center gap-1">
+                  <span className="text-slate-500">Rows:</span>
+                  <select
+                    value={pageSize}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPageSize(val === "all" ? "all" : Number(val));
+                      setPage(1);
+                    }}
+                    className="rounded border border-slate-200 bg-white px-1.5 py-0.5 text-xs text-slate-700 focus:outline-none"
+                  >
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={50}>50</option>
+                    <option value={100}>100</option>
+                    <option value="all">All</option>
+                  </select>
+                </div>
                 <button
                   type="button"
                   disabled={currentPage === 1}

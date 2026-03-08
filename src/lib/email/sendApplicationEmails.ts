@@ -97,9 +97,16 @@ export async function sendApplicationEmails(args: {
 
   const customerEmail = buildCustomerApplicationReceivedEmail(customerPayload);
 
+  // Extract trackingId for the admin payload 
+  // (usually trackingIdOrPath is the tracking URL or just the ID)
+  const extractedTrackingId = args.trackingIdOrPath.includes("/track/") 
+    ? args.trackingIdOrPath.split("/track/").pop()?.split("?")[0] 
+    : args.trackingIdOrPath;
+
   // Admin
   const adminPayload: AdminEmailPayload = {
     applicationId: args.applicationId,
+    trackingId: extractedTrackingId,
     paidAmount: args.paidAmount,
     currency: args.currency,
     applicants,

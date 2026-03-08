@@ -14,8 +14,12 @@ import { db } from "@/lib/firebaseClient";
 
 export default function ApplySuccessPageClient() {
   const searchParams = useSearchParams();
-  const trackingId = searchParams.get("appId") ?? "";
-  const hasId = Boolean(trackingId);
+  const appIdParam = searchParams.get("appId") ?? "";
+  const [actualTrackingId, setActualTrackingId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const displayId = actualTrackingId || appIdParam;
+  const hasId = Boolean(displayId);
 
   const [showConfetti, setShowConfetti] = useState(false);
 
@@ -69,15 +73,23 @@ export default function ApplySuccessPageClient() {
   }, []);
 
   useEffect(() => {
-    if (!trackingId) return;
+    if (!appIdParam) return;
 
     const run = async () => {
       try {
-        const ref = doc(db, "applications", trackingId);
+        const ref = doc(db, "applications", appIdParam);
         const snap = await getDoc(ref);
-        if (!snap.exists()) return;
+        if (!snap.exists()) {
+          setLoading(false);
+          return;
+        }
 
         const data = snap.data();
+        if (data.trackingId) {
+          setActualTrackingId(data.trackingId);
+        }
+        
+        setLoading(false);
 
         // 1️⃣ Mark paid
         await updateDoc(ref, {
@@ -95,8 +107,8 @@ export default function ApplySuccessPageClient() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            applicationId: trackingId,
-            trackingId,
+            applicationId: appIdParam,
+            trackingId: data.trackingId || appIdParam,
             status: "paid",
             previousStatus: data.status || "submitted",
             applicants: data.applicants || [],
@@ -108,12 +120,12 @@ export default function ApplySuccessPageClient() {
     };
 
     run();
-  }, [trackingId]);
+  }, [appIdParam]);
 
   const handleCopy = async () => {
-    if (!trackingId) return;
+    if (!displayId) return;
     try {
-      await navigator.clipboard.writeText(trackingId);
+      await navigator.clipboard.writeText(displayId);
       toast.success("Tracking ID copied", {
         description: "You can paste this anywhere to check your status.",
       });
@@ -122,7 +134,18 @@ export default function ApplySuccessPageClient() {
     }
   };
 
-  const trackHref = hasId ? `/track?appId=${trackingId}` : "/track";
+  const trackHref = hasId ? `/track?appId=${displayId}` : "/track";
+
+  if (loading) {
+    return (
+      <main className="min-h-screen pt-28 pb-10 flex items-center justify-center bg-[#F5F6FB]">
+        <div className="flex animate-pulse items-center gap-3 text-slate-500 rounded-2xl bg-white px-5 py-4 shadow-sm ring-1 ring-slate-200">
+          <div className="h-5 w-5 rounded-full border-2 border-slate-300 border-t-[#62E9C9] animate-spin" />
+          <span className="text-sm font-medium">Verifying payment...</span>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main
@@ -164,7 +187,7 @@ export default function ApplySuccessPageClient() {
             <div className="space-y-1">
               <p className="text-xs text-slate-500">Tracking ID</p>
               <p className="font-mono text-sm font-semibold text-slate-900">
-                {hasId ? trackingId : "Will be shared with you shortly"}
+                {hasId ? displayId : "Will be shared with you shortly"}
               </p>
             </div>
 

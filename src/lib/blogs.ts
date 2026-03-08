@@ -29,6 +29,7 @@ export type BlogPost = {
   updatedAt?: Date | null;
   seoTitle?: string;
   seoDescription?: string;
+  schema?: any;
 };
 
 const colRef = collection(db, "blogs");
@@ -114,6 +115,7 @@ function toBlogPost(id: string, data: any): BlogPost {
     category: data.category ?? "",
     seoTitle: data.seoTitle ?? data.title ?? "",
     seoDescription: data.seoDescription ?? data.excerpt ?? "",
+    schema: data.schema ?? null,
     createdAt: data.createdAt?.toDate?.() ?? null,
     updatedAt: data.updatedAt?.toDate?.() ?? null,
   };

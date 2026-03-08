@@ -166,7 +166,7 @@ async function uploadCoverImage(file: File): Promise<string> {
                 className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 outline-none focus:ring-2 focus:ring-emerald-500/30"
               />
               <p className="mt-1 text-[11px] text-slate-600">
-                Final URL: <span className="text-slate-600">/blog/{slug || makeSlug(title) || "your-slug"}</span>
+                Final URL: <span className="text-slate-600">/{slug || makeSlug(title) || "your-slug"}</span>
               </p>
             </div>
 

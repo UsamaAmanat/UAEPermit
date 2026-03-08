@@ -110,19 +110,36 @@ export async function createApplication({
       for (const kind of ["passport", "photo", "ticket"] as DocKind[]) {
         const files = (d as any)?.[kind] || [];
         for (const file of files) {
-          const path = `applications/${appId}/applicant_${i}/${kind}/${Date.now()}_${file.name}`;
+          if (!file) continue;
+
+          // If the "file" is actually a string URL (e.g., from "Add My Info"), 
+          // skip uploading and just store the URL.
+          if (typeof file === "string") {
+            forApplicant[kind].push({
+              name: `Saved ${kind}`,
+              url: file,
+              path: "existing-profile-doc",
+              size: 0,
+            });
+            continue;
+          }
+
+          const path = `applications/${appId}/applicant_${i}/${kind}/${Date.now()}_${file.name || "file"}`;
           const storageRef = ref(storage, path);
 
           await uploadBytes(storageRef, file);
           const url = await getDownloadURL(storageRef);
 
           const uploaded: UploadedDoc = {
-            name: file.name,
+            name: file.name || "Uploaded File",
             url,
             path,
-            size: file.size,
-            type: file.type || undefined,
+            size: file.size || 0,
           };
+          
+          if (file.type) {
+            uploaded.type = file.type;
+          }
 
           forApplicant[kind].push(uploaded);
         }

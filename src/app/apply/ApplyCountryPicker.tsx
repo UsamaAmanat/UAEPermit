@@ -9,7 +9,7 @@ import { Search, SearchX, Loader2 } from "lucide-react";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "@/lib/firebaseClient";
 
-type Country = { name: string; code: string };
+type Country = { name: string; code: string; slug?: string };
 
 function countrySlug(name: string) {
   return name
@@ -41,7 +41,8 @@ export default function ApplyCountryPicker() {
           const data = d.data() as any;
           const name = data?.name || d.id;
           const code = data?.countryCode || data?.code || "";
-          list.push({ name, code });
+          const slug = data?.slug || d.id;
+          list.push({ name, code, slug });
         });
         list.sort((a, b) => a.name.localeCompare(b.name, "en", { sensitivity: "base" }));
         setCountries(list);
@@ -151,7 +152,7 @@ export default function ApplyCountryPicker() {
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                 {filteredCountries.map((c: Country) => {
-                  const slug = countrySlug(c.name);
+                  const slug = c.slug || countrySlug(c.name);
                   const href = `/country/${slug}`;
 
                   return (

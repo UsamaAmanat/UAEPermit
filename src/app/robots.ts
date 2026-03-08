@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
       },
     ],
-    sitemap: "https://uaepermit.com/sitemap.xml",
+    sitemap: "https://www.uaepermit.com/sitemap.xml",
   };
 }

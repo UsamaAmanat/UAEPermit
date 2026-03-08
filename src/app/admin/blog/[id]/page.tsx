@@ -174,7 +174,7 @@ export default function EditBlogPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-semibold text-slate-900">Edit blog post</h1>
-            <p className="text-sm text-slate-600">/blog/{slug || post?.slug}</p>
+            <p className="text-sm text-slate-600">/{slug || post?.slug}</p>
           </div>
         </div>
 

@@ -33,10 +33,11 @@ type AppRow = {
   extraFast: boolean;
 };
 
-type StatusKey = "submitted" | "paid" | "issued" | "rejected";
+type StatusKey = "submitted" | "pending_payment" | "paid" | "issued" | "rejected";
 
 const STATUS_CONFIG: Record<StatusKey, { label: string; bg: string; text: string; border: string; icon: typeof Clock }> = {
   submitted: { label: "Submitted", bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200", icon: Clock },
+  pending_payment: { label: "Pending Payment", bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-200", icon: Clock },
   paid: { label: "Payment Done", bg: "bg-sky-50", text: "text-sky-700", border: "border-sky-200", icon: CreditCard },
   issued: { label: "Visa Issued", bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200", icon: CheckCircle2 },
   rejected: { label: "Rejected", bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200", icon: AlertCircle },
@@ -44,7 +45,7 @@ const STATUS_CONFIG: Record<StatusKey, { label: string; bg: string; text: string
 
 function mapStatus(raw: string): StatusKey {
   const s = raw.trim().toLowerCase();
-  if (["draft", "pending", "submitted"].includes(s)) return "submitted";
+  if (["draft", "pending", "submitted", "incomplete"].includes(s)) return "pending_payment";
   if (["paid", "processing", "succeeded", "complete"].includes(s)) return "paid";
   if (s === "issued") return "issued";
   if (s === "rejected") return "rejected";
@@ -234,7 +235,7 @@ export default function AccountApplicationsPage() {
           </div>
           <div className="flex flex-wrap items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
             <Filter className="h-4 w-4 text-slate-400" />
-            {(["all", "submitted", "paid", "issued", "rejected"] as const).map((f) => (
+            {(["all", "submitted", "pending_payment", "paid", "issued", "rejected"] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilterStatus(f)}
@@ -345,10 +346,27 @@ export default function AccountApplicationsPage() {
                       </p>
                       <p className="text-[10px] text-slate-400 uppercase">{app.currency}</p>
                     </div>
-                    <span className={`inline-flex items-center gap-1.5 rounded-full border ${cfg.border} ${cfg.bg} px-2.5 py-1 text-[11px] font-semibold ${cfg.text}`}>
-                      <Icon className="h-3 w-3" />
-                      {cfg.label}
-                    </span>
+
+                    <div className="flex flex-col items-end gap-2">
+                       <span className={`inline-flex items-center gap-1.5 rounded-full border ${cfg.border} ${cfg.bg} px-2.5 py-1 text-[11px] font-semibold ${cfg.text}`}>
+                        <Icon className="h-3 w-3" />
+                        {cfg.label}
+                      </span>
+                      
+                      {statusKey === "pending_payment" && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.location.href = `/apply/payment?appId=${encodeURIComponent(app.id)}&amount=${encodeURIComponent(app.amount)}`;
+                          }}
+                          className="inline-flex items-center gap-1 mt-1 rounded-full bg-emerald-600 px-3 py-1.5 text-[10px] font-semibold text-white shadow-sm hover:bg-emerald-700 transition"
+                        >
+                          <CreditCard className="h-3 w-3" />
+                          Pay Now
+                        </button>
+                      )}
+                    </div>
                     <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-emerald-500 transition-colors" />
                   </div>
                 </Link>

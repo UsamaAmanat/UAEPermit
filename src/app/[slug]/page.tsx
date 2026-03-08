@@ -44,7 +44,7 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: `/blog/${slug}` },
+    alternates: { canonical: `/${slug}` },
 
     // ✅ explicit (good SEO hygiene)
     robots: { index: true, follow: true },
